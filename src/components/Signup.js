@@ -39,8 +39,7 @@ export default function Signup(props){
                     <img alt="bruin" src={bruin} className={classes.bruin} />
                     <img alt="paw" src={paw} className={classes.paw} />
                     <h2 className={classes.subtitle}>SIGN UP</h2>
-                    <div className={classes.diamondBox}>
-                        <img alt="diamond background" src={diamonds} className={classes.diamonds} />
+                    <div className={classes.diamondBox}> 
                         <div className={classes.subBox}>
                             <span className={classes.text}>Name</span>
                             <input className={classes.input} type="text" style={{width: '360px'}} 
@@ -103,19 +102,16 @@ const useStyles = makeStyles(() => ({
         zIndex: 2
     },
     diamondBox: {
-        height: '100%',
+        height: '354px',
+        borderBottomLeftRadius: '26px',
+        borderBottomRightRadius: '28px',
         width: '100%',
         position: 'relative',
-    },
-    diamonds: {
-        position: 'absolute',
-        height: '414px',
-        width: '683px',
-        top: '-87px',
-        left: '-7px',
-        zIndex: 1,
-        borderBottomRightRadius: '67px',
-        borderBottomLeftRadius: '80px'
+        backgroundImage: `url(${diamonds})`,
+        backgroundSize: '684px 414px',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: '50% 50%',
+        overflow: 'hidden'
     },
     contentBox: {
         margin: '200px auto 0px auto',
@@ -134,6 +130,7 @@ const useStyles = makeStyles(() => ({
         fontSize: '46px',
         fontWeight: '400',
         marginTop: '15px',
+        marginBottom: '0',
         paddingBottom: '15px',
         borderBottom: '2px solid #32312D'
     },
@@ -163,7 +160,7 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        marginTop: '57px'
+        paddingTop: '57px'
     },
     text: {
         fontFamily: 'Chelsea Market',
