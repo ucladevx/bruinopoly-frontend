@@ -18,7 +18,7 @@ const initialState = {
 export function lobbyReducer(state = initialState, action) {
     switch (action.type) {
         case SET_USER_INFO:
-            return {...state, userInfo: action.userObj}
+            return {...state, userInfo: action.userObj, redirectTo: "/"}
         
         default:
             return state;
@@ -35,7 +35,6 @@ export const setUserInfo = (info) => async (dispatch) => {
     if(!name || name === ""){
         return
     }
-    
     cookies.set('user', JSON.stringify(info))
 
     dispatch({type: SET_USER_INFO, userObj: info})
@@ -43,10 +42,11 @@ export const setUserInfo = (info) => async (dispatch) => {
 };
 
 function checkCookies() {
+    //cookies.remove('user')
     let user = cookies.get("user");
+    //console.log(user)
 
     if(user && user !== "null"){
-        user = JSON.parse(user)
         if(!user.hasOwnProperty('name') || !user.hasOwnProperty('major') || !user.hasOwnProperty('year'))
             return null;
         let {name, major, email} = user
