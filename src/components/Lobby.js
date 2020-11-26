@@ -4,41 +4,58 @@ import bruinopoly from '../assets/bruinopoly.png'
 import Room from '../components/Room.js'
 import { FormHelperText } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
+import blob1 from '../assets/blob1.png'
+import blob2 from '../assets/blob2.png'
 
 
 export default function Lobby(props){
 
     const [displayCreateGame, setDisplayCreateGame] = useState("none");
-    const [createGameName, setCreateGameName] = useState("")
-    const [createGameTime, setCreateGameTime] = useState("")
+    const [createGameName, setCreateGameName] = useState("");
+    const [createGameTime, setCreateGameTime] = useState("");
+    const [createGameLength, setCreateGameLength] = useState("");
+    const [createGamePublic, setCreateGamePublic] = useState();
+    const [publicBackgroundColor, setPublicBackgroundColor] = useState("#C4B299")
+    const [privateBackgroundColor, setPrivateBackgroundColor] = useState("#C4B299")
 
     const classes = useStyles();
 
-    var timesList = []
+    var timesList = [];
     for(var i = 0; i < 12; i++){
         timesList.push(
             <option value={(i+1) + ":00 PM PST"}/>
-        )
+        );
         timesList.push(
             <option value={(i+1) + ":30 PM PST"}/>
-        )
+        );
         timesList.push(
             <option value={(i+1) + ":00 AM PST"}/>
-        )
+        );
         timesList.push(
             <option value={(i+1) + ":30 AM PST"}/>
-        )
+        );
     }
 
-    var suggestedRooms = []
+    var suggestedRooms = [];
     for(var i = 0; i < 7; i++){
         suggestedRooms.push(
             <Room roomNumber='10' gameTime='2:00 PM'
                 numberOfPlayers='4'></Room>
-        )
+        );
     }
 
-
+    let publicClicked = (e) => {
+        setPublicBackgroundColor("#7A6E5D");
+        setPrivateBackgroundColor('#C4B299');
+        setCreateGamePublic(true);
+    }
+    
+    let privateClicked = (e) => {
+        setPublicBackgroundColor("#C4B299");
+        setPrivateBackgroundColor('#7A6E5D');
+        setCreateGamePublic(false);
+    }
+    
     return (
         <div className={classes.wrapper}>
         <div className={classes.createRoomPopup}
@@ -47,8 +64,8 @@ export default function Lobby(props){
                     <div className={classes.deleteCreateGame}><ClearIcon onClick={() => setDisplayCreateGame("none")}/></div>
                     <div className={classes.createRoomText}>CREATE ROOM</div>
                     <div className={classes.createRoomOptionsHolder}>
-                        <button className={classes.createRoomOptions}><div>PUBLIC</div></button>
-                        <button className={classes.createRoomOptions}><div>PRIVATE</div></button>
+                        <button className={classes.createRoomOptions} style={{backgroundColor: publicBackgroundColor}} onClick={publicClicked}><div>PUBLIC</div></button>
+                        <button className={classes.createRoomOptions} style={{backgroundColor: privateBackgroundColor}} onClick={privateClicked}><div>PRIVATE</div></button>
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>ROOM NAME: </div>
@@ -56,17 +73,24 @@ export default function Lobby(props){
                         onChange={(e)=>{setCreateGameName(e.target.value)}}></input>
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
-                        <div className={classes.roomOptionsText}>GAME TIME: </div>
+                        <div className={classes.roomOptionsText}>START TIME: </div>
                         <form className={classes.roomForm}>
                             <input className={classes.roomFormInput} placeholder="12:00 PM PST"
                             list='times' onChange={(e)=>{setCreateGameTime(e.target.value)}}></input>
                             <datalist id='times'>{timesList}</datalist>
                         </form>
                     </div>
+                    <div className={classes.createRoomOptionsHolder}>
+                        <div className={classes.roomOptionsText}>LENGTH: </div>
+                        <input className={classes.roomInput} placeholder="in minutes"
+                            onChange={(e)=>{setCreateGameLength(e.target.value)}}></input>
+                    </div>
                     <button className={classes.createRoomOptions} style={{backgroundColor: '#7A6E5D'}}><div>CREATE</div></button>
                 </div>
         </div>
         <div className={classes.main}>
+            <img className={classes.blob1} src={blob1}></img>
+            <img className={classes.blob2} src={blob2}></img>
             <div className={classes.bruinopolyText}>BRUINOPOLY</div> 
             <div className={classes.lobbyBox}>
                 <div className={classes.lobbyText}>
@@ -96,6 +120,21 @@ const useStyles = makeStyles(() => ({
         position: 'relative',
         width: '100vw'
     },
+    blob1: {
+        position: 'fixed',
+        top: '5%',
+        right: '5%',
+        height: '50%',
+        zIndex: '-2'
+    },
+    blob2: {
+        position: 'fixed',
+        bottom: '5%',
+        left: '5%',
+        height: '50%',
+        zIndex: '-2',
+        filter: "blur(10px)"
+    },
     main: {
         position: 'absolute',
         top: '0',
@@ -106,7 +145,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: 'ChelseaMarket',
-        zIndex: '-100'
+        zIndex: '-1'
     },
     createRoomPopup: {
         //display: 'none',
@@ -117,7 +156,7 @@ const useStyles = makeStyles(() => ({
         transform: 'translate(-50%, -50%)',
         zIndex: '100',
         width: '661px',
-        height: '500px',
+        height: '560px',
         backgroundColor: "#DED3C1",
         border: '10px solid #C4B299',
         boxShadow: '10px 10px 0px #C4B299',
@@ -155,7 +194,6 @@ const useStyles = makeStyles(() => ({
     },
     createRoomOptions: {
         color: 'white',
-        backgroundColor: '#C4B299',
         width: '45%',
         borderRadius: '20px',
         fontSize: '42px',
@@ -164,7 +202,8 @@ const useStyles = makeStyles(() => ({
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: 'ChelseaMarket',
-        border: 'none'
+        border: 'none',
+        outline: 'none',
     },
     roomOptionsText: {
         color: 'white',
@@ -214,6 +253,7 @@ const useStyles = makeStyles(() => ({
     lobbyBox: {
         marginBottom: '40px',
         width: '71%',
+        maxWidth: '875px',
         backgroundColor: '#F7F2E7',
         border: '3px solid #C4B299',
         boxSizing: 'border-box',
@@ -254,7 +294,8 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: 'ChelseaMarket'
+        fontFamily: 'ChelseaMarket',
+        outline: 'none'
     },
     roomsText: {
         margin: '8px',

@@ -24,7 +24,7 @@ export default function Room(props){
     }
 
     return (
-        <div className={classes.main}>
+        <button className={classes.main}>
             <div className={classes.roomNumberHolder}>
                 <p className={classes.roomNumber}>ROOM {props.roomNumber}</p>
             </div>
@@ -37,7 +37,7 @@ export default function Room(props){
                 <p style={{margin: '5px'}}>GAME TIME</p>
                 <p className={classes.gameTime}>{props.gameTime}</p>
             </div>
-        </div>
+        </button>
     )
 }
 
@@ -51,7 +51,10 @@ const useStyles = makeStyles(() => ({
         borderRadius: '10px',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
+        border: 'none',
+        outline: 'none'
+
     },
     roomNumberHolder: {
         margin: "5px",
