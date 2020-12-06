@@ -3,6 +3,9 @@ import {Redirect} from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import {majors} from '../config'
 
+import blob1 from '../assets/blueblob1.png'
+import blob2 from '../assets/blueblob2.png'
+
 import bruin from '../assets/bruinman.png'
 import paw from '../assets/paw.png'
 import bruinopoly from '../assets/bruinopoly.png'
@@ -34,6 +37,8 @@ export default function Signup(props){
     return (
         <div>
             <div className={classes.container}>
+                <img alt="background" className={classes.blob1} src={blob1}></img>
+                <img alt="background" className={classes.blob2} src={blob2}></img>
                 <div className={classes.contentBox}>
                     <img alt="title" src={bruinopoly} className={classes.titleImage}/>
                     <img alt="bruin" src={bruin} className={classes.bruin} />
@@ -75,6 +80,21 @@ export default function Signup(props){
 const useStyles = makeStyles(() => ({
     container : {
         
+    },
+    blob1: {
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        width: '100%',
+        zIndex: -1
+    },
+    blob2: {
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        width: '100%',
+        height: '58%',
+        zIndex: -1
     },
     titleImage: {
         height: 'auto',
@@ -125,7 +145,7 @@ const useStyles = makeStyles(() => ({
         border: '3px solid #32312D',
     },
     subtitle: {
-        fontFamily: 'Chelsea Market',
+        fontFamily: 'ChelseaMarket',
         textAlign: 'center',
         fontSize: '46px',
         fontWeight: '400',
@@ -135,7 +155,7 @@ const useStyles = makeStyles(() => ({
         borderBottom: '2px solid #32312D'
     },
     button: {
-        fontFamily: 'Chelsea Market',
+        fontFamily: 'ChelseaMarket',
         fontSize: '35px',
         boxSizing: 'border-box',
         height: '75px',
@@ -163,7 +183,7 @@ const useStyles = makeStyles(() => ({
         paddingTop: '57px'
     },
     text: {
-        fontFamily: 'Chelsea Market',
+        fontFamily: 'ChelseaMarket',
         fontWeight: '400',
         width: '140px',
         fontSize: '36px',
@@ -172,7 +192,7 @@ const useStyles = makeStyles(() => ({
         zIndex: 2
     },
     input: {
-        fontFamily: 'Chelsea Market',
+        fontFamily: 'ChelseaMarket',
         fontSize: '20px',
         paddingLeft: '13px',
         boxSizing: 'border-box',
