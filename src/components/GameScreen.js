@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
-import paw from '../assets/loadingpaw.png'
+import paw from '../assets/loadingpaw.png';
+import Chat from './Chat';
 
 export default function GameScreen(props){
 
@@ -15,6 +16,7 @@ export default function GameScreen(props){
                 <img className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>GAME WILL BEGIN AT 00:00</div>
             </div>
+            <Chat/>
         </div>
     )
 
@@ -53,6 +55,7 @@ const useStyles = makeStyles(() => ({
         marginTop: '50px',
         fontFamily: 'ChelseaMarket',
         fontSize: '46px',
-        color: '#7A6E5D'
+        color: '#7A6E5D',
+        textAlign: 'center'
     }
 }))
