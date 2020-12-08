@@ -6,7 +6,7 @@ export default function Sidebar(props){
 
     const classes = useStyles();
 
-    var playersList = ["Sam", "Thomas", "David", "Rahul", "Frank"]
+    var playersList = props.playersList
 
     var players =[]
 
@@ -33,8 +33,9 @@ export default function Sidebar(props){
 
 const useStyles = makeStyles(() => ({
     container: {
-        margin: '50px',
+        margin: '50px 0px 0px 50px',
         fontFamily: 'VCR',
+        width: '25%'
     },
     bruinopoly: {
         fontFamily: 'ChelseaMarket',
