@@ -1,4 +1,6 @@
 
+let API_URL = "http://localhost:3000"
+
 let majors = ["Aerospace Engineering",
     "African American Studies",
     "African and Middle Eastern Studies",
@@ -136,4 +138,4 @@ let majors = ["Aerospace Engineering",
     "World Arts and Cultures"
 ]
 
-export {majors}
+export {majors, API_URL}

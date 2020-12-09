@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import bruinopoly from '../assets/bruinopoly.png'
 import Room from '../components/Room.js'
@@ -7,87 +7,77 @@ import ClearIcon from '@material-ui/icons/Clear';
 import blob1 from '../assets/blob1.png'
 import blob2 from '../assets/blob2.png'
 
-
 export default function Lobby(props){
-
-    const [displayCreateGame, setDisplayCreateGame] = useState("none");
-    const [createGameName, setCreateGameName] = useState("");
-    const [createGameTime, setCreateGameTime] = useState("");
-    const [createGameLength, setCreateGameLength] = useState("");
-    const [createGamePublic, setCreateGamePublic] = useState();
-    const [publicBackgroundColor, setPublicBackgroundColor] = useState("#C4B299")
-    const [privateBackgroundColor, setPrivateBackgroundColor] = useState("#C4B299")
-
     const classes = useStyles();
 
-    var timesList = [];
-    for(var i = 0; i < 12; i++){
-        timesList.push(
-            <option value={(i+1) + ":00 PM PST"}/>
-        );
-        timesList.push(
-            <option value={(i+1) + ":30 PM PST"}/>
-        );
-        timesList.push(
-            <option value={(i+1) + ":00 AM PST"}/>
-        );
-        timesList.push(
-            <option value={(i+1) + ":30 AM PST"}/>
-        );
+    const [display, setDisplay] = useState(false);
+    const [name, setName] = useState("");
+    const [time, setTime] = useState("");
+    const [length, setLength] = useState("");
+    const [publicLobby, setPublic] = useState(true);
+    const [password, setPassword] = useState("");
+
+    useEffect(()=>{
+        props.getRooms()
+    }, [])
+   
+    let timesList = [];
+    for(let i = 0; i < 12; i++){
+        timesList.push(<option value={(i+1) + ":00 PM PST"}/>);
+        timesList.push(<option value={(i+1) + ":30 PM PST"}/>);
+        timesList.push(<option value={(i+1) + ":00 AM PST"}/>);
+        timesList.push(<option value={(i+1) + ":30 AM PST"}/>);
     }
 
-    var suggestedRooms = [];
-    for(var i = 0; i < 7; i++){
+     //TEMPORARY START
+    let suggestedRooms = [];
+    for(let i = 0; i < 7; i++){
         suggestedRooms.push(
-            <Room roomNumber='10' gameTime='2:00 PM'
+            <Room key={i} roomNumber='10' gameTime='2:00 PM'
                 numberOfPlayers='4'></Room>
         );
     }
+    //TEMPORARY END
 
-    let publicClicked = (e) => {
-        setPublicBackgroundColor("#7A6E5D");
-        setPrivateBackgroundColor('#C4B299');
-        setCreateGamePublic(true);
-    }
-    
-    let privateClicked = (e) => {
-        setPublicBackgroundColor("#C4B299");
-        setPrivateBackgroundColor('#7A6E5D');
-        setCreateGamePublic(false);
-    }
     
     return (
         <div className={classes.wrapper}>
-        <div className={classes.createRoomPopup}
-            style={{display: displayCreateGame}}>
+        {display && <div className={classes.blur}><div className={classes.createRoomPopup} style={!publicLobby ? {height: '630px'} : null}>
                 <div style={{display: "flex", flexDirection: 'column', alignItems: 'center', justifyContent: 'space-around', height:'100%'}}>
-                    <div className={classes.deleteCreateGame}><ClearIcon onClick={() => setDisplayCreateGame("none")}/></div>
+                    <div className={classes.deleteCreateGame}><ClearIcon onClick={() => setDisplay(false)}/></div>
                     <div className={classes.createRoomText}>CREATE ROOM</div>
-                    <div className={classes.createRoomOptionsHolder}>
-                        <button className={classes.createRoomOptions} style={{backgroundColor: publicBackgroundColor}} onClick={publicClicked}><div>PUBLIC</div></button>
-                        <button className={classes.createRoomOptions} style={{backgroundColor: privateBackgroundColor}} onClick={privateClicked}><div>PRIVATE</div></button>
+                    <div className={classes.createRoomOptionsHolder} style={{justifyContent: 'center'}}>
+                        <button className={classes.createRoomOptions} style={{backgroundColor: publicLobby ? '#7A6E5D' : '#C4B299'}} 
+                            onClick={()=>{setPublic(true)}}><div>PUBLIC</div></button>
+                        <button className={classes.createRoomOptions} style={{backgroundColor: !publicLobby ? '#7A6E5D' : '#C4B299', marginLeft: '20px'}} 
+                            onClick={()=>{setPublic(false)}}><div>PRIVATE</div></button>
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>ROOM NAME: </div>
-                        <input className={classes.roomInput} placeholder="Name..."
-                        onChange={(e)=>{setCreateGameName(e.target.value)}}></input>
+                        <input className={classes.roomInput} placeholder="NAME..."
+                        onChange={(e)=>{setName(e.target.value)}} />
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
-                        <div className={classes.roomOptionsText}>START TIME: </div>
+                        <div className={classes.roomOptionsText}>GAME TIME: </div>
                         <form className={classes.roomForm}>
                             <input className={classes.roomFormInput} placeholder="12:00 PM PST"
-                            list='times' onChange={(e)=>{setCreateGameTime(e.target.value)}}></input>
+                            list='times' onChange={(e)=>{setTime(e.target.value)}} />
                             <datalist id='times'>{timesList}</datalist>
                         </form>
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
-                        <div className={classes.roomOptionsText}>LENGTH: </div>
-                        <input className={classes.roomInput} placeholder="in minutes"
-                            onChange={(e)=>{setCreateGameLength(e.target.value)}}></input>
+                        <div className={classes.roomOptionsText}>TIME LIMIT: </div>
+                        <input value={length} className={classes.roomInput} placeholder="in minutes"
+                            onChange={(e)=>{setLength(e.target.value)}} />
                     </div>
-                    <button className={classes.createRoomOptions} style={{backgroundColor: '#7A6E5D'}}><div>CREATE</div></button>
+                    {!publicLobby && <div className={classes.createRoomOptionsHolder}>
+                        <div className={classes.roomOptionsText}>PASSWORD: </div>
+                        <input value={password} className={classes.roomInput} placeholder="PASSWORD..."
+                            onChange={(e)=>{setPassword(e.target.value)}} />
+                    </div>}
+                    <button className={classes.createRoomOptions} style={{backgroundColor: '#7A6E5D', width: '240px'}}><div>CREATE</div></button>
                 </div>
-        </div>
+        </div></div>}
         <div className={classes.main}>
             <img className={classes.blob1} src={blob1}></img>
             <img className={classes.blob2} src={blob2}></img>
@@ -101,7 +91,7 @@ export default function Lobby(props){
                     <span style={{transform: 'rotate(5.99deg) translate(0px, 8px)'}}>Y</span>
                 </div>
                 <div className={classes.optionsBox}>
-                    <button className={classes.option} onClick={() => setDisplayCreateGame("initial")}><div>CREATE ROOM</div></button>
+                    <button className={classes.option} onClick={() => setDisplay(true)}><div>CREATE ROOM</div></button>
                     <button className={classes.option}><div>ABOUT</div></button>
                     <button className={classes.option}><div>CONTACT</div></button>
                 </div>
@@ -145,40 +135,46 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: 'ChelseaMarket',
-        zIndex: '-1'
+    },
+    blur: {
+        position: 'fixed',
+        height: '100%',
+        width: '100%',
+        backdropFilter: 'blur(5px)',
+        zIndex: '3'
     },
     createRoomPopup: {
-        //display: 'none',
         fontFamily: 'ChelseaMarket',
         position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        zIndex: '100',
+        zIndex: '3',
         width: '661px',
         height: '560px',
         backgroundColor: "#DED3C1",
-        border: '10px solid #C4B299',
-        boxShadow: '10px 10px 0px #C4B299',
-        borderRadius: '50px',
+        border: '3px solid #C4B299',
+        boxShadow: '4px 4px 0px #C4B299',
+        borderRadius: '26px',
     },
     deleteCreateGame: {
         color: "white",
         backgroundColor: '#C4B299',
         borderRadius: '50%',
-        width: '45px',
-        height: '45px',
+        width: '30px',
+        height: '30px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        top: '10px',
-        right: '10px',
-        fontWeight: 'bold'
+        top: '17px',
+        right: '17px',
+        fontWeight: 'bold',
+        cursor: 'pointer'
     },
     createRoomText: {
         color: '#A8DDD7',
-        fontSize: '70px',
+        fontSize: '55px',
         textAlign: 'center',
         margin: '5px',
         marginTop: '20px',
@@ -190,13 +186,14 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        // alignItems: 'center,
         margin: '10px'
     },
     createRoomOptions: {
         color: 'white',
-        width: '45%',
-        borderRadius: '20px',
-        fontSize: '42px',
+        width: '47%',
+        borderRadius: '9px',
+        fontSize: '32px',
         textShadow: '2px 2px 0px rgba(0, 0, 0, 0.25)',
         display: 'flex',
         alignItems: 'center',
@@ -204,15 +201,16 @@ const useStyles = makeStyles(() => ({
         fontFamily: 'ChelseaMarket',
         border: 'none',
         outline: 'none',
+        cursor: 'pointer'
     },
     roomOptionsText: {
         color: 'white',
-        fontSize: '42px',
+        fontSize: '35px',
         textShadow: '2px 2px 2px #433F36',
     },
     roomInput: {
         backgroundColor: '#EFE9DB',
-        borderRadius: '20px',
+        borderRadius: '9px',
         width: '40%',
         fontFamily: 'VCR',
         fontSize: '30px',
@@ -238,7 +236,7 @@ const useStyles = makeStyles(() => ({
         fontFamily: 'VCR',
         fontSize: '30px',
         backgroundColor: '#EFE9DB',
-        borderRadius: '20px',
+        borderRadius: '9px',
     },
     bruinopolyText: {
         margin: '20px',
@@ -295,7 +293,8 @@ const useStyles = makeStyles(() => ({
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: 'ChelseaMarket',
-        outline: 'none'
+        outline: 'none',
+        cursor: 'pointer'
     },
     roomsText: {
         margin: '8px',

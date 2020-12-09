@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
-import paw from '../assets/loadingpaw.png';
 import Chat from './Chat';
+
+import paw from '../assets/loadingpaw.png';
 
 export default function GameScreen(props){
 
@@ -13,7 +14,7 @@ export default function GameScreen(props){
             <div className={classes.topBar}></div>
             <Sidebar name="Game Name" playersList={["Samuel", "Thomas", "David", "Rahul", "Frank"]}/>
             <div className={classes.loadingContainer}>
-                <img className={classes.paw} src={paw}/>
+                <img alt="paw" className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>GAME WILL BEGIN AT 00:00</div>
             </div>
             <Chat/>

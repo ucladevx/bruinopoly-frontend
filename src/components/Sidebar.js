@@ -3,18 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import clock from '../assets/Groupclock.png'
 
 export default function Sidebar(props){
-
     const classes = useStyles();
-
-    var playersList = props.playersList
-
-    var players =[]
-
-    for(var i = 0; i < playersList.length; i++){
-        players.push(
-            <div className={classes.playersNames}>{playersList[i].toUpperCase()}</div>
-        )
-    }
 
     return(
         <div className={classes.container}>
@@ -25,7 +14,9 @@ export default function Sidebar(props){
                 <div>0:00 left</div>
             </div>
             <div className={classes.playersText}>PLAYERS</div>
-            {players}
+            {props.playersList.map((player)=>{
+                return <div className={classes.playersNames}>{player.toUpperCase()}</div>
+            })}
         </div>
     )
 

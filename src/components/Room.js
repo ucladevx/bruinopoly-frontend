@@ -13,7 +13,7 @@ export default function Room(props){
         var leftPercent = 50 - (50*Math.cos(i*(Math.PI/4)))
         var topPercent = 50 - (50*Math.sin(i*(Math.PI/4)))
         playerDots.push(
-            <div className={classes.dot}
+            <div className={classes.dot} key={i}
                 style={{
                     left: leftPercent + '%',
                     top: topPercent + '%',
@@ -23,8 +23,12 @@ export default function Room(props){
         )
     }
 
+    let handleClick = () => {
+        console.log("join this room")
+    }
+
     return (
-        <button className={classes.main}>
+        <button className={classes.main} onClick={handleClick}>
             <div className={classes.roomNumberHolder}>
                 <p className={classes.roomNumber}>ROOM {props.roomNumber}</p>
             </div>
@@ -53,7 +57,8 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         alignItems: 'center',
         border: 'none',
-        outline: 'none'
+        outline: 'none',
+        cursor: 'pointer'
 
     },
     roomNumberHolder: {
