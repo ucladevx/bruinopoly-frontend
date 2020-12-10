@@ -1,5 +1,8 @@
 import {connect} from 'react-redux';
-import {getRooms} from '../reducers/lobby';
+import {
+    getRooms, 
+    createRoom
+    } from '../reducers/lobby';
 import Lobby from '../components/Lobby';
 
 // import {withRouter} from 'react-router-dom';
@@ -11,6 +14,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getRooms: () => {
         dispatch(getRooms());
+    },
+    createRoom: (data) => {
+        dispatch(createRoom(data));
     }
 });
 

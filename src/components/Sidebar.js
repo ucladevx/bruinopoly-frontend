@@ -10,7 +10,7 @@ export default function Sidebar(props){
             <div className={classes.bruinopoly}>BRUINOPOLY</div>
             <div className={classes.name}>{props.name.toUpperCase()}</div>
             <div className={classes.timeLeft}>
-                <img src={clock} className={classes.clock}></img>
+                <img alt="clock" src={clock} className={classes.clock}></img>
                 <div>0:00 left</div>
             </div>
             <div className={classes.playersText}>PLAYERS</div>

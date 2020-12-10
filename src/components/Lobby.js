@@ -6,6 +6,7 @@ import { FormHelperText } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import blob1 from '../assets/blob1.png'
 import blob2 from '../assets/blob2.png'
+import dropdown from '../assets/dropdown.png'
 
 export default function Lobby(props){
     const classes = useStyles();
@@ -13,7 +14,7 @@ export default function Lobby(props){
     const [display, setDisplay] = useState(false);
     const [name, setName] = useState("");
     const [time, setTime] = useState("");
-    const [length, setLength] = useState("");
+    const [length, setLength] = useState("00 MINS");
     const [publicLobby, setPublic] = useState(true);
     const [password, setPassword] = useState("");
 
@@ -22,11 +23,12 @@ export default function Lobby(props){
     }, [])
    
     let timesList = [];
+    //should probably change this so time options are linear
     for(let i = 0; i < 12; i++){
-        timesList.push(<option value={(i+1) + ":00 PM PST"}/>);
-        timesList.push(<option value={(i+1) + ":30 PM PST"}/>);
-        timesList.push(<option value={(i+1) + ":00 AM PST"}/>);
-        timesList.push(<option value={(i+1) + ":30 AM PST"}/>);
+        timesList.push(<option value={(i+1) + ":00 PM PST"}>{(i+1) + ":00 PM PST"}</option>);
+        timesList.push(<option value={(i+1) + ":30 PM PST"}>{(i+1) + ":30 PM PST"}</option>);
+        timesList.push(<option value={(i+1) + ":00 AM PST"}>{(i+1) + ":00 AM PST"}</option>);
+        timesList.push(<option value={(i+1) + ":30 AM PST"}>{(i+1) + ":30 AM PST"}</option>);
     }
 
      //TEMPORARY START
@@ -38,6 +40,17 @@ export default function Lobby(props){
         );
     }
     //TEMPORARY END
+
+    let handleCreateRoom = () => {
+        setDisplay(false);
+        let obj = {
+            name: name,
+            startTime: time,
+            password: password,
+            timeLimit: length
+        }
+        props.createRoom(obj);
+    }
 
     
     return (
@@ -59,23 +72,26 @@ export default function Lobby(props){
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>GAME TIME: </div>
-                        <form className={classes.roomForm}>
-                            <input className={classes.roomFormInput} placeholder="12:00 PM PST"
-                            list='times' onChange={(e)=>{setTime(e.target.value)}} />
-                            <datalist id='times'>{timesList}</datalist>
-                        </form>
+                            <select className={` ${classes.roomFormInput} ${classes.dropdownStyle}`} placeholder="12:00 PM PST"
+                            list='times' onChange={(e)=>{setTime(e.target.value)}}>
+                                {timesList}
+                            </select>
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>TIME LIMIT: </div>
-                        <input value={length} className={classes.roomInput} placeholder="in minutes"
-                            onChange={(e)=>{setLength(e.target.value)}} />
+                        <select value={length} className={`${classes.roomInput} ${classes.dropdownStyle}`} placeholder="in minutes"
+                            onChange={(e)=>{setLength(e.target.value)}} >
+                            {Array.apply(null, Array(10)).map((v, i)=>{
+                                return <option key={i} value={15*i}>{15*i} MIN</option>
+                            })}
+                        </select>
                     </div>
                     {!publicLobby && <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>PASSWORD: </div>
                         <input value={password} className={classes.roomInput} placeholder="PASSWORD..."
                             onChange={(e)=>{setPassword(e.target.value)}} />
                     </div>}
-                    <button className={classes.createRoomOptions} style={{backgroundColor: '#7A6E5D', width: '240px'}}><div>CREATE</div></button>
+                    <button onClick={handleCreateRoom} className={classes.createRoomOptions} style={{backgroundColor: '#7A6E5D', width: '240px'}}><div>CREATE</div></button>
                 </div>
         </div></div>}
         <div className={classes.main}>
@@ -211,32 +227,32 @@ const useStyles = makeStyles(() => ({
     roomInput: {
         backgroundColor: '#EFE9DB',
         borderRadius: '9px',
-        width: '40%',
+        width: '50%',
         fontFamily: 'VCR',
         fontSize: '30px',
         paddingLeft: '5%',
         border: 'none',
         outline: 'none',
     },
-    roomForm: {
-        backgroundColor: '#EFE9DB',
-        borderRadius: '20px',
-        width: '45%',
-        fontFamily: 'VCR',
-        fontSize: '30px',
-        border: 'none',
-        outline: 'none',
-    },
     roomFormInput: {
         height: '100%',
-        width: '90%',
-        paddingLeft: '10%',
+        width: '54%',
+        paddingLeft: '20px',
         border: 'none',
         outline: 'none',
         fontFamily: 'VCR',
         fontSize: '30px',
         backgroundColor: '#EFE9DB',
-        borderRadius: '9px',
+        borderRadius: '9px'
+    },
+    dropdownStyle: {
+        backgroundImage: `url(${dropdown})`,
+        backgroundPosition: '97% 52%',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '22px 22px',
+        webkitAppearance: 'none',
+        mozAppearance: 'none',
+        appearance: 'none',
     },
     bruinopolyText: {
         margin: '20px',

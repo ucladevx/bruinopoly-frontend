@@ -33,7 +33,7 @@ export default function Room(props){
                 <p className={classes.roomNumber}>ROOM {props.roomNumber}</p>
             </div>
             <div className={classes.table}> 
-                <img className={classes.paw} src={paw}></img>
+                <img alt="paw" className={classes.paw} src={paw}></img>
                 <p className={classes.numberOfPlayers}>{props.numberOfPlayers}/8</p>
                 {playerDots}
             </div>

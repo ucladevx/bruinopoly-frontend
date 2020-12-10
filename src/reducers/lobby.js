@@ -7,8 +7,10 @@ const cookies = new Cookies();
 const SET_USER_INFO = "SET_USER_INFO"
 
 const SET_ROOMS_LIST = "SET_ROOMS_LIST"
+const ADD_NEW_ROOM = "ADD_NEW_ROOM"
 const LOBBY_ERROR = "LOBBY_ERROR"
 const ROOMS_ERROR = "ROOMS_ERROR"
+const CREATE_ROOM_ERROR = "CREATE_ROOMS_ERROR"
 
 const initialState = {
     userInfo: checkCookies(),
@@ -16,6 +18,7 @@ const initialState = {
     rooms: null,
     roomsError: null,
     lobbyError: null,
+    createRoomError: null,
     lobby: null
 }
 
@@ -27,6 +30,10 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, rooms: action.rooms}
         case ROOMS_ERROR:
             return {...state, roomsError: action.error}
+        case CREATE_ROOM_ERROR:
+            return {...state, createRoomError: action.error}
+        case ADD_NEW_ROOM:
+            return {...state, rooms: [...state.rooms, action.room]}
         default:
             return state;
     }
@@ -36,11 +43,21 @@ export const joinRoom = () => async (dispatch) => {
     console.log('join room')
 }
 
+export const createRoom = (data) => async (dispatch) => {
+    console.log(data)
+    try {  
+        let result = await axios.post(`${API_URL}/rooms`, data);
+        console.log(result);
+        dispatch({type: ADD_NEW_ROOM, room: result.data.room})
+    } catch(e){
+        dispatch({type: CREATE_ROOM_ERROR, error: e})
+    }
+}
+
 export const getRooms = () => async (dispatch) => {
     try {
         let result = await axios.get(`${API_URL}/rooms`)
-        console.log(result)
-         //dispatch({type: SET_ROOMS_LIST, rooms: re})
+         dispatch({type: SET_ROOMS_LIST, rooms: result.data.rooms})
     } catch(e){
         console.log(e)
         dispatch({type: ROOMS_ERROR, error: e})
