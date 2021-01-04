@@ -47,7 +47,9 @@ export default function Lobby(props){
             name: name,
             startTime: time,
             password: password,
-            timeLimit: length
+            timeLimit: length,
+            isPrivate: publicLobby,
+            hostPlayerName: props.user ? props.user.name : ""
         }
         props.createRoom(obj);
     }

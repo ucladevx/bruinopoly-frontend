@@ -8,7 +8,8 @@ import Lobby from '../components/Lobby';
 // import {withRouter} from 'react-router-dom';
 
 const mapStateToProps = state => ({
-    rooms: state.lobbyReducer.rooms
+    rooms: state.lobbyReducer.rooms,
+    user: state.lobbyReducer.userInfo
 });
 
 const mapDispatchToProps = dispatch => ({
