@@ -6,18 +6,18 @@ import Chat from './Chat';
 import paw from '../assets/loadingpaw.png';
 
 export default function GameScreen(props){
-
+    console.log(props)
     const classes = useStyles();
 
     return(
         <div className={classes.main}>
             <div className={classes.topBar}></div>
-            <Sidebar name="Game Name" playersList={["Samuel", "Thomas", "David", "Rahul", "Frank"]}/>
+            <Sidebar name={props.game.name} playersList={props.players}/>
             <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
-                <div className={classes.loadingText}>GAME WILL BEGIN AT 00:00</div>
+                <div className={classes.loadingText}>{`GAME WILL BEGIN AT ${props.game.startTime}`}</div>
             </div>
-            <Chat/>
+            <Chat playersList={props.players}/>
         </div>
     )
 

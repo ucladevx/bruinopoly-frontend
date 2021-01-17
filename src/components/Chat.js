@@ -14,7 +14,6 @@ export default function About(props){
     const [message, setMessage] = useState("")
 
     const colors = ["#A8DC96", "#F6C811", "#B6DAD6", "#DC9F96"]
-    const mockUsers = ["thomas", "sam", "david", "frank"]
 
     let toggle = () => setOpen(!open);
     let toggleMute = () => setMute(!muted);
@@ -29,8 +28,8 @@ export default function About(props){
                 <div className={classes.users}>
                     { !muted ? <MicNone className={classes.mic} onClick={toggleMute}/> : <MicOff className={classes.mic} onClick={toggleMute}/> }
                     {
-                        mockUsers.map((user, i)=>{
-                            return <Bubble color={colors[i]} name={user} />
+                        props.playersList && props.playersList.map((user, i)=>{
+                            return <Bubble key={i} color={colors[i]} name={user.name} />
                         })
                     }
                 </div>
@@ -155,7 +154,6 @@ const useStyles = makeStyles(() => ({
 }))
 
 const Bubble = ({name, color}) => {
-    console.log(color)
     return (
         <div style={{borderRadius: '50%', height: '28px', width: '28px', backgroundColor: `${color}`, 
         fontSize: '18px', marginTop: '7px', display: 'flex', justifyContent: 'center', alignItems: 'center', 

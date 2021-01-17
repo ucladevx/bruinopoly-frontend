@@ -11,7 +11,8 @@ import Lobby from '../components/Lobby';
 const mapStateToProps = state => ({
     rooms: state.lobbyReducer.rooms,
     user: state.lobbyReducer.userInfo,
-    redirect: state.lobbyReducer.redirectTo
+    redirect: state.lobbyReducer.redirectTo,
+    id: state.lobbyReducer.gameID
 });
 
 const mapDispatchToProps = dispatch => ({

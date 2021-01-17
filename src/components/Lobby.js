@@ -12,6 +12,7 @@ import {times, minGameTime} from '../config'
 
 export default function Lobby(props){
     const classes = useStyles();
+    const [joinRoom, setJoinRoom] = useState(false)
 
     const [display, setDisplay] = useState(false);
     const [name, setName] = useState("");
@@ -28,9 +29,18 @@ export default function Lobby(props){
         props.getRooms()
     }, [])
 
+    useEffect(()=>{
+        if(props.id !== null){
+            setJoinRoom(true)
+        }
+    }, [props.id])
+
     //doesn't seem to work
     if(props.redirect === null){
         return <Redirect to={{ pathname: '/signup' }} />
+    }
+    if(joinRoom){
+        return <Redirect to={{ pathname: `/game/${props.id}`}} />
     }
 
     let handleClick = (id, isPrivate) => {

@@ -10,7 +10,7 @@ function App() {
     <React.Fragment>
         <Switch>
           <Route exact path="/signup" component={Signup} />
-          <Route exact path="/game" component={GameScreen} />
+          <Route path="/game" component={GameScreen} />
           <Route path="/" component={Lobby} />
         </Switch> 
     </React.Fragment>

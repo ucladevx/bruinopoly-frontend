@@ -4,7 +4,8 @@ import GameScreen from '../components/GameScreen';
 // import {withRouter} from 'react-router-dom';
 
 const mapStateToProps = state => ({
-    todos: state.todos
+    players: state.lobbyReducer.players,
+    game: state.lobbyReducer.game
 });
 
 const mapDispatchToProps = dispatch => ({
