@@ -1,7 +1,8 @@
 import {connect} from 'react-redux';
 import {
     getRooms, 
-    createRoom
+    createRoom,
+    joinRoom
     } from '../reducers/lobby';
 import Lobby from '../components/Lobby';
 
@@ -9,7 +10,8 @@ import Lobby from '../components/Lobby';
 
 const mapStateToProps = state => ({
     rooms: state.lobbyReducer.rooms,
-    user: state.lobbyReducer.userInfo
+    user: state.lobbyReducer.userInfo,
+    redirect: state.lobbyReducer.redirectTo
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -18,6 +20,9 @@ const mapDispatchToProps = dispatch => ({
     },
     createRoom: (data) => {
         dispatch(createRoom(data));
+    },
+    joinRoom: (data) =>{
+        dispatch(joinRoom(data))
     }
 });
 

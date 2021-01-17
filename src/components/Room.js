@@ -4,9 +4,7 @@ import paw from '../assets/palepaw.png'
 
 
 export default function Room(props){
-
     const classes = useStyles();
-
     var playerDots = []
 
     for(var i=0; i<props.numberOfPlayers; i++){
@@ -23,14 +21,10 @@ export default function Room(props){
         )
     }
 
-    let handleClick = () => {
-        console.log("join this room")
-    }
-
     return (
-        <button className={classes.main} onClick={handleClick}>
+        <button onClick={props.onClick} className={classes.main}>
             <div className={classes.roomNumberHolder}>
-                <p className={classes.roomNumber}>ROOM {props.roomNumber}</p>
+                <p className={classes.roomNumber}>{props.name}</p>
             </div>
             <div className={classes.table}> 
                 <img alt="paw" className={classes.paw} src={paw}></img>

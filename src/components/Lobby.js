@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react'
+import {Redirect} from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
-import bruinopoly from '../assets/bruinopoly.png'
+// import bruinopoly from '../assets/bruinopoly.png'
 import Room from '../components/Room.js'
 import { FormHelperText } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import blob1 from '../assets/blob1.png'
 import blob2 from '../assets/blob2.png'
 import dropdown from '../assets/dropdown.png'
+import {times, minGameTime} from '../config'
 
 export default function Lobby(props){
     const classes = useStyles();
@@ -18,28 +20,42 @@ export default function Lobby(props){
     const [publicLobby, setPublic] = useState(true);
     const [password, setPassword] = useState("");
 
+    const [showPasswordAttempt, setPasswordAttemptBox] = useState(false)
+    const [savedID, storeID] = useState("")
+    const [passwordJoin, setPasswordJoin] = useState("")
+
     useEffect(()=>{
         props.getRooms()
     }, [])
-   
-    let timesList = [];
-    //should probably change this so time options are linear
-    for(let i = 0; i < 12; i++){
-        timesList.push(<option value={(i+1) + ":00 PM PST"}>{(i+1) + ":00 PM PST"}</option>);
-        timesList.push(<option value={(i+1) + ":30 PM PST"}>{(i+1) + ":30 PM PST"}</option>);
-        timesList.push(<option value={(i+1) + ":00 AM PST"}>{(i+1) + ":00 AM PST"}</option>);
-        timesList.push(<option value={(i+1) + ":30 AM PST"}>{(i+1) + ":30 AM PST"}</option>);
+
+    //doesn't seem to work
+    if(props.redirect === null){
+        return <Redirect to={{ pathname: '/signup' }} />
     }
 
-     //TEMPORARY START
-    let suggestedRooms = [];
-    for(let i = 0; i < 7; i++){
-        suggestedRooms.push(
-            <Room key={i} roomNumber='10' gameTime='2:00 PM'
-                numberOfPlayers='4'></Room>
-        );
+    let handleClick = (id, isPrivate) => {
+        if(isPrivate){
+            setPasswordAttemptBox(true)
+            storeID(id)
+            return
+        }
+
+        props.joinRoom({password: "", id, name: props.user.name})
     }
-    //TEMPORARY END
+
+    let handlePasswordJoin = (e) => {
+        e.preventDefault()
+
+        let obj = {
+            password: passwordJoin,
+            id: savedID,
+            name: props.user.name
+        }
+        setPasswordAttemptBox(false);
+        setPasswordJoin("");
+
+        props.joinRoom(obj)
+    }
 
     let handleCreateRoom = () => {
         setDisplay(false);
@@ -48,7 +64,7 @@ export default function Lobby(props){
             startTime: time,
             password: password,
             timeLimit: length,
-            isPrivate: publicLobby,
+            isPrivate: !publicLobby,
             hostPlayerName: props.user ? props.user.name : ""
         }
         props.createRoom(obj);
@@ -57,6 +73,12 @@ export default function Lobby(props){
     
     return (
         <div className={classes.wrapper}>
+        {showPasswordAttempt && <div className={classes.blur}><div className={classes.createRoomPopup} style={{height: '150px', width: '400px'}}>
+            <form style={{margin: 0, padding: 0, marginTop: '50px', marginLeft: '50px'}} onSubmit={handlePasswordJoin}>
+                <input style={{width: '80%', height: '45px'}} className={classes.roomInput} placeholder="ROOM PASSWORD..." value={passwordJoin} 
+                    onChange={(e)=>{setPasswordJoin(e.target.value)}} />
+            </form>
+        </div></div>}
         {display && <div className={classes.blur}><div className={classes.createRoomPopup} style={!publicLobby ? {height: '630px'} : null}>
                 <div style={{display: "flex", flexDirection: 'column', alignItems: 'center', justifyContent: 'space-around', height:'100%'}}>
                     <div className={classes.deleteCreateGame}><ClearIcon onClick={() => setDisplay(false)}/></div>
@@ -76,15 +98,17 @@ export default function Lobby(props){
                         <div className={classes.roomOptionsText}>GAME TIME: </div>
                             <select className={` ${classes.roomFormInput} ${classes.dropdownStyle}`} placeholder="12:00 PM PST"
                             list='times' onChange={(e)=>{setTime(e.target.value)}}>
-                                {timesList}
+                                {times.map((time, i)=>{
+                                    return <option key={i} value={time}>{time}</option>
+                                })}
                             </select>
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>TIME LIMIT: </div>
                         <select value={length} className={`${classes.roomInput} ${classes.dropdownStyle}`} placeholder="in minutes"
                             onChange={(e)=>{setLength(e.target.value)}} >
-                            {Array.apply(null, Array(10)).map((v, i)=>{
-                                return <option key={i} value={15*i}>{15*i} MIN</option>
+                            {Array.apply(null, Array(12)).map((v, i)=>{
+                                return <option key={i} value={10*i+minGameTime}>{15*i+minGameTime} MIN</option>
                             })}
                         </select>
                     </div>
@@ -114,9 +138,13 @@ export default function Lobby(props){
                     <button className={classes.option}><div>CONTACT</div></button>
                 </div>
                 <div className={classes.roomsText} style={{backgroundColor: '#A8DDD7'}}><div>SUGGESTED ROOMS</div></div>
-                <div className={classes.rooms}>{suggestedRooms}</div>
                 <div className={classes.roomsText} style={{backgroundColor: '#DC9F96'}}><div>AVAILABLE ROOMS</div></div>
-                <div className={classes.rooms}>{suggestedRooms}</div>
+                <div className={classes.rooms}>
+                    {props.rooms && props.rooms.map((room, i)=>{
+                        return  <Room onClick={()=>{handleClick(room._id, room.isPrivate)}} key={i} name={room.name} gameTime={room.startTime}
+                        numberOfPlayers={room.players.length} />
+                    })} 
+                </div>
             </div>
         </div>
         </div>
