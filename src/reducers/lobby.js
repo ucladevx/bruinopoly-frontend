@@ -15,6 +15,7 @@ const JOIN_ROOM_ERROR = "JOIN_ROOM_ERROR"
 const CREATE_ROOM_ERROR = "CREATE_ROOMS_ERROR"
 
 const UPDATE_PLAYERS = "UPDATE_PLAYERS"
+const ADD_MESSAGE = "ADD_MESSAGE"
 
 const initialState = {
     userInfo: checkCookies(),
@@ -27,6 +28,7 @@ const initialState = {
     players: null,
     gameID: null,
     game: null,
+    messages: [{name: "Thomas", content: "let's start!!"}]
 }
 
 export function lobbyReducer(state = initialState, action) {
@@ -48,6 +50,8 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, gameID: action.id, game: action.room}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
+        case ADD_MESSAGE:
+            return {...state, messages: [...state.messages, action.message]}
         default:
             return state;
     }
@@ -79,6 +83,8 @@ export const joinRoom = ({id, name, password}) => async (dispatch) => {
             case 'join':    
                 dispatch({type: JOIN_ROOM, id, room: data[1].roomData})
                 break;
+            case 'message':
+                dispatch({type: ADD_MESSAGE, message: data[1].message})
             default:
                 console.log("default case")
         }
@@ -111,6 +117,10 @@ export const getRooms = () => async (dispatch) => {
         dispatch({type: LOBBY_ERROR, error: e})
     }
    
+};
+
+export const addMessage = (message) => async (dispatch) => {
+        dispatch({type: ADD_MESSAGE, message})
 };
 
 export const setUserInfo = (info) => async (dispatch) => {

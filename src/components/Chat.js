@@ -1,5 +1,7 @@
 import React, {useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
+import {useSelector, useDispatch} from 'react-redux'
+import {addMessage} from '../reducers/lobby.js'
 
 import Plus from '@material-ui/icons/Add';
 import KReturn from '@material-ui/icons/KeyboardReturn';
@@ -13,10 +15,22 @@ export default function About(props){
     const [muted, setMute] = useState(true)
     const [message, setMessage] = useState("")
 
+    const dispatch = useDispatch()
+    const messages = useSelector(state => state.lobbyReducer.messages)
+    const user = useSelector(state => state.lobbyReducer.userInfo)
+
+
     const colors = ["#A8DC96", "#F6C811", "#B6DAD6", "#DC9F96"]
 
     let toggle = () => setOpen(!open);
     let toggleMute = () => setMute(!muted);
+
+    let handleMessage = () => {
+        if(message === "") return
+
+        dispatch(addMessage({name: user.name, content: message}))
+        setMessage("")
+    }
 
     return (
         <div className={classes.container}>
@@ -35,12 +49,21 @@ export default function About(props){
                 </div>
                 <div className={classes.rightBox}>
                     <div className={classes.messages}>
-
+                        {
+                            messages && messages.map((message, i)=>{
+                                return <div key={i} style={{display: 'flex', alignItems: 'center', paddingLeft: '15px', marginBottom: '7px'}}>
+                                    <Bubble color={colors[0]} name={message.name} />
+                                    <span className={classes.messageText}>{message.content}</span>
+                                </div>
+                            })
+                        }
                     </div>
                     <div className={classes.inputBox}>
+                        <form style={{margin: 0, padding: 0, display: 'inline'}} onSubmit={(e)=>{e.preventDefault(); handleMessage();}}>
                         <input type="text" placeholder="Send a message..." className={classes.input} value={message} 
                             onChange={(e)=>{setMessage(e.target.value)}} />
-                        <KReturn className={classes.sendIcon}/>
+                        <KReturn onClick={handleMessage} className={classes.sendIcon}/>
+                        </form>
                     </div>
                 </div>
             </div>}
@@ -126,6 +149,12 @@ const useStyles = makeStyles(() => ({
             color: 'black'
         }
     },
+    messageText: {
+        fontFamily: 'Avenir',
+        fontSize: '16px',
+        paddingLeft: '10px',
+        marginTop: '7px'
+    },
     rightBox: {
         display: 'flex',
         flexDirection: 'column',
@@ -135,6 +164,7 @@ const useStyles = makeStyles(() => ({
         height: '90%',
         width: '100%',
         backgroundColor: 'white',
+        overflow: 'scroll'
     },
     inputBox: {
         borderTop: '1px solid #7A6E5D',
