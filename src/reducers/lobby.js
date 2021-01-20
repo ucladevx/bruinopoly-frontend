@@ -52,8 +52,8 @@ export function lobbyReducer(state = initialState, action) {
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
-            if(state.socket != null){
-                console.log(state.socket)
+            if(state.socket != null && action.send){
+                //console.log(state.socket)
                 state.socket.send(JSON.stringify(['message', action.message]))
             }
             return {...state, messages: [...state.messages, action.message]}
@@ -92,7 +92,7 @@ export const joinRoom = ({id, name, password}) => async (dispatch) => {
                 dispatch({type: JOIN_ROOM, id, room: data[1].roomData})
                 break;
             case 'message':
-                dispatch({type: ADD_MESSAGE, message: data[1].message})
+                dispatch({type: ADD_MESSAGE, message: data[1].message, send: false})
                 break;
             default:
                 console.log("default case")
@@ -130,7 +130,7 @@ export const getRooms = () => async (dispatch) => {
 };
 
 export const addMessage = (message) => async (dispatch) => {
-        dispatch({type: ADD_MESSAGE, message})
+        dispatch({type: ADD_MESSAGE, message, send: true})
 };
 
 export const setUserInfo = (info) => async (dispatch) => {
