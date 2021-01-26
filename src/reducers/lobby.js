@@ -16,6 +16,7 @@ const CREATE_ROOM_ERROR = "CREATE_ROOMS_ERROR"
 
 const UPDATE_PLAYERS = "UPDATE_PLAYERS"
 const ADD_MESSAGE = "ADD_MESSAGE"
+const SET_SOCKET = "SET_SOCKET"
 
 const initialState = {
     userInfo: checkCookies(),
@@ -51,7 +52,13 @@ export function lobbyReducer(state = initialState, action) {
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
+            if(state.socket != null && action.send){
+                //console.log(state.socket)
+                state.socket.send(JSON.stringify(['message', action.message]))
+            }
             return {...state, messages: [...state.messages, action.message]}
+        case SET_SOCKET:
+            return {...state, socket: action.socket}
         default:
             return state;
     }
@@ -60,6 +67,7 @@ export function lobbyReducer(state = initialState, action) {
 export const joinRoom = ({id, name, password}) => async (dispatch) => {
     console.log(id, name, password)
     let socket = new WebSocket(`ws://localhost:8080?room_id=${id}&name=${name}&password=${password}`);
+    
 
     socket.addEventListener('open', function (event) {
         console.log("open event")
@@ -84,11 +92,13 @@ export const joinRoom = ({id, name, password}) => async (dispatch) => {
                 dispatch({type: JOIN_ROOM, id, room: data[1].roomData})
                 break;
             case 'message':
-                dispatch({type: ADD_MESSAGE, message: data[1].message})
+                dispatch({type: ADD_MESSAGE, message: data[1].message, send: false})
+                break;
             default:
                 console.log("default case")
         }
     })
+    dispatch({type: SET_SOCKET, socket})
 }
 
 export const createRoom = (data) => async (dispatch) => {
@@ -120,7 +130,7 @@ export const getRooms = () => async (dispatch) => {
 };
 
 export const addMessage = (message) => async (dispatch) => {
-        dispatch({type: ADD_MESSAGE, message})
+        dispatch({type: ADD_MESSAGE, message, send: true})
 };
 
 export const setUserInfo = (info) => async (dispatch) => {
