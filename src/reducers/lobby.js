@@ -41,7 +41,7 @@ export function lobbyReducer(state = initialState, action) {
         case LOBBY_ERROR:
             return {...state, lobbyError: action.error}
         case JOIN_ROOM_ERROR:
-            return {...state, joinRoomError: action.error}
+            return {...state, joinRoomError: action.error, gameID: null, game: null, players: null, socket: null}
         case CREATE_ROOM_ERROR:
             alert("Room could not be created. Something went wrong.")
             return {...state, createRoomError: action.error}

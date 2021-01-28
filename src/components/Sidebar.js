@@ -1,22 +1,36 @@
 import React, {useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import clock from '../assets/Groupclock.png'
+import Bruincard from './Bruincard'
+import PlayerBanner from './PlayerBanner'
 
 export default function Sidebar(props){
     const classes = useStyles();
+
+    const money = "5000"
 
     return(
         <div className={classes.container}>
             <div className={classes.bruinopoly}>BRUINOPOLY</div>
             <div className={classes.name}>{props.name.toUpperCase()}</div>
-            <div className={classes.timeLeft}>
-                <img alt="clock" src={clock} className={classes.clock}></img>
-                <div>0:00 left</div>
-            </div>
-            <div className={classes.playersText}>PLAYERS</div>
-            {props.playersList && props.playersList.map((player, i)=>{
-                return <div key={i} className={classes.playersNames}>{player.name.toUpperCase()}</div>
-            })}
+            {!props.started && <div>
+                <div className={classes.timeLeft}>
+                    <img alt="clock" src={clock} className={classes.clock}></img>
+                    <div>0:00 left</div>
+                </div>
+                <div className={classes.playersText}>PLAYERS</div>
+                {props.playersList && props.playersList.map((player, i)=>{
+                    return <div key={i} className={classes.playersNames}>{player.name.toUpperCase()}</div>
+                })}
+            </div>}
+            {props.started && <div className={classes.gameSidebar}>
+                <Bruincard money={money} name={props.user.name} />
+                <div className={classes.nameBox}>
+                    {props.playersList && props.playersList.map((player, i) => {
+                        return <PlayerBanner key={i} name={player.name} money="0000" />
+                    })}
+                </div>
+            </div>}
         </div>
     )
 
@@ -26,7 +40,10 @@ const useStyles = makeStyles(() => ({
     container: {
         margin: '50px 0px 0px 50px',
         fontFamily: 'VCR',
-        width: '25%'
+        width: '25%',
+    },
+    gameSidebar: {
+        paddingTop: '30px'
     },
     bruinopoly: {
         fontFamily: 'ChelseaMarket',
@@ -66,5 +83,10 @@ const useStyles = makeStyles(() => ({
         color: '#7A6E5D',
         fontSize: '29px',
         lineHeight: '28px'
+    },
+    nameBox: {
+        marginTop: '14px',
+        height: '380px',
+        overflow: 'scroll'
     }
 }))

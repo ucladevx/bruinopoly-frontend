@@ -5,6 +5,7 @@ import GameScreen from '../components/GameScreen';
 
 const mapStateToProps = state => ({
     players: state.lobbyReducer.players,
+    user: state.lobbyReducer.userInfo,
     game: state.lobbyReducer.game,
 });
 

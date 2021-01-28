@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import Board from './Board/Board';
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
 import Chat from './Chat';
@@ -9,14 +10,19 @@ export default function GameScreen(props){
     console.log(props)
     const classes = useStyles();
 
+    const [started, changeStart] = useState(true)
+
     return(
         <div className={classes.main}>
             <div className={classes.topBar}></div>
-            <Sidebar name={props.game.name} playersList={props.players}/>
-            <div className={classes.loadingContainer}>
+            <Sidebar user={props.user} started={started} name={props.game.name} playersList={props.players}/>
+            {!started && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>{`GAME WILL BEGIN AT ${props.game.startTime}`}</div>
-            </div>
+            </div>}
+            {started && <div className={classes.board}>
+                <Board />
+            </div>}
             <Chat playersList={props.players}/>
         </div>
     )
@@ -29,6 +35,11 @@ const useStyles = makeStyles(() => ({
         boxShadow: '0px 32.4707px 106.268px -61.9895px rgba(0, 0, 0, 0.25);',
         height: '100vh',
         width: '100vw',
+    },
+    board: {
+        position: 'absolute',
+        right: '250px',
+        top: '110px'
     },
     topBar: {
         height: '6vh',
@@ -50,7 +61,8 @@ const useStyles = makeStyles(() => ({
         transform: 'translate(-50%, -50%)'
     },
     paw: {
-        height: "168px"
+        height: "168px",
+        zIndex: "-3"
     },
     loadingText: {
         marginTop: '50px',
