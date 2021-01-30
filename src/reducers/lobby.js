@@ -19,8 +19,8 @@ const ADD_MESSAGE = "ADD_MESSAGE"
 const SET_SOCKET = "SET_SOCKET"
 
 const initialState = {
-    userInfo: checkCookies(),
-    redirectTo: JSON.stringify(checkCookies()),
+    userInfo: null,
+    redirectTo: null,
     rooms: null,
     socket: null,
     lobbyError: null,
