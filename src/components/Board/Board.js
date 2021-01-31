@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { positions } from '../config'
-import B from '../assets/B.png';
-import Bruinopoly from '../assets/Bruinopoly.png';
-import FinAidCards from '../assets/Financial_Aid_Cards.png';
-import ExuseMeCards from '../assets/Exuse_Me_Cards.png';
+import { positions } from '../../config'
+import B from '../../assets/B.png';
+import Bruinopoly from '../../assets/Bruinopoly.png';
+import FinAidCards from '../../assets/Financial_Aid_Cards.png';
+import ExuseMeCards from '../../assets/Exuse_Me_Cards.png';
 
 export default function GameScreen(props){
     const classes = useStyles();

@@ -14,13 +14,16 @@ const LOBBY_ERROR = "LOBBY_ERROR"
 const JOIN_ROOM_ERROR = "JOIN_ROOM_ERROR"
 const CREATE_ROOM_ERROR = "CREATE_ROOMS_ERROR"
 
+const REQUEST_START = "REQUEST_START"
+const START_GAME = "START_GAME"
+const SET_HOST = "SET_HOST"
 const UPDATE_PLAYERS = "UPDATE_PLAYERS"
 const ADD_MESSAGE = "ADD_MESSAGE"
 const SET_SOCKET = "SET_SOCKET"
 
 const initialState = {
-    userInfo: checkCookies(),
-    redirectTo: JSON.stringify(checkCookies()),
+    userInfo: null,
+    redirectTo: null,
     rooms: null,
     socket: null,
     lobbyError: null,
@@ -28,7 +31,10 @@ const initialState = {
     createRoomError: null,
     players: null,
     gameID: null,
+    isHost: false,
     game: null,
+    gameStart: false,
+    token: null,
     messages: [{name: "Thomas", content: "let's start!!"}]
 }
 
@@ -41,12 +47,12 @@ export function lobbyReducer(state = initialState, action) {
         case LOBBY_ERROR:
             return {...state, lobbyError: action.error}
         case JOIN_ROOM_ERROR:
-            return {...state, joinRoomError: action.error}
+            return {...state, joinRoomError: action.error, gameID: null, game: null, players: null, socket: null}
         case CREATE_ROOM_ERROR:
             alert("Room could not be created. Something went wrong.")
             return {...state, createRoomError: action.error}
         case ADD_NEW_ROOM:
-            return {...state, rooms: [...state.rooms, action.room]}
+            return {...state, rooms: [...state.rooms, action.room], token: action.token}
         case JOIN_ROOM:
             return {...state, gameID: action.id, game: action.room}
         case UPDATE_PLAYERS:
@@ -57,16 +63,23 @@ export function lobbyReducer(state = initialState, action) {
                 state.socket.send(JSON.stringify(['message', action.message]))
             }
             return {...state, messages: [...state.messages, action.message]}
+        case REQUEST_START: 
+            if(state.socket != null)
+                state.socket.send(JSON.stringify(['request-start']))
         case SET_SOCKET:
             return {...state, socket: action.socket}
+        case SET_HOST: 
+            return {...state, isHost: true}
+        case START_GAME:
+            return {...state, gameStart: true}
         default:
             return state;
     }
 }
 
-export const joinRoom = ({id, name, password}) => async (dispatch) => {
+export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
     console.log(id, name, password)
-    let socket = new WebSocket(`ws://localhost:8080?room_id=${id}&name=${name}&password=${password}`);
+    let socket = new WebSocket(`ws://localhost:8080?room_id=${id}&name=${name}&password=${password}&token=${token}`);
     
 
     socket.addEventListener('open', function (event) {
@@ -94,6 +107,10 @@ export const joinRoom = ({id, name, password}) => async (dispatch) => {
             case 'message':
                 dispatch({type: ADD_MESSAGE, message: data[1].message, send: false})
                 break;
+            case 'host':
+                dispatch({type: SET_HOST})
+            case 'can-start':
+                dispatch({type: START_GAME})
             default:
                 console.log("default case")
         }
@@ -111,7 +128,7 @@ export const createRoom = (data) => async (dispatch) => {
     try {  
         let result = await axios.post(`${API_URL}/rooms`, data);
         console.log(result.data);
-        dispatch({type: ADD_NEW_ROOM, room: result.data})
+        dispatch({type: ADD_NEW_ROOM, room: result.data.room, token: result.data.token})
     } catch(e){
         dispatch({type: CREATE_ROOM_ERROR, error: e})
     }
@@ -131,6 +148,10 @@ export const getRooms = () => async (dispatch) => {
 
 export const addMessage = (message) => async (dispatch) => {
         dispatch({type: ADD_MESSAGE, message, send: true})
+};
+
+export const requestStart = () => async (dispatch) => {
+    dispatch({type: REQUEST_START})
 };
 
 export const setUserInfo = (info) => async (dispatch) => {

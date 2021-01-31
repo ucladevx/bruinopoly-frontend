@@ -8,7 +8,7 @@ import blob2 from '../assets/blueblob2.png'
 
 import bruin from '../assets/bruinman.png'
 import paw from '../assets/paw.png'
-import bruinopoly from '../assets/bruinopoly.png'
+import bruinopoly from '../assets/bruinopoly-lettering.png'
 import dropdown from '../assets/dropdown.png'
 import diamonds from '../assets/diamonds.png'
 

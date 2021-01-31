@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import Board from './Board/Board';
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
 import Chat from './Chat';
@@ -9,14 +10,22 @@ export default function GameScreen(props){
     console.log(props)
     const classes = useStyles();
 
+    let handleStart = () => {
+        props.requestStart()
+    }
+
     return(
         <div className={classes.main}>
             <div className={classes.topBar}></div>
-            <Sidebar name={props.game.name} playersList={props.players}/>
-            <div className={classes.loadingContainer}>
+            <Sidebar user={props.user} started={props.start} name={props.game.name} playersList={props.players}/>
+            {!props.start && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
-                <div className={classes.loadingText}>{`GAME WILL BEGIN AT ${props.game.startTime}`}</div>
-            </div>
+                <div className={classes.loadingText}>{`GAME WILL BEGIN AFTER ${props.game.startTime}`}</div>
+                <button className={classes.startButton} onClick={handleStart}>Start Game</button>
+            </div>}
+            {props.start && <div className={classes.board}>
+                <Board />
+            </div>}
             <Chat playersList={props.players}/>
         </div>
     )
@@ -29,6 +38,28 @@ const useStyles = makeStyles(() => ({
         boxShadow: '0px 32.4707px 106.268px -61.9895px rgba(0, 0, 0, 0.25);',
         height: '100vh',
         width: '100vw',
+    },
+    board: {
+        position: 'absolute',
+        left: '600px',
+        top: '110px'
+    },
+    startButton: {
+        color: 'white',
+        width: '220px',
+        padding: '12px',
+        backgroundColor: '#7A6E5D',
+        borderRadius: '9px',
+        fontSize: '30px',
+        textShadow: '2px 2px 0px rgba(0, 0, 0, 0.25)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'ChelseaMarket',
+        border: 'none',
+        outline: 'none',
+        cursor: 'pointer',
+        marginTop: '20px'
     },
     topBar: {
         height: '6vh',
@@ -50,7 +81,8 @@ const useStyles = makeStyles(() => ({
         transform: 'translate(-50%, -50%)'
     },
     paw: {
-        height: "168px"
+        height: "168px",
+        zIndex: "-3"
     },
     loadingText: {
         marginTop: '50px',

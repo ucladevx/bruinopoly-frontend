@@ -50,7 +50,7 @@ export default function Lobby(props){
             return
         }
 
-        props.joinRoom({password: "", id, name: props.user.name})
+        props.joinRoom({password: "", id, name: props.user.name, token: props.token})
     }
 
     let handlePasswordJoin = (e) => {
@@ -59,7 +59,8 @@ export default function Lobby(props){
         let obj = {
             password: passwordJoin,
             id: savedID,
-            name: props.user.name
+            name: props.user.name,
+            token: props.token
         }
         setPasswordAttemptBox(false);
         setPasswordJoin("");
