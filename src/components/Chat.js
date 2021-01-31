@@ -81,7 +81,8 @@ const useStyles = makeStyles(() => ({
         borderTopRightRadius: '25px',
         boxSizing: 'border-box',
         padding: 0,
-        boxShadow: '20.7958px -14.8542px 44.5625px -17.825px rgba(0, 0, 0, 0.09)'
+        boxShadow: '20.7958px -14.8542px 44.5625px -17.825px rgba(0, 0, 0, 0.09)',
+        zIndex: 10
     },
     topBox: {
         position: 'relative',

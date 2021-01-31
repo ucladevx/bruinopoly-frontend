@@ -12,7 +12,8 @@ const mapStateToProps = state => ({
     rooms: state.lobbyReducer.rooms,
     user: state.lobbyReducer.userInfo,
     redirect: state.lobbyReducer.redirectTo,
-    id: state.lobbyReducer.gameID
+    id: state.lobbyReducer.gameID,
+    token: state.lobbyReducer.token
 });
 
 const mapDispatchToProps = dispatch => ({

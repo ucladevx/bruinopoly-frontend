@@ -10,17 +10,20 @@ export default function GameScreen(props){
     console.log(props)
     const classes = useStyles();
 
-    const [started, changeStart] = useState(true)
+    let handleStart = () => {
+        props.requestStart()
+    }
 
     return(
         <div className={classes.main}>
             <div className={classes.topBar}></div>
-            <Sidebar user={props.user} started={started} name={props.game.name} playersList={props.players}/>
-            {!started && <div className={classes.loadingContainer}>
+            <Sidebar user={props.user} started={props.start} name={props.game.name} playersList={props.players}/>
+            {!props.start && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
-                <div className={classes.loadingText}>{`GAME WILL BEGIN AT ${props.game.startTime}`}</div>
+                <div className={classes.loadingText}>{`GAME WILL BEGIN AFTER ${props.game.startTime}`}</div>
+                <button className={classes.startButton} onClick={handleStart}>Start Game</button>
             </div>}
-            {started && <div className={classes.board}>
+            {props.start && <div className={classes.board}>
                 <Board />
             </div>}
             <Chat playersList={props.players}/>
@@ -38,8 +41,25 @@ const useStyles = makeStyles(() => ({
     },
     board: {
         position: 'absolute',
-        right: '250px',
+        left: '600px',
         top: '110px'
+    },
+    startButton: {
+        color: 'white',
+        width: '220px',
+        padding: '12px',
+        backgroundColor: '#7A6E5D',
+        borderRadius: '9px',
+        fontSize: '30px',
+        textShadow: '2px 2px 0px rgba(0, 0, 0, 0.25)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'ChelseaMarket',
+        border: 'none',
+        outline: 'none',
+        cursor: 'pointer',
+        marginTop: '20px'
     },
     topBar: {
         height: '6vh',
