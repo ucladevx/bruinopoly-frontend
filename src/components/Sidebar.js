@@ -41,6 +41,7 @@ const useStyles = makeStyles(() => ({
         margin: '50px 0px 0px 50px',
         fontFamily: 'VCR',
         width: '25%',
+        minWidth: '300px'
     },
     gameSidebar: {
         paddingTop: '30px'

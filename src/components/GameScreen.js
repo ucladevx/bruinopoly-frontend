@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Board from './Board/Board';
+import {Redirect} from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
 import Chat from './Chat';
@@ -14,14 +15,24 @@ export default function GameScreen(props){
         props.requestStart()
     }
 
+    let handleLeave = () => {
+        props.leaveLobby()
+        props.history.push("/")
+    }
+
+    if(props.game === null)
+        return <Redirect to={{ pathname: '/'}} />
+
     return(
         <div className={classes.main}>
-            <div className={classes.topBar}></div>
+            <div className={classes.topBar}><p style={{display: 'inline-block', margin: 0, padding: 0, paddingLeft: '30px', fontSize: 23, 
+                color: 'purple', cursor: 'pointer', paddingTop: '10px'}} onClick={handleLeave}>Leave Lobby (Testing)</p></div>
             <Sidebar user={props.user} started={props.start} name={props.game.name} playersList={props.players}/>
             {!props.start && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>{`GAME WILL BEGIN AFTER ${props.game.startTime}`}</div>
-                <button className={classes.startButton} onClick={handleStart}>Start Game</button>
+                {props.host && <button className={classes.startButton} onClick={handleStart}>Start Game</button>}
+                <button className={classes.startButton} onClick={handleLeave}>Leave Lobby</button>
             </div>}
             {props.start && <div className={classes.board}>
                 <Board />
@@ -78,7 +89,8 @@ const useStyles = makeStyles(() => ({
         position: 'fixed',
         top: '50%',
         left: '50%',
-        transform: 'translate(-50%, -50%)'
+        transform: 'translate(-50%, -50%)',
+        minWidth: '300px'
     },
     paw: {
         height: "168px",

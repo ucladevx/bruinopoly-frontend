@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {requestStart} from '../reducers/lobby'
+import {requestStart, leaveLobby} from '../reducers/lobby'
 import GameScreen from '../components/GameScreen';
 
 // import {withRouter} from 'react-router-dom';
@@ -15,6 +15,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     requestStart: () => {
         dispatch(requestStart())
+    },
+    leaveLobby: () => {
+        dispatch(leaveLobby())
     }
 });
 

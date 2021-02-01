@@ -52,7 +52,8 @@ const useStyles = makeStyles(() => ({
         alignItems: 'center',
         border: 'none',
         outline: 'none',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        overflow: 'hidden'
 
     },
     roomNumberHolder: {
@@ -63,6 +64,8 @@ const useStyles = makeStyles(() => ({
     },
     roomNumber: {
         margin: '0',
+        wordBreak: 'break-all',
+        maxHeight: '100px',
         color: "#FFFFFF",
         //border: '1px solid #433F36',
         textShadow: '2px 2px 0px #433F36',

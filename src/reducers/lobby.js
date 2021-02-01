@@ -9,6 +9,7 @@ const SET_USER_INFO = "SET_USER_INFO"
 const SET_ROOMS_LIST = "SET_ROOMS_LIST"
 const ADD_NEW_ROOM = "ADD_NEW_ROOM"
 const JOIN_ROOM = "JOIN_ROOM"
+const LEAVE_ROOM = "LEAVE_ROOM"
 
 const LOBBY_ERROR = "LOBBY_ERROR"
 const JOIN_ROOM_ERROR = "JOIN_ROOM_ERROR"
@@ -55,6 +56,8 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, rooms: [...state.rooms, action.room], token: action.token}
         case JOIN_ROOM:
             return {...state, gameID: action.id, game: action.room}
+        case LEAVE_ROOM:
+            return {...state, gameID: null, isHost: false, gameStart: false, messages: [], players: null, game: null, socket: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -109,8 +112,10 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 break;
             case 'host':
                 dispatch({type: SET_HOST})
+                break;
             case 'can-start':
                 dispatch({type: START_GAME})
+                break;
             default:
                 console.log("default case")
         }
@@ -152,6 +157,10 @@ export const addMessage = (message) => async (dispatch) => {
 
 export const requestStart = () => async (dispatch) => {
     dispatch({type: REQUEST_START})
+};
+
+export const leaveLobby = () => async (dispatch) => {
+    dispatch({type: LEAVE_ROOM})
 };
 
 export const setUserInfo = (info) => async (dispatch) => {
