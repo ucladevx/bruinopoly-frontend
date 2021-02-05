@@ -6,7 +6,7 @@ import Powell from './assets/POWELL.png';
 import FinAid from './assets/Financial_Aid.png';
 import Exuse_Me_Yellow from './assets/Exuse_Me_Yellow.png';
 import Concert from './assets/Concert.png';
-import USAC from './assets/USAC.png';
+import USAC from './assets/usac.png';
 import Exuse_Me_Red from './assets/Exuse_Me_Red.png';
 import Royce from './assets/Royce.png';
 import Go from './assets/GO.png';
@@ -167,49 +167,49 @@ let times = ["1:00 PM PST", "1:30 PM PST", "1:00 AM PST", "1:30 AM PST",
 let minGameTime = 20
 let positions = [
     //corner
-    <Corner icon={Go} />,
-    <Property  color='#8E6A36' name='Kerckhoff' price='$60' />,
-    <Property  name='Financial Aid Office' icon={FinAid} />,
-    <Property  color='#8E6A36' name='Northern Lights' price='$60' />,
-    <Property  name='USAC FEES' icon={USAC} price='PAY $200' />,
-    <Property  name='Feast' price='$200' icon={Dining} />,
-    <Property  color='#A8DDD7' name='Math Sciences' price='$100' />,
-    <Property  name='Exuse Me Sir!' icon={Exuse_Me_Red} />,
-    <Property  color='#A8DDD7' name='Engr. IV' price='$100' />,
-    <Property  color='#A8DDD7' name='Boelter' price='$120' />,
+    <Corner key={1} icon={Go} />,
+    <Property  key={2} color='#8E6A36' name='Kerckhoff' price='$60' />,
+    <Property  key={3} name='Financial Aid Office' icon={FinAid} />,
+    <Property  key={4} color='#8E6A36' name='Northern Lights' price='$60' />,
+    <Property  key={5} name='USAC FEES' small={true} icon={USAC} price='PAY $200' />,
+    <Property  key={6} name='Feast' price='$200' icon={Dining} />,
+    <Property  key={7} color='#A8DDD7' name='Math Sciences' price='$100' />,
+    <Property  key={8} name='Exuse Me Sir!' icon={Exuse_Me_Red} />,
+    <Property  key={9} color='#A8DDD7' name='Engr. IV' price='$100' />,
+    <Property  key={10} color='#A8DDD7' name='Boelter' price='$120' />,
     //corner
-    <Corner icon={Jail}></Corner>,
-    <Property  color='#EAACA3' name='Rolfe Hall' price='$140' />,
-    <Property  name='Royce' icon={Royce} price='$150' />,
-    <Property  color='#EAACA3' name='Schoenberg Music Hall' price='$140' />,
-    <Property  color='#EAACA3' name='Dodd Hall' price='$160' />,
-    <Property  name='De Neve' price='$200' icon={Dining} />,
-    <Property  color='#F6B611' name='La Kretz' price='$180' />,
-    <Property  name='Financial Aid Office' icon={FinAid} />,
-    <Property  color='#F6B611' name='LS' price='$180' />,
-    <Property  color='#F6B611' name='Young Hall' price='$200' />,
+    <Corner key={11} icon={Jail}></Corner>,
+    <Property  key={12} color='#EAACA3' name='Rolfe Hall' price='$140' />,
+    <Property  key={13} name='Royce' icon={Royce} price='$150' />,
+    <Property  key={14} color='#EAACA3' name='Schoenberg Music Hall' price='$140' />,
+    <Property  key={15} color='#EAACA3' name='Dodd Hall' price='$160' />,
+    <Property  key={16} name='De Neve' price='$200' icon={Dining} />,
+    <Property  key={17} color='#F6B611' name='La Kretz' price='$180' />,
+    <Property  key={18} name='Financial Aid Office' icon={FinAid} />,
+    <Property  key={19} color='#F6B611' name='LS' price='$180' />,
+    <Property  key={20} color='#F6B611' name='Young Hall' price='$200' />,
     //corner
-    <Corner icon={NoFreeParking}></Corner>,
-    <Property  color='#F15B45' name='ACKERMAN' price='$220' />,
-    <Property  name='EXUSE ME SIR!' icon={Exuse_Me_Blue} />,
-    <Property  color='#F15B45' name='WOODEN' price='$220' />,
-    <Property  color='#F15B45' name='FRANZ' price='$240' />,
-    <Property  name='BPLATE' price='$200' icon={Dining} />,
-    <Property  color='#FFF261' name='BUNCHE' price='$260' />,
-    <Property  color='#FFF261' name='KAPLAN' price='$260' />,
-    <Property  name='POWELL' price='$150' icon={Powell} />,
-    <Property  color='#FFF261' name='FRANZ' price='$280' />,
+    <Corner key={21} icon={NoFreeParking}></Corner>,
+    <Property  key={22} color='#F15B45' name='ACKERMAN' price='$220' />,
+    <Property  key={23} name='EXUSE ME SIR!' icon={Exuse_Me_Blue} />,
+    <Property  key={24} color='#F15B45' name='WOODEN' price='$220' />,
+    <Property  key={25} color='#F15B45' name='FRANZ' price='$240' />,
+    <Property  key={26} name='BPLATE' price='$200' icon={Dining} />,
+    <Property  key={27} color='#FFF261' name='BUNCHE' price='$260' />,
+    <Property  key={28} color='#FFF261' name='KAPLAN' price='$260' />,
+    <Property  key={29} name='POWELL' price='$150' icon={Powell} />,
+    <Property  key={30} color='#FFF261' name='FRANZ' price='$280' />,
     //corner
-    <Corner icon={GoToJail}></Corner>,
-    <Property  color='#A8DC96' name='SCI & ENGR. LIBRARY' price='$300' />,
-    <Property  name='Financial Aid Office' icon={FinAid} />,
-    <Property  color='#A8DC96' name='BIOMED LIBRARY' price='$300' />,
-    <Property  color='#A8DC96' name='YRL' price='$320' />,
-    <Property  name='Covel' price='$200' icon={Dining} />,
-    <Property  name='Exuse Me Sir!' icon={Exuse_Me_Yellow} />,
-    <Property  color='#3F4CBB' name='Sculpture Garden' price='$350' />,
-    <Property  name='Bruinbash Fest' icon={Concert} />,
-    <Property  color='#3F4CBB' name='Fowler Museum' price='$400' />
+    <Corner key={31} icon={GoToJail}></Corner>,
+    <Property  key={32} color='#A8DC96' name='SCI & ENGR. LIBRARY' price='$300' />,
+    <Property  key={33} name='Financial Aid Office' icon={FinAid} />,
+    <Property  key={34} color='#A8DC96' name='BIOMED LIBRARY' price='$300' />,
+    <Property  key={35} color='#A8DC96' name='YRL' price='$320' />,
+    <Property  key={36} name='Covel' price='$200' icon={Dining} />,
+    <Property  key={37} name='Exuse Me Sir!' icon={Exuse_Me_Yellow} />,
+    <Property  key={38} color='#3F4CBB' name='Sculpture Garden' price='$350' />,
+    <Property  key={39} name='Bruinbash Fest' icon={Concert} />,
+    <Property  key={40} color='#3F4CBB' name='Fowler Museum' price='$400' />
 ]
 
 export {majors, API_URL, times, minGameTime, positions}

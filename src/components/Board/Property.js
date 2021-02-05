@@ -15,7 +15,7 @@ export default function Property(props){
         <div className={classes.main}>
             {hasColor && <div className={classes.colorBar}></div>}
             <div className={classes.name}>{props.name.toUpperCase()}</div>
-            {hasIcon && <img src={icon} className={classes.icon}/>}
+            {hasIcon && <img src={icon} style={props.small ? {width: '35px'}:null} className={classes.icon}/>}
             {hasPrice && <div className={classes.price}>{props.price}</div>}
         </div>
     )
@@ -56,6 +56,7 @@ const useStyles = makeStyles(() => ({
     price:{
         fontSize: '8px',
         position: 'absolute',
+        width: '90%',
         bottom: '5px',
         left: '50%',
         transform: 'translate(-50%, 0)'

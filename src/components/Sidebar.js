@@ -1,8 +1,11 @@
 import React, {useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import clock from '../assets/Groupclock.png'
 import Bruincard from './Bruincard'
 import PlayerBanner from './PlayerBanner'
+import clock from '../assets/Groupclock.png'
+import mortgage from '../assets/mortgage.png'
+import home from '../assets/home.png'
+import trade from '../assets/trade.png'
 
 export default function Sidebar(props){
     const classes = useStyles();
@@ -24,6 +27,12 @@ export default function Sidebar(props){
                 })}
             </div>}
             {props.started && <div className={classes.gameSidebar}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '35px'}}>
+                    <div className={classes.actionButton}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
+                    <div className={classes.actionButton}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
+                    <div className={classes.actionButton}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
+                    <div className={classes.actionButton}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
+                </div>
                 <Bruincard money={money} name={props.user.name} />
                 <div className={classes.nameBox}>
                     {props.playersList && props.playersList.map((player, i) => {
@@ -41,7 +50,23 @@ const useStyles = makeStyles(() => ({
         margin: '50px 0px 0px 50px',
         fontFamily: 'VCR',
         width: '25%',
-        minWidth: '300px'
+        minWidth: '416px'
+    },
+    actionButton: {
+        width: '82px',
+        height: '69px',
+        borderRadius: '5px',
+        backgroundColor: '#7A6E5D',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '34px',
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    actionImage: {
+        height: '56px'
     },
     gameSidebar: {
         paddingTop: '30px'
