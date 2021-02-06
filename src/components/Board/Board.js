@@ -6,11 +6,14 @@ import Bruinopoly from '../../assets/bruinopoly.png';
 import FinAidCards from '../../assets/Financial_Aid_Cards.png';
 import ExuseMeCards from '../../assets/Exuse_Me_Cards.png';
 
+import Popup from './Popup'
+
 export default function GameScreen(props){
     const classes = useStyles();
 
     return(
         <div className={classes.board}>
+            {props.popup && <Popup />}
             <img className={classes.Bruinopoly} src={Bruinopoly}></img>
             <img className={classes.B} src={B}></img>
             <img className={classes.FinAidCards} src={FinAidCards}></img>

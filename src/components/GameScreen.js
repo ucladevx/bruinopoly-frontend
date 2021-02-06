@@ -23,6 +23,8 @@ export default function GameScreen(props){
     if(props.game === null)
         return <Redirect to={{ pathname: '/'}} />
 
+    //popup prop in Board should eventually be a set of data about that property
+
     return(
         <div className={classes.main}>
             <div className={classes.topBar}><p style={{display: 'inline-block', margin: 0, padding: 0, paddingLeft: '30px', fontSize: 23, 
@@ -35,7 +37,7 @@ export default function GameScreen(props){
                 <button className={classes.startButton} onClick={handleLeave}>Leave Lobby</button>
             </div>}
             {props.start && <div className={classes.board}>
-                <Board />
+                <Board popup={false}/>
             </div>}
             <Chat playersList={props.players}/>
         </div>
