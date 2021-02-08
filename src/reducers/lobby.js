@@ -48,6 +48,8 @@ export function lobbyReducer(state = initialState, action) {
         case LOBBY_ERROR:
             return {...state, lobbyError: action.error}
         case JOIN_ROOM_ERROR:
+            if(state.socket != null && typeof state.socket.close !== "undefined")
+                state.socket.close()
             return {...state, joinRoomError: action.error, gameID: null, game: null, players: null, socket: null}
         case CREATE_ROOM_ERROR:
             alert("Room could not be created. Something went wrong.")
@@ -57,6 +59,8 @@ export function lobbyReducer(state = initialState, action) {
         case JOIN_ROOM:
             return {...state, gameID: action.id, game: action.room}
         case LEAVE_ROOM:
+            if(state.socket != null && typeof state.socket.close !== "undefined")
+                state.socket.close()
             return {...state, gameID: null, isHost: false, gameStart: false, messages: [], players: null, game: null, socket: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
@@ -108,7 +112,8 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 dispatch({type: JOIN_ROOM, id, room: data[1].roomData})
                 break;
             case 'message':
-                dispatch({type: ADD_MESSAGE, message: data[1].message, send: false})
+                console.log(data[1])
+                dispatch({type: ADD_MESSAGE, message: data[1], send: false})
                 break;
             case 'host':
                 dispatch({type: SET_HOST})
@@ -152,7 +157,7 @@ export const getRooms = () => async (dispatch) => {
 };
 
 export const addMessage = (message) => async (dispatch) => {
-        dispatch({type: ADD_MESSAGE, message, send: true})
+    dispatch({type: ADD_MESSAGE, message, send: true})
 };
 
 export const requestStart = () => async (dispatch) => {
