@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-export default function Popup(props){
+export default function SalePopup(props){
     const classes = useStyles();
 
     return(

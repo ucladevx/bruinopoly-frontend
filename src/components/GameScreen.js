@@ -23,7 +23,11 @@ export default function GameScreen(props){
     if(props.game === null)
         return <Redirect to={{ pathname: '/'}} />
 
-    //popup prop in Board should eventually be a set of data about that property
+    //popup props in Board should eventually be a set of data about that property
+    const EXCUSE_ME_SIR = 0;
+    const FIN_AID = 1;
+    let card = {show: true, type: EXCUSE_ME_SIR, text: "TAKE A RIDE ON THE READING IF YOU PASS GO COLLECT $200", id: 1}
+    card = null
 
     return(
         <div className={classes.main}>
@@ -37,7 +41,7 @@ export default function GameScreen(props){
                 <button className={classes.startButton} onClick={handleLeave}>Leave Lobby</button>
             </div>}
             {props.start && <div className={classes.board}>
-                <Board popup={false}/>
+                <Board salePopup={false} cardPopup={card} />
             </div>}
             <Chat playersList={props.players}/>
         </div>

@@ -1,6 +1,6 @@
 # Bruinopoly
 
-UCLA-themed monopoly game that you can play on your brower with friends.
+UCLA-themed monopoly game that you can play on your browser with friends.
 
 ## To Start
 
@@ -17,8 +17,8 @@ npm start
 
 ## Current Tasks
 
-* sign up page
-* lobby page
+* game logic
+* taking turns on gameboard
 
 ## Contributors
 
