@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Board from './Board/Board';
+import Board from '../containers/Board';
 import {Redirect} from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
@@ -24,6 +24,7 @@ export default function GameScreen(props){
         return <Redirect to={{ pathname: '/'}} />
 
     //popup props in Board should eventually be a set of data about that property
+    //board has its own container, so may not need to give it props, it'll know
     const EXCUSE_ME_SIR = 0;
     const FIN_AID = 1;
     let card = {show: true, type: EXCUSE_ME_SIR, text: "TAKE A RIDE ON THE READING IF YOU PASS GO COLLECT $200", id: 1}

@@ -4,6 +4,7 @@ import Board from '../components/Board/Board';
 // import {withRouter} from 'react-router-dom';
 
 const mapStateToProps = state => ({
+    turn: state.lobbyReducer.yourTurn
 });
 
 const mapDispatchToProps = dispatch => ({

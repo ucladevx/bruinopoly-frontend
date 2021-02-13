@@ -35,8 +35,9 @@ const initialState = {
     isHost: false,
     game: null,
     gameStart: false,
+    yourTurn: true,
     token: null,
-    messages: [{name: "Thomas", content: "let's start!!"}]
+    messages: []
 }
 
 export function lobbyReducer(state = initialState, action) {
@@ -57,7 +58,7 @@ export function lobbyReducer(state = initialState, action) {
         case ADD_NEW_ROOM:
             return {...state, rooms: [...state.rooms, action.room], token: action.token}
         case JOIN_ROOM:
-            return {...state, gameID: action.id, game: action.room}
+            return {...state, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, createRoomError: null}
         case LEAVE_ROOM:
             if(state.socket != null && typeof state.socket.close !== "undefined")
                 state.socket.close()
