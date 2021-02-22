@@ -8,6 +8,7 @@ import ExuseMeCards from '../../assets/Exuse_Me_Cards.png';
 
 import SalePopup from './SalePopup'
 import CardPopup from './CardPopup'
+import TradePopup from './Trade'
 
 export default function Board(props){
     const classes = useStyles();
@@ -16,6 +17,7 @@ export default function Board(props){
     return(
         <div className={classes.board}>
             {props.salePopup && <SalePopup />}
+            {props.tradePopup && <TradePopup />}
             {props.cardPopup && props.cardPopup.show && <CardPopup info={props.cardPopup} />}
             {props.turn && <DiceBox />}
             <img className={classes.Bruinopoly} src={Bruinopoly}></img>
@@ -249,7 +251,7 @@ const diceStyles = makeStyles(() => ({
         position: 'absolute',
         left: '115px',
         bottom: '115px',
-        zIndex: 5,
+        zIndex: 4,
     },
     roll: {
         width: '104px',
