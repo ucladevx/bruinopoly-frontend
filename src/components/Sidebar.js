@@ -10,12 +10,10 @@ import trade from '../assets/trade.png'
 export default function Sidebar(props){
     const classes = useStyles();
 
-    const money = "5000"
-
     return(
         <div className={classes.container}>
             <div className={classes.bruinopoly}>BRUINOPOLY</div>
-            <div className={classes.name}>{props.name.toUpperCase()}</div>
+            <div className={classes.name}>{props.game.name.toUpperCase()}</div>
             {!props.started && <div>
                 <div className={classes.timeLeft}>
                     <img alt="clock" src={clock} className={classes.clock}></img>
@@ -33,10 +31,10 @@ export default function Sidebar(props){
                     <div className={classes.actionButton}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
                     <div className={classes.actionButton}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
                 </div>
-                <Bruincard money={money} name={props.user.name} />
+                <Bruincard user={props.game.players.filter((player)=> player._id === props.user.id)[0]} />
                 <div className={classes.nameBox}>
-                    {props.playersList && props.playersList.map((player, i) => {
-                        return <PlayerBanner key={i} name={player.name} money="0000" />
+                    {props.game && props.game.players.filter((player)=> player._id !== props.user.id).map((player, i) => {
+                        return <PlayerBanner key={i} name={player.name} money={player.money} />
                     })}
                 </div>
             </div>}
@@ -73,8 +71,8 @@ const useStyles = makeStyles(() => ({
     },
     bruinopoly: {
         fontFamily: 'ChelseaMarket',
-        fontSize: '46px',
-        lineHeight: '59px',
+        fontSize: '44px',
+        lineHeight: '25px',
         color: '#433F36'
     },
     name: {

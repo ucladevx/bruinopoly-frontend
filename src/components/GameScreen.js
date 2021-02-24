@@ -33,8 +33,8 @@ export default function GameScreen(props){
     return(
         <div className={classes.main}>
             <div className={classes.topBar}><p style={{display: 'inline-block', margin: 0, padding: 0, paddingLeft: '30px', fontSize: 23, 
-                color: 'purple', cursor: 'pointer', paddingTop: '10px'}} onClick={handleLeave}>Leave Lobby (Testing)</p></div>
-            <Sidebar user={props.user} started={props.start} name={props.game.name} playersList={props.players}/>
+                color: 'purple', cursor: 'pointer', paddingTop: '12px'}} onClick={handleLeave}>Leave Lobby (Testing)</p></div>
+            <Sidebar user={props.user} started={props.start} game={props.game}/>
             {!props.start && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>{`GAME WILL BEGIN AFTER ${props.game.startTime}`}</div>
@@ -60,7 +60,7 @@ const useStyles = makeStyles(() => ({
     board: {
         position: 'absolute',
         left: '600px',
-        top: '110px'
+        top: '100px'
     },
     startButton: {
         color: 'white',
@@ -80,7 +80,7 @@ const useStyles = makeStyles(() => ({
         marginTop: '20px'
     },
     topBar: {
-        height: '6vh',
+        height: '52px',
         backgroundColor: '#B6DAD6'
     },
     container: {

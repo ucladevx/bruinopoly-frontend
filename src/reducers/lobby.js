@@ -58,7 +58,13 @@ export function lobbyReducer(state = initialState, action) {
         case ADD_NEW_ROOM:
             return {...state, rooms: [...state.rooms, action.room], token: action.token}
         case JOIN_ROOM:
-            return {...state, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, createRoomError: null}
+            let playerId = null; 
+            action.room.players.forEach((player)=> { 
+                if(player.name == state.userInfo.name)
+                    playerId = player._id
+            })
+
+            return {...state, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, createRoomError: null, userInfo: {...state.userInfo, id: playerId}}
         case LEAVE_ROOM:
             if(state.socket != null && typeof state.socket.close !== "undefined")
                 state.socket.close()

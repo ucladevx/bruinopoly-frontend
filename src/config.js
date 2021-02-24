@@ -6,7 +6,7 @@ import Powell from './assets/POWELL.png';
 import FinAid from './assets/Financial_Aid.png';
 import Exuse_Me_Yellow from './assets/Exuse_Me_Yellow.png';
 import Concert from './assets/Concert.png';
-import USAC from './assets/usac.png';
+import USAC from './assets/USAC.png';
 import Exuse_Me_Red from './assets/Exuse_Me_Red.png';
 import Royce from './assets/Royce.png';
 import Go from './assets/GO.png';

@@ -13,8 +13,8 @@ export default function Bruincard(props){
            <img alt="bruin man" className={classes.bman} src={bruin} />
            <img alt="colored blob" className={classes.blob} src={blob1} />
            <div className={classes.box}>
-                <p style={{marginTop: '10px', marginBottom: '5px'}} className={classes.text}>{props.name.toUpperCase()}</p>
-                <p className={classes.text}>{`$${props.money}`}</p>
+                <p style={{marginTop: '10px', marginBottom: '5px'}} className={classes.text}>{props.user.name.toUpperCase()}</p>
+                <p className={classes.text}>{`$${props.user.money}`}</p>
            </div>
            <div className={classes.bluebox}>
                 <p className={classes.b1}>BRUINOPOLY</p>
