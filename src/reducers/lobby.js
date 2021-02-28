@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-import {API_URL} from '../config';
+import {API_URL, sleep} from '../config';
 
 const cookies = new Cookies();
 
@@ -22,6 +22,8 @@ const UPDATE_PLAYERS = "UPDATE_PLAYERS"
 const ADD_MESSAGE = "ADD_MESSAGE"
 const SET_SOCKET = "SET_SOCKET"
 
+const MOVE_ONE = "MOVE_ONE"
+
 const initialState = {
     userInfo: null,
     redirectTo: null,
@@ -34,7 +36,6 @@ const initialState = {
     gameID: null,
     isHost: false,
     game: null,
-    gameStart: false,
     yourTurn: true,
     token: null,
     messages: []
@@ -68,7 +69,7 @@ export function lobbyReducer(state = initialState, action) {
         case LEAVE_ROOM:
             if(state.socket != null && typeof state.socket.close !== "undefined")
                 state.socket.close()
-            return {...state, gameID: null, isHost: false, gameStart: false, messages: [], players: null, game: null, socket: null}
+            return {...state, gameID: null, isHost: false, messages: [], players: null, game: null, socket: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -85,7 +86,12 @@ export function lobbyReducer(state = initialState, action) {
         case SET_HOST: 
             return {...state, isHost: true}
         case START_GAME:
-            return {...state, gameStart: true}
+            return {...state, game: {...state.game, hasStarted: true}}
+        case MOVE_ONE:
+            return {...state, game: {...state.game, players: state.game.players.map((player)=>{
+                if(player.id !== action.id) return player
+                else return {...player, currentTile: (player.currentTile + 1)%40}
+            })}}
         default:
             return state;
     }
@@ -174,6 +180,14 @@ export const requestStart = () => async (dispatch) => {
 export const leaveLobby = () => async (dispatch) => {
     dispatch({type: LEAVE_ROOM})
 };
+
+export const handleMovement = ({movement, id}) => async (dispatch) => {
+
+    for(let i = 0; i < movement; i++){
+        dispatch({type: MOVE_ONE, id})
+        await sleep(1)
+    }
+}
 
 export const setUserInfo = (info) => async (dispatch) => {
     let {name, major, year} = info;

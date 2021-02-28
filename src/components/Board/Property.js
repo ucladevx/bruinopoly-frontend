@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux'
 
 export default function Property(props){
+    const players = useSelector(state => state.lobbyReducer.game.players)
 
     const [hasColor, setHasColor] = useState(props.color != null);
     const [hasPrice, setHasPrice] = useState(props.price != null);
@@ -17,12 +19,28 @@ export default function Property(props){
             <div className={classes.name}>{props.name.toUpperCase()}</div>
             {hasIcon && <img src={icon} style={props.small ? {width: '35px'}:null} className={classes.icon}/>}
             {hasPrice && <div className={classes.price}>{props.price}</div>}
+            {players.map((player, i)=>{
+                if(player.currentTile === props.id)
+                    return <div key={i} className={classes.token}></div>
+                else
+                    return null
+            })}
         </div>
     )
 
 }
 
 const useStyles = makeStyles(() => ({
+    token: {
+        height: '15px',
+        width: '15px',
+        borderRadius: '50%',
+        backgroundColor: 'purple',
+        zIndex: 5,
+        position: 'absolute',
+        top: '50px',
+        left: '22px'
+    },
     main: props => ({
         height: '100px',
         width: '60px',

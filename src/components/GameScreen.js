@@ -4,12 +4,14 @@ import {Redirect} from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
 import Chat from './Chat';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import paw from '../assets/loadingpaw.png';
 
 export default function GameScreen(props){
     console.log(props)
     const classes = useStyles();
+    const heightMatch = useMediaQuery('(max-height:800px)');
 
     let handleStart = () => {
         props.requestStart()
@@ -34,14 +36,14 @@ export default function GameScreen(props){
         <div className={classes.main}>
             <div className={classes.topBar}><p style={{display: 'inline-block', margin: 0, padding: 0, paddingLeft: '30px', fontSize: 23, 
                 color: 'purple', cursor: 'pointer', paddingTop: '12px'}} onClick={handleLeave}>Leave Lobby (Testing)</p></div>
-            <Sidebar user={props.user} started={props.start} game={props.game}/>
-            {!props.start && <div className={classes.loadingContainer}>
+            <Sidebar user={props.user} started={props.game.hasStarted} game={props.game}/>
+            {!props.game.hasStarted && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>{`GAME WILL BEGIN AFTER ${props.game.startTime}`}</div>
                 {props.host && <button className={classes.startButton} onClick={handleStart}>Start Game</button>}
                 <button className={classes.startButton} onClick={handleLeave}>Leave Lobby</button>
             </div>}
-            {props.start && <div className={classes.board}>
+            {props.game.hasStarted && <div className={classes.board} style={heightMatch ? {transform: 'scale(.9)', top: '50px'} : null}>
                 <Board salePopup={false} cardPopup={card} tradePopup={false} />
             </div>}
             <Chat playersList={props.players}/>
@@ -60,7 +62,8 @@ const useStyles = makeStyles(() => ({
     board: {
         position: 'absolute',
         left: '600px',
-        top: '100px'
+        top: '100px',
+        // transform: 'scale(.9)'
     },
     startButton: {
         color: 'white',

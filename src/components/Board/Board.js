@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux'
+import {handleMovement} from '../../reducers/lobby'
 import { makeStyles } from '@material-ui/core/styles';
-import { positions } from '../../config'
+import { positions, sleep } from '../../config'
 import B from '../../assets/B.png';
 import Bruinopoly from '../../assets/bruinopoly.png';
 import FinAidCards from '../../assets/Financial_Aid_Cards.png';
@@ -20,10 +22,10 @@ export default function Board(props){
             {props.tradePopup && <TradePopup />}
             {props.cardPopup && props.cardPopup.show && <CardPopup info={props.cardPopup} />}
             {props.turn && <DiceBox />}
-            <img className={classes.Bruinopoly} src={Bruinopoly}></img>
-            <img className={classes.B} src={B}></img>
-            <img className={classes.FinAidCards} src={FinAidCards}></img>
-            <img className={classes.ExuseMeCards} src={ExuseMeCards}></img>
+            <img alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly}></img>
+            <img alt="B" className={classes.B} src={B}></img>
+            <img alt="financial aid card" className={classes.FinAidCards} src={FinAidCards}></img>
+            <img alt="excuse me card" className={classes.ExuseMeCards} src={ExuseMeCards}></img>
             <div className={classes.NoParking}>
                 {positions[20]}
             </div>
@@ -55,26 +57,32 @@ export default function Board(props){
 }
 
 function DiceBox(){
+    const players = useSelector(state => state.lobbyReducer.game.players)
+    const user = useSelector(state => state.lobbyReducer.userInfo)
+    const dispatch = useDispatch()
+
     const classes = diceStyles();
-    const [left, updateLeft] = useState(2)
-    const [right, updateRight] = useState(1)
+    const [left, updateLeft] = useState(6)
+    const [right, updateRight] = useState(6)
     const [haveRolled, updateRolled] = useState(false)
 
     let handleRoll = async () => {
-        if(haveRolled) return
+        //if(haveRolled) return
         updateRolled(true)
+        let leftDice = Math.floor(Math.random()*6+1)
+        let rightDice = Math.floor(Math.random()*6+1)
+
         for(let i = 0; i < 13; i++){
             updateLeft(Math.floor(Math.random()*6+1))
             updateRight(Math.floor(Math.random()*6+1))
             await sleep(0.1)
         }
+        updateLeft(leftDice)
+        updateRight(rightDice)
         //send roll to server, move the person left+right tiles
-    }
+        let movement = leftDice + rightDice
 
-    let sleep = (sec) => {
-        return new Promise((res, rej)=>{
-            setTimeout(()=>{res()}, sec*1000)
-        })
+        dispatch(handleMovement({movement, playerId: user.id}))
     }
 
     return (
