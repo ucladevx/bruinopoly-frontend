@@ -23,6 +23,7 @@ const ADD_MESSAGE = "ADD_MESSAGE"
 const SET_SOCKET = "SET_SOCKET"
 
 const MOVE_ONE = "MOVE_ONE"
+const MOVEMENT = "MOVEMENT"
 
 const initialState = {
     userInfo: null,
@@ -92,6 +93,11 @@ export function lobbyReducer(state = initialState, action) {
                 if(player.id !== action.id) return player
                 else return {...player, currentTile: (player.currentTile + 1)%40}
             })}}
+        case MOVEMENT:
+            if(state.socket != null){
+                state.socket.send(JSON.stringify(['game-events', [{type: 'MOVEMENT', playerId: state.userInfo.id, numTiles: action.movement}] ]))
+            }
+            return {...state}
         default:
             return state;
     }
@@ -182,11 +188,12 @@ export const leaveLobby = () => async (dispatch) => {
 };
 
 export const handleMovement = ({movement, id}) => async (dispatch) => {
-
+    dispatch({type: MOVEMENT, movement})
     for(let i = 0; i < movement; i++){
         dispatch({type: MOVE_ONE, id})
         await sleep(1)
     }
+
 }
 
 export const setUserInfo = (info) => async (dispatch) => {
