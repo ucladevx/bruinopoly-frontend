@@ -14,6 +14,11 @@ import Jail from './assets/JAIL.png';
 import GoToJail from './assets/GO_TO_JAIL.png';
 import NoFreeParking from './assets/FREE_PARKING.png';
 
+import CHANCE from './data/chance'
+import CHEST from './data/chest'
+import {TILES, TileType} from './data/tiles'
+import PROPERTIES from './data/properties'
+
 let sleep = (sec) => {
     return new Promise((res, rej)=>{
         setTimeout(()=>{res()}, sec*1000)
@@ -169,8 +174,10 @@ let times = ["1:00 PM PST", "1:30 PM PST", "1:00 AM PST", "1:30 AM PST",
             "10:00 PM PST", "10:30 PM PST", "10:00 AM PST", "10:30 AM PST",
              "11:00 PM PST", "11:30 PM PST", "11:00 AM PST", "11:30 AM PST", 
              "12:00 PM PST", "12:30 PM PST", "12:00 AM PST", "12:30 AM PST"
-        ]        
-let minGameTime = 20
+        ]       
+
+const minGameTime = 20
+
 let positions = [
     //corner
     <Corner id={0} key={1} icon={Go} />,
@@ -218,4 +225,5 @@ let positions = [
     <Property id={39} key={40} color='#3F4CBB' name='Fowler Museum' price='$400' />
 ]
 
-export {majors, API_URL, times, minGameTime, positions, sleep}
+
+export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType}

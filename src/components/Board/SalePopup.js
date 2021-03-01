@@ -1,45 +1,55 @@
 import React, {useState} from 'react';
+import { useDispatch } from 'react-redux'
+import {PROPERTIES} from '../../config'
+import {handlePurchase} from '../../reducers/lobby'
 import { makeStyles } from '@material-ui/core/styles';
 
 export default function SalePopup(props){
+    const dispatch = useDispatch()
     const classes = useStyles();
+    const property = PROPERTIES[props.property]
 
     return(
         <div style={{width: '100%', height: '100%'}}>
             <div className={classes.shadow}></div>
             <div className={classes.container}>
-                <div className={classes.close}>X</div>
                 <div className={classes.saleText}>FOR SALE</div>
-                <div className={classes.topBox}>${`${140}`}</div>
+                <div className={classes.topBox}>${property.price}</div>
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '482px', marginTop: '24px'}}>
                     <div className={classes.box}>
                         <div className={classes.colorBar}></div>
-                        <p className={classes.leftText} style={{marginBottom: '160px', marginTop: '15px'}}>Schoenberg Music Hall</p>
-                        <p className={classes.leftText}>Price: ${`${140}`}</p>
+                        <p className={classes.leftText} style={{marginBottom: '20px', marginTop: '15px'}}>{property.name}</p>
+                        <button className={classes.button} style={{width: '158px'}} 
+                            onClick={()=>{dispatch(handlePurchase({buy: true, property: props.property}))}}>BUY</button>
+                        <button className={classes.button} style={{width: '158px'}}
+                             onClick={()=>{dispatch(handlePurchase({buy: false, property: props.property}))}}>SKIP</button>
+                        <p className={classes.leftText}>Price: ${property.price}</p>
                     </div>
                     <div style={{padding: '13px'}} className={classes.box}>
-                        <div className={classes.colorBox}>Schoenberg Music Hall</div>
-                        <p className={classes.rent} style={{marginBottom: '8px', marginTop: '13px'}}>Rent: ${`${10}`}</p>
-                        <div className={classes.detailBox}> 
-                            <p className={classes.rent} style={{fontSize: '16px'}}>With 1 Dorm</p>
-                            <p className={classes.rent} style={{fontSize: '16px'}}>${`${50}`}</p>
-                        </div>
-                        <div className={classes.detailBox}> 
-                            <p className={classes.rent} style={{fontSize: '16px'}}>With 2 Dorms</p>
-                            <p className={classes.rent} style={{fontSize: '16px'}}>${`${150}`}</p>
-                        </div>
-                        <div className={classes.detailBox}> 
-                            <p className={classes.rent} style={{fontSize: '16px'}}>With 3 Dorms</p>
-                            <p className={classes.rent} style={{fontSize: '16px'}}>${`${450}`}</p>
-                        </div>
-                        <div className={classes.detailBox} style={{marginBottom: '2px'}}> 
-                            <p className={classes.rent} style={{fontSize: '16px'}}>With 4 Dorms</p>
-                            <p className={classes.rent} style={{fontSize: '16px'}}>${`${650}`}</p>
-                        </div>
-                        <p className={classes.rent2}>WITH APT ${`${750}`}</p>
-                        <p className={classes.rent2}>MORTGAGE VALUE ${`${70}`}</p>
-                        <p className={classes.rent2}>DORMS COST ${`${100}`}</p>
-                        <p className={classes.rent2}>APT, ${`${100}`} + 4 DORMS</p>
+                        <div className={classes.colorBox}>{property.name}</div>
+                        <p className={classes.rent} style={{marginBottom: '8px', marginTop: '13px'}}>Rent: ${property.rent}</p>
+                        {property.railroad === false && property.utility === false && <div>
+                            <div className={classes.detailBox}> 
+                                <p className={classes.rent} style={{fontSize: '16px'}}>With 1 Dorm</p>
+                                <p className={classes.rent} style={{fontSize: '16px'}}>${`${50}`}</p>
+                            </div>
+                            <div className={classes.detailBox}> 
+                                <p className={classes.rent} style={{fontSize: '16px'}}>With 2 Dorms</p>
+                                <p className={classes.rent} style={{fontSize: '16px'}}>${`${150}`}</p>
+                            </div>
+                            <div className={classes.detailBox}> 
+                                <p className={classes.rent} style={{fontSize: '16px'}}>With 3 Dorms</p>
+                                <p className={classes.rent} style={{fontSize: '16px'}}>${`${450}`}</p>
+                            </div>
+                            <div className={classes.detailBox} style={{marginBottom: '2px'}}> 
+                                <p className={classes.rent} style={{fontSize: '16px'}}>With 4 Dorms</p>
+                                <p className={classes.rent} style={{fontSize: '16px'}}>${`${650}`}</p>
+                            </div>
+                            <p className={classes.rent2}>WITH APT ${`${750}`}</p>
+                            <p className={classes.rent2}>MORTGAGE VALUE ${property.price / 2}</p>
+                            <p className={classes.rent2}>DORMS COST ${`${100}`}</p>
+                            <p className={classes.rent2}>APT, ${`${100}`} + 4 DORMS</p>
+                        </div>}
                     </div>
                 </div>
             </div>
@@ -66,22 +76,22 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         alignItems: 'center',
     },
-    close: {
-        width: '28px',
-        height: '28px',
-        borderRadius: '50%',
-        backgroundColor: '#7A6E5D',
-        color: '#F8F4E9',
-        fontSize: '20px',
-        position: 'absolute',
-        fontWeight: '800',
-        fontFamily: 'ChelseaMarket',
-        right: '15px',
-        top: '10px',
+    button: {
+        color: 'white',
+        borderRadius: '5px',
+        fontSize: '22px',
+        height: '35px',
+        textShadow: '2px 2px 0px rgba(0, 0, 0, 0.25)',
         display: 'flex',
-        justifyContent: 'center',
         alignItems: 'center',
-        cursor: 'pointer'
+        justifyContent: 'center',
+        fontFamily: 'ChelseaMarket',
+        border: 'none',
+        outline: 'none',
+        cursor: 'pointer',
+        backgroundColor: '#7A6E5D',
+        margin: 'auto',
+        marginBottom: '21px'
     },
     shadow: {
         width: '100%',

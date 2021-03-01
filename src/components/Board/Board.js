@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import {handleMovement} from '../../reducers/lobby'
+import {turnLogic} from '../../reducers/lobby'
 import { makeStyles } from '@material-ui/core/styles';
 import { positions, sleep } from '../../config'
 import B from '../../assets/B.png';
@@ -18,7 +18,7 @@ export default function Board(props){
 
     return(
         <div className={classes.board}>
-            {props.salePopup && <SalePopup />}
+            {props.salePopup && <SalePopup property={props.salePopup}/>}
             {props.tradePopup && <TradePopup />}
             {props.cardPopup && props.cardPopup.show && <CardPopup info={props.cardPopup} />}
             {props.turn && <DiceBox />}
@@ -79,10 +79,12 @@ function DiceBox(){
         }
         updateLeft(leftDice)
         updateRight(rightDice)
-        //send roll to server, move the person left+right tiles
-        let movement = leftDice + rightDice
 
-        dispatch(handleMovement({movement, playerId: user.id}))
+        let movement = leftDice + rightDice
+        let destination = (players.filter(p => p._id === user.id)[0].currentTile + movement) % 40
+
+        // dispatch(handleMovement())
+        dispatch(turnLogic({movement, id: user.id, destination}))
     }
 
     return (

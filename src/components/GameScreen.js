@@ -44,7 +44,7 @@ export default function GameScreen(props){
                 <button className={classes.startButton} onClick={handleLeave}>Leave Lobby</button>
             </div>}
             {props.game.hasStarted && <div className={classes.board} style={heightMatch ? {transform: 'scale(.9)', top: '50px'} : null}>
-                <Board salePopup={false} cardPopup={card} tradePopup={false} />
+                <Board salePopup={props.salePopup} cardPopup={card} tradePopup={false} />
             </div>}
             <Chat playersList={props.players}/>
         </div>

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import Cookies from 'universal-cookie';
-import {API_URL, sleep} from '../config';
+//import Cookies from 'universal-cookie';
+import {API_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
-const cookies = new Cookies();
+//const cookies = new Cookies();
 
 const SET_USER_INFO = "SET_USER_INFO"
 
@@ -24,6 +24,9 @@ const SET_SOCKET = "SET_SOCKET"
 
 const MOVE_ONE = "MOVE_ONE"
 const MOVEMENT = "MOVEMENT"
+const PROPERTY_DECISION = "PROPERTY_DECISION"
+const CLOSE_PROPERTY = "CLOSE_PROPERTY"
+
 
 const initialState = {
     userInfo: null,
@@ -39,7 +42,8 @@ const initialState = {
     game: null,
     yourTurn: true,
     token: null,
-    messages: []
+    messages: [],
+    salePopup: null
 }
 
 export function lobbyReducer(state = initialState, action) {
@@ -74,7 +78,7 @@ export function lobbyReducer(state = initialState, action) {
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
-            if(state.socket != null && action.send){
+            if(state.socket !== null && action.send){
                 //console.log(state.socket)
                 state.socket.send(JSON.stringify(['message', action.message]))
             }
@@ -88,16 +92,21 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, isHost: true}
         case START_GAME:
             return {...state, game: {...state.game, hasStarted: true}}
+
         case MOVE_ONE:
             return {...state, game: {...state.game, players: state.game.players.map((player)=>{
-                if(player.id !== action.id) return player
+                if(player._id !== action.id) return player
                 else return {...player, currentTile: (player.currentTile + 1)%40}
             })}}
         case MOVEMENT:
-            if(state.socket != null){
+            if(state.socket !== null){
                 state.socket.send(JSON.stringify(['game-events', [{type: 'MOVEMENT', playerId: state.userInfo.id, numTiles: action.movement}] ]))
             }
             return {...state}
+        case PROPERTY_DECISION:
+            return {...state, salePopup: action.id}
+        case CLOSE_PROPERTY:
+            return {...state, salePopup: null}
         default:
             return state;
     }
@@ -193,30 +202,57 @@ export const handleMovement = ({movement, id}) => async (dispatch) => {
         dispatch({type: MOVE_ONE, id})
         await sleep(1)
     }
-
 }
+
+export const turnLogic = ({movement, id, destination}) => async (dispatch) => {
+    await dispatch(handleMovement({movement, id}))
+
+    //add check if property is owned (need backend changes first
+    if(TILES[destination].type = TileType.PROPERTY){
+        console.log("looking at a property")
+        dispatch({type: PROPERTY_DECISION, id: destination})
+    }
+
+    //(1) LAND ON PROPERTY => BUY/SKIP IF NOT OWNED, PAY RENT IF OWNED
+    //(2) LAND ON CARD DRAW (COMMUNITY CHEST OR CHANCE)=> DRAW CARD, DO CARD EFFECTS,
+    //(3) LAND ON FEES => PAY FEES
+    //(4) LAND ON GOTO JAIL => GO TO JAIL
+}
+
+export const handlePurchase = ({buy, property}) => async (dispatch) => {
+    if(buy === true){
+        //try to buy
+
+        //tell server about purchase
+        
+    } 
+
+    dispatch({type: CLOSE_PROPERTY})
+}
+
+
 
 export const setUserInfo = (info) => async (dispatch) => {
     let {name, major, year} = info;
     if(!name || name === ""){
         return
     }
-    cookies.set('user', JSON.stringify(info))
+    //cookies.set('user', JSON.stringify(info))
 
-    dispatch({type: SET_USER_INFO, userObj: info})
+    dispatch({type: SET_USER_INFO, userObj: {...info, id: null}})
 
 };
 
-function checkCookies() {
-    //cookies.remove('user')
-    let user = cookies.get("user");
-    console.log(user)
+// function checkCookies() {
+//     //cookies.remove('user')
+//     let user = cookies.get("user");
+//     console.log(user)
 
-    if(user && user !== "null"){
-        if(!user.hasOwnProperty('name') || !user.hasOwnProperty('major') || !user.hasOwnProperty('year'))
-            return null;
-        let {name, major, email} = user
-        return {name, major, email}
-    }
-    return null;
-}
+//     if(user && user !== "null"){
+//         if(!user.hasOwnProperty('name') || !user.hasOwnProperty('major') || !user.hasOwnProperty('year'))
+//             return null;
+//         let {name, major, email} = user
+//         return {name, major, email}
+//     }
+//     return null;
+// }
