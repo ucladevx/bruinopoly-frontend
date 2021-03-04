@@ -105,7 +105,30 @@ export function lobbyReducer(state = initialState, action) {
             }
             return {...state}
         case PROPERTY_DECISION:
-            return {...state, salePopup: action.id}
+            let owner = state.game.properties[action.id].ownerId
+            if(owner === state.userInfo.id){
+                //DO NOTHING
+                return {...state}
+            } else if (owner === null){
+                //CAN POTENTIALLY BUY
+                return {...state, salePopup: action.id}
+            } else if(owner !== state.userInfo.id) {
+                //PAY RENT  (ADD BANKRUPTY CHECK LATER)
+                let property = PROPERTIES[action.id]
+
+                if(state.socket !== null){
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'RENT', playerId: state.userInfo.id, propertyOwner: owner, propertyId: action.id}]]))
+                }
+            
+                return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                    if(p._id === state.userInfo.id) 
+                        return {...p, money: p.money - property.rent}
+                    else if(p._id === owner) 
+                        return {...p, money: p.money + property.rent}
+                    else 
+                        return p
+                })}}
+            }
         case CLOSE_PROPERTY:
             return {...state, salePopup: null}
         case ATTEMPT_BUY:
@@ -226,14 +249,24 @@ export const handleMovement = ({movement, id}) => async (dispatch) => {
     }
 }
 
-export const turnLogic = ({movement, id, destination}) => async (dispatch) => {
+export const turnLogic = ({movement, id, destination, doubles}) => async (dispatch) => {
     await dispatch(handleMovement({movement, id}))
 
-    //handle doubles (in what order? after other stuff?)
 
-    //add check if property is owned (need backend changes first
     if(TILES[destination].type === TileType.PROPERTY){
         dispatch({type: PROPERTY_DECISION, id: destination})
+    } else if(TILES[destination].type === TileType.CHANCE){
+
+    } else if(TILES[destination].type === TileType.CHEST){
+
+    } else if(TILES[destination].type === TileType.FEES){
+
+    } else {
+
+    }
+
+    if(doubles){
+
     }
 
     //(1) LAND ON PROPERTY => BUY/SKIP IF NOT OWNED, PAY RENT IF OWNED
@@ -261,7 +294,6 @@ export const setUserInfo = (info) => async (dispatch) => {
     //cookies.set('user', JSON.stringify(info))
 
     dispatch({type: SET_USER_INFO, userObj: {...info, id: null}})
-
 };
 
 // function checkCookies() {
