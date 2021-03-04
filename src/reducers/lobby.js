@@ -97,6 +97,7 @@ export function lobbyReducer(state = initialState, action) {
         case MOVE_ONE:
             return {...state, game: {...state.game, players: state.game.players.map((player)=>{
                 if(player._id !== action.id) return player
+                else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200}
                 else return {...player, currentTile: (player.currentTile + 1)%40}
             })}}
         case MOVEMENT:

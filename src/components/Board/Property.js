@@ -10,8 +10,9 @@ export default function Property(props){
     const [ownerIndex, setOwner] = useState(0)
     const cssProps = {color: props.color}
     const classes = useStyles(cssProps);
-
+   
     useEffect(()=>{
+        console.log(properties[props.id].ownerId,ownerIndex)
         if(properties[props.id].ownerId === null) setOwner(null)
         
         players.forEach((p, i)=>{
@@ -22,7 +23,7 @@ export default function Property(props){
 
     return(
         <div className={classes.main}>
-            {properties[props.id].ownerId !== null && <div className={classes.ownership} style={{backgroundColor: playerDetails[ownerIndex].color}}></div>}
+            {properties[props.id].ownerId !== null && ownerIndex !== null && <div className={classes.ownership} style={{backgroundColor: playerDetails[ownerIndex].color}}></div>}
             {props.color !== null && <div className={classes.colorBar}></div>}
             <div className={classes.name}>{props.name.toUpperCase()}</div>
             {props.icon !== null && <img src={props.icon} style={{width: props.small ? '35px' : '90%', marginBottom: props.padding ? '20px': null}} className={classes.icon}/>}

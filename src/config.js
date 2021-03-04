@@ -227,7 +227,7 @@ let positions = [
 ]
 
 let playerDetails = [
-    {color: "black", img: bman}, 
+    {color: "brown", img: bman}, 
     {color: "blue", img: bman},
     {color: "pink", img: bman}, 
     {color: "purple", img: bman}, 
