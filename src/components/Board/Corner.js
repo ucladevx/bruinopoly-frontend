@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux'
+import {playerDetails} from '../../config'
 
 export default function Property(props){
     const players = useSelector(state => state.lobbyReducer.game.players)
@@ -13,7 +14,7 @@ export default function Property(props){
             <img src={icon} className={classes.icon}/>
             {players.map((player, i)=>{
                 if(player.currentTile === props.id)
-                    return <div key={i} className={classes.token}></div>
+                    return <img key={i} className={classes.token} src={playerDetails[i].img} />
                 else
                     return null
             })}
@@ -32,13 +33,10 @@ const useStyles = makeStyles(() => ({
         height: '100%',
     },
     token: {
-        height: '15px',
-        width: '15px',
-        borderRadius: '50%',
-        backgroundColor: 'purple',
+        height: '40px',
         zIndex: 5,
         position: 'absolute',
-        left: '10px',
-        top: '10px'
+        left: '20px',
+        top: '20px'
     },
 }))

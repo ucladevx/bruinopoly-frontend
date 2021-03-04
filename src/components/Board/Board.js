@@ -83,7 +83,7 @@ function DiceBox(){
         let destination = (players.filter(p => p._id === user.id)[0].currentTile + movement) % 40
 
         // dispatch(handleMovement())
-        dispatch(turnLogic({movement, id: user.id, destination}))
+        dispatch(turnLogic({movement, id: user.id, destination, doubles: leftDice === rightDice}))
     }
 
     return (
@@ -162,7 +162,7 @@ const useStyles = makeStyles(() => ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        height: '375px',
+        height: '350px',
         zIndex: '1'
     },
     B: {

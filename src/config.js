@@ -13,6 +13,7 @@ import Go from './assets/GO.png';
 import Jail from './assets/JAIL.png';
 import GoToJail from './assets/GO_TO_JAIL.png';
 import NoFreeParking from './assets/FREE_PARKING.png';
+import bman from './assets/bruinman.png'
 
 import CHANCE from './data/chance'
 import CHEST from './data/chest'
@@ -184,8 +185,8 @@ let positions = [
     <Property id={1} key={2} color='#8E6A36' name='Kerckhoff' price='$60' />,
     <Property id={2} key={3} name='Financial Aid Office' icon={FinAid} />,
     <Property id={3} key={4} color='#8E6A36' name='Northern Lights' price='$60' />,
-    <Property id={4} key={5} name='USAC FEES' small={true} icon={USAC} price='PAY $200' />,
-    <Property id={5} key={6} name='Feast' price='$200' icon={Dining} />,
+    <Property id={4} key={5} padding={true}name='USAC FEES' small={true} icon={USAC} price='PAY $200' />,
+    <Property id={5} key={6} padding={true} name='Feast' price='$200' icon={Dining} />,
     <Property id={6} key={7} color='#A8DDD7' name='Math Sciences' price='$100' />,
     <Property id={7} key={8} name='Exuse Me Sir!' icon={Exuse_Me_Red} />,
     <Property id={8} key={9} color='#A8DDD7' name='Engr. IV' price='$100' />,
@@ -193,10 +194,10 @@ let positions = [
     //corner
     <Corner id={10} key={11} icon={Jail}></Corner>,
     <Property id={11} key={12} color='#EAACA3' name='Rolfe Hall' price='$140' />,
-    <Property id={12} key={13} name='Royce' icon={Royce} price='$150' />,
+    <Property id={12} key={13} padding={true} name='Royce' icon={Royce} price='$150' />,
     <Property id={13} key={14} color='#EAACA3' name='Schoenberg Music Hall' price='$140' />,
     <Property id={14} key={15} color='#EAACA3' name='Dodd Hall' price='$160' />,
-    <Property id={15} key={16} name='De Neve' price='$200' icon={Dining} />,
+    <Property id={15} key={16} padding={true} name='De Neve' price='$200' icon={Dining} />,
     <Property id={16} key={17} color='#F6B611' name='La Kretz' price='$180' />,
     <Property id={17} key={18} name='Financial Aid Office' icon={FinAid} />,
     <Property id={18} key={19} color='#F6B611' name='LS' price='$180' />,
@@ -207,10 +208,10 @@ let positions = [
     <Property id={22} key={23} name='EXUSE ME SIR!' icon={Exuse_Me_Blue} />,
     <Property id={23} key={24} color='#F15B45' name='WOODEN' price='$220' />,
     <Property id={24} key={25} color='#F15B45' name='FRANZ' price='$240' />,
-    <Property id={25} key={26} name='BPLATE' price='$200' icon={Dining} />,
+    <Property id={25} key={26} padding={true} name='BPLATE' price='$200' icon={Dining} />,
     <Property id={26} key={27} color='#FFF261' name='BUNCHE' price='$260' />,
     <Property id={27} key={28} color='#FFF261' name='KAPLAN' price='$260' />,
-    <Property id={28} key={29} name='POWELL' price='$150' icon={Powell} />,
+    <Property id={28} key={29} padding={true}  name='POWELL' price='$150' icon={Powell} />,
     <Property id={29} key={30} color='#FFF261' name='FRANZ' price='$280' />,
     //corner
     <Corner id={30} key={31} icon={GoToJail}></Corner>,
@@ -218,12 +219,22 @@ let positions = [
     <Property id={32} key={33} name='Financial Aid Office' icon={FinAid} />,
     <Property id={33} key={34} color='#A8DC96' name='BIOMED LIBRARY' price='$300' />,
     <Property id={34} key={35} color='#A8DC96' name='YRL' price='$320' />,
-    <Property id={35} key={36} name='Covel' price='$200' icon={Dining} />,
+    <Property id={35} key={36} padding={true} name='Covel' price='$200' icon={Dining} />,
     <Property id={36} key={37} name='Exuse Me Sir!' icon={Exuse_Me_Yellow} />,
     <Property id={37} key={38} color='#3F4CBB' name='Sculpture Garden' price='$350' />,
     <Property id={38} key={39} name='Bruinbash Fest' icon={Concert} />,
     <Property id={39} key={40} color='#3F4CBB' name='Fowler Museum' price='$400' />
 ]
 
+let playerDetails = [
+    {color: "black", img: bman}, 
+    {color: "blue", img: bman},
+    {color: "pink", img: bman}, 
+    {color: "purple", img: bman}, 
+    {color: "yellow", img: bman}, 
+    {color: "green", img: bman}, 
+    {color: "cyan", img: bman},
+    {color: "orange", img: bman}
+]
 
-export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType}
+export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails}

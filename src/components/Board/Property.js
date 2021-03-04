@@ -1,31 +1,35 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux'
-import {PROPERTIES} from '../../config'
+import {playerDetails} from '../../config'
 
 export default function Property(props){
     const players = useSelector(state => state.lobbyReducer.game.players)
     const properties = useSelector(state => state.lobbyReducer.game.properties)
 
-    const [hasColor, setHasColor] = useState(props.color !== null);
-    const [hasPrice, setHasPrice] = useState(props.price !== null);
-    const [hasIcon, setHasIcon] = useState(props.icon !== null);
-    const [icon, setIcon] = useState(props.icon);
+    const [ownerIndex, setOwner] = useState(0)
     const cssProps = {color: props.color}
-
     const classes = useStyles(cssProps);
 
-    //TODO: DIFFERENTIATE OWNERSHIP BANNERS BETWEEN PLAYERS
+    useEffect(()=>{
+        if(properties[props.id].ownerId === null) setOwner(null)
+        
+        players.forEach((p, i)=>{
+            if(p._id === properties[props.id].ownerId)
+                setOwner(i)
+        })
+    }, [properties[props.id].ownerId])
+
     return(
         <div className={classes.main}>
-            {properties[props.id].ownerId !== null && <div className={classes.ownership}></div>}
-            {hasColor && <div className={classes.colorBar}></div>}
+            {properties[props.id].ownerId !== null && <div className={classes.ownership} style={{backgroundColor: playerDetails[ownerIndex].color}}></div>}
+            {props.color !== null && <div className={classes.colorBar}></div>}
             <div className={classes.name}>{props.name.toUpperCase()}</div>
-            {hasIcon && <img src={icon} style={props.small ? {width: '35px'}:null} className={classes.icon}/>}
-            {hasPrice && <div className={classes.price}>{props.price}</div>}
+            {props.icon !== null && <img src={props.icon} style={{width: props.small ? '35px' : '90%', marginBottom: props.padding ? '20px': null}} className={classes.icon}/>}
+            {props.price !== null && <div className={classes.price}>{props.price}</div>}
             {players.map((player, i)=>{
                 if(player.currentTile === props.id)
-                    return <div key={i} className={classes.token}></div>
+                    return <img key={i} className={classes.token} src={playerDetails[i].img} />
                 else
                     return null
             })}
@@ -36,10 +40,7 @@ export default function Property(props){
 
 const useStyles = makeStyles(() => ({
     token: {
-        height: '15px',
-        width: '15px',
-        borderRadius: '50%',
-        backgroundColor: 'purple',
+        height: '40px',
         zIndex: 5,
         position: 'absolute',
         top: '50px',
@@ -85,7 +86,7 @@ const useStyles = makeStyles(() => ({
         //marginTop: '5px'
     },
     price:{
-        fontSize: '8px',
+        fontSize: '9px',
         position: 'absolute',
         width: '90%',
         bottom: '5px',
