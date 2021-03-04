@@ -1,13 +1,24 @@
-import React, {useState} from 'react';
-import { useDispatch } from 'react-redux'
+import React, {useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 import {PROPERTIES} from '../../config'
 import {handlePurchase} from '../../reducers/lobby'
 import { makeStyles } from '@material-ui/core/styles';
 
 export default function SalePopup(props){
+    const [canAfford, changeAfford] = useState(true)
     const dispatch = useDispatch()
     const classes = useStyles();
     const property = PROPERTIES[props.property]
+    const players = useSelector(state => state.lobbyReducer.game.players)
+    const user = useSelector(state => state.lobbyReducer.userInfo)
+
+    useEffect(()=>{
+        let player = players.filter(p => p._id === user.id)[0]
+
+        if(player.money < property.price){
+            changeAfford(false)
+        }
+    },[])
 
     return(
         <div style={{width: '100%', height: '100%'}}>
@@ -19,8 +30,8 @@ export default function SalePopup(props){
                     <div className={classes.box}>
                         <div className={classes.colorBar}></div>
                         <p className={classes.leftText} style={{marginBottom: '20px', marginTop: '15px'}}>{property.name}</p>
-                        <button className={classes.button} style={{width: '158px'}} 
-                            onClick={()=>{dispatch(handlePurchase({buy: true, property: props.property}))}}>BUY</button>
+                        <button className={classes.button} style={{width: '158px', opacity: canAfford ? 1 : .5}} 
+                            onClick={()=>{if(!canAfford) return; dispatch(handlePurchase({buy: true, property: props.property}))}}>BUY</button>
                         <button className={classes.button} style={{width: '158px'}}
                              onClick={()=>{dispatch(handlePurchase({buy: false, property: props.property}))}}>SKIP</button>
                         <p className={classes.leftText}>Price: ${property.price}</p>

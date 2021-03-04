@@ -20,7 +20,7 @@ export default function Sidebar(props){
                     <div>0:00 left</div>
                 </div>
                 <div className={classes.playersText}>PLAYERS</div>
-                {props.game && props.game.players.map((player, i)=>{
+                {props.players && props.players.map((player, i)=>{
                     return <div key={i} className={classes.playersNames}>{player.name.toUpperCase()}</div>
                 })}
             </div>}

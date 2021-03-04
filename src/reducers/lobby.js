@@ -26,6 +26,7 @@ const MOVE_ONE = "MOVE_ONE"
 const MOVEMENT = "MOVEMENT"
 const PROPERTY_DECISION = "PROPERTY_DECISION"
 const CLOSE_PROPERTY = "CLOSE_PROPERTY"
+const ATTEMPT_BUY = "ATTEMPT_BUY"
 
 
 const initialState = {
@@ -55,7 +56,7 @@ export function lobbyReducer(state = initialState, action) {
         case LOBBY_ERROR:
             return {...state, lobbyError: action.error}
         case JOIN_ROOM_ERROR:
-            if(state.socket != null && typeof state.socket.close !== "undefined")
+            if(state.socket !== null && typeof state.socket.close !== "undefined")
                 state.socket.close()
             return {...state, joinRoomError: action.error, gameID: null, game: null, players: null, socket: null}
         case CREATE_ROOM_ERROR:
@@ -66,13 +67,13 @@ export function lobbyReducer(state = initialState, action) {
         case JOIN_ROOM:
             let playerId = null; 
             action.room.players.forEach((player)=> { 
-                if(player.name == state.userInfo.name)
+                if(player.name === state.userInfo.name)
                     playerId = player._id
             })
 
             return {...state, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, createRoomError: null, userInfo: {...state.userInfo, id: playerId}}
         case LEAVE_ROOM:
-            if(state.socket != null && typeof state.socket.close !== "undefined")
+            if(state.socket !== null && typeof state.socket.close !== "undefined")
                 state.socket.close()
             return {...state, gameID: null, isHost: false, messages: [], players: null, game: null, socket: null}
         case UPDATE_PLAYERS:
@@ -107,6 +108,26 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, salePopup: action.id}
         case CLOSE_PROPERTY:
             return {...state, salePopup: null}
+        case ATTEMPT_BUY:
+            let player = state.game.players.filter(p => p._id === state.userInfo.id)[0]
+
+            if(player.money >= action.property.price){
+                //CAN BUY: DECREASE MONEY, ADD PROPERTY TO USER'S PROPERTIES, NOTIFY SERVER
+                let temp_properties = Object.assign({}, state.game.properties)
+                temp_properties[action.property.id] = {...state.game.properties[action.property.id], ownerId: state.userInfo.id}
+                
+                return {...state, game: {...state.game, 
+                    properties: temp_properties, 
+                    players: state.game.players.map((p)=>{
+                        if(p._id !== state.userInfo.id) return p
+                        return {...p, 
+                            money: p.money - action.property.price, 
+                            propertiesOwned: [...p.propertiesOwned, action.property.id]
+                        }
+                    })}}
+            } else {
+                return {...state}
+            }
         default:
             return state;
     }
@@ -116,6 +137,7 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
     console.log(id, name, password)
     let socket = new WebSocket(`ws://localhost:8080?room_id=${id}&name=${name}&password=${password}&token=${token}`);
     
+    dispatch({type: SET_SOCKET, socket})
 
     socket.addEventListener('open', function (event) {
         console.log("open event")
@@ -153,7 +175,7 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 console.log("default case")
         }
     })
-    dispatch({type: SET_SOCKET, socket})
+    
 }
 
 export const createRoom = (data) => async (dispatch) => {
@@ -207,9 +229,10 @@ export const handleMovement = ({movement, id}) => async (dispatch) => {
 export const turnLogic = ({movement, id, destination}) => async (dispatch) => {
     await dispatch(handleMovement({movement, id}))
 
+    //handle doubles (in what order? after other stuff?)
+
     //add check if property is owned (need backend changes first
-    if(TILES[destination].type = TileType.PROPERTY){
-        console.log("looking at a property")
+    if(TILES[destination].type === TileType.PROPERTY){
         dispatch({type: PROPERTY_DECISION, id: destination})
     }
 
@@ -221,10 +244,8 @@ export const turnLogic = ({movement, id, destination}) => async (dispatch) => {
 
 export const handlePurchase = ({buy, property}) => async (dispatch) => {
     if(buy === true){
-        //try to buy
-
-        //tell server about purchase
-        
+        let propertyData = PROPERTIES[property];
+        dispatch({type: ATTEMPT_BUY, property: propertyData}) 
     } 
 
     dispatch({type: CLOSE_PROPERTY})

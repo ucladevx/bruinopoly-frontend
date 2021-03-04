@@ -16,8 +16,8 @@ export default function Lobby(props){
 
     const [display, setDisplay] = useState(false);
     const [name, setName] = useState("");
-    const [time, setTime] = useState("");
-    const [length, setLength] = useState("00 MINS");
+    const [time, setTime] = useState("1:00 PM PST");
+    const [length, setLength] = useState(minGameTime);
     const [publicLobby, setPublic] = useState(true);
     const [password, setPassword] = useState("");
 
@@ -107,7 +107,7 @@ export default function Lobby(props){
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>GAME TIME: </div>
-                            <select className={` ${classes.roomFormInput} ${classes.dropdownStyle}`} placeholder="12:00 PM PST"
+                            <select className={` ${classes.roomFormInput} ${classes.dropdownStyle}`} 
                             list='times' onChange={(e)=>{setTime(e.target.value)}}>
                                 {times.map((time, i)=>{
                                     return <option key={i} value={time}>{time}</option>
@@ -116,10 +116,10 @@ export default function Lobby(props){
                     </div>
                     <div className={classes.createRoomOptionsHolder}>
                         <div className={classes.roomOptionsText}>TIME LIMIT: </div>
-                        <select value={length} className={`${classes.roomInput} ${classes.dropdownStyle}`} placeholder="in minutes"
+                        <select value={length} className={`${classes.roomInput} ${classes.dropdownStyle}`} 
                             onChange={(e)=>{setLength(e.target.value)}} >
                             {Array.apply(null, Array(12)).map((v, i)=>{
-                                return <option key={i} value={10*i+minGameTime}>{15*i+minGameTime} MIN</option>
+                                return <option key={i} value={10*i+minGameTime}>{10*i+minGameTime} MIN</option>
                             })}
                         </select>
                     </div>
@@ -132,8 +132,8 @@ export default function Lobby(props){
                 </div>
         </div></div>}
         <div className={classes.main}>
-            <img className={classes.blob1} src={blob1}></img>
-            <img className={classes.blob2} src={blob2}></img>
+            <img alt="background blob" className={classes.blob1} src={blob1} />
+            <img alt="background blob" className={classes.blob2} src={blob2} />
             <div className={classes.bruinopolyText}>BRUINOPOLY</div> 
             <div className={classes.lobbyBox}>
                 <div className={classes.lobbyText}>

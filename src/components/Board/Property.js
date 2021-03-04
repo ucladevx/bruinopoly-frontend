@@ -1,20 +1,24 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux'
+import {PROPERTIES} from '../../config'
 
 export default function Property(props){
     const players = useSelector(state => state.lobbyReducer.game.players)
+    const properties = useSelector(state => state.lobbyReducer.game.properties)
 
-    const [hasColor, setHasColor] = useState(props.color != null);
-    const [hasPrice, setHasPrice] = useState(props.price != null);
-    const [hasIcon, setHasIcon] = useState(props.icon != null);
+    const [hasColor, setHasColor] = useState(props.color !== null);
+    const [hasPrice, setHasPrice] = useState(props.price !== null);
+    const [hasIcon, setHasIcon] = useState(props.icon !== null);
     const [icon, setIcon] = useState(props.icon);
     const cssProps = {color: props.color}
 
     const classes = useStyles(cssProps);
 
+    //TODO: DIFFERENTIATE OWNERSHIP BANNERS BETWEEN PLAYERS
     return(
         <div className={classes.main}>
+            {properties[props.id].ownerId !== null && <div className={classes.ownership}></div>}
             {hasColor && <div className={classes.colorBar}></div>}
             <div className={classes.name}>{props.name.toUpperCase()}</div>
             {hasIcon && <img src={icon} style={props.small ? {width: '35px'}:null} className={classes.icon}/>}
@@ -39,7 +43,16 @@ const useStyles = makeStyles(() => ({
         zIndex: 5,
         position: 'absolute',
         top: '50px',
-        left: '22px'
+        left: '22px',
+    },
+    ownership: {
+        position: 'absolute',
+        height: '25px',
+        width: '60px',
+        backgroundColor: 'purple',
+        top: '100px',
+        borderBottomLeftRadius: '50%',
+        borderBottomRightRadius: '50%'
     },
     main: props => ({
         height: '100px',

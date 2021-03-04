@@ -14,18 +14,17 @@ import TradePopup from './Trade'
 
 export default function Board(props){
     const classes = useStyles();
-    console.log(props)
 
     return(
         <div className={classes.board}>
-            {props.salePopup && <SalePopup property={props.salePopup}/>}
+            {props.salePopup && <SalePopup property={props.salePopup} />}
             {props.tradePopup && <TradePopup />}
             {props.cardPopup && props.cardPopup.show && <CardPopup info={props.cardPopup} />}
             {props.turn && <DiceBox />}
-            <img alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly}></img>
-            <img alt="B" className={classes.B} src={B}></img>
-            <img alt="financial aid card" className={classes.FinAidCards} src={FinAidCards}></img>
-            <img alt="excuse me card" className={classes.ExuseMeCards} src={ExuseMeCards}></img>
+            <img alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly} />
+            <img alt="B" className={classes.B} src={B} />
+            <img alt="financial aid card" className={classes.FinAidCards} src={FinAidCards} />
+            <img alt="excuse me card" className={classes.ExuseMeCards} src={ExuseMeCards} />
             <div className={classes.NoParking}>
                 {positions[20]}
             </div>
