@@ -1,21 +1,22 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
-//replace with enum in config file
-const EXCUSE_ME_SIR = 0;
-const FIN_AID = 1;
+import { useDispatch } from 'react-redux'
 
 export default function CardPopup(props){
     const classes = useStyles();
+    const wrapperRef = useRef(null);
+    useOutsideAlerter(wrapperRef);
+
+    let doubleText = props.doubles && props.doubles === 3 ? "YOU ROLLED A DOUBLE THREE TIMES IN A ROW. GO TO MURPHY" : "YOU ROLLED A DOUBLE. ROLL AGAIN"
 
     return(
-        <div style={{width: '100%', height: '100%'}}>
+        <div  style={{width: '100%', height: '100%'}}>
             <div className={classes.shadow}></div>
-            <div className={classes.container} style={{backgroundColor: props.info.type == EXCUSE_ME_SIR ? "#F5D34D" : "#A8DDD7"}}>
-                <p className={classes.titleText}>{props.info.type == EXCUSE_ME_SIR ? "EXCUSE ME SIR" : "FINANCIAL AID OFFICE"}</p>
+            <div ref={wrapperRef} className={classes.container} style={{backgroundColor: props.chance ? "#F5D34D" : (props.chest ? "#A8DDD7" : "#7A6E5D")}}>
+                <p className={classes.titleText}>{props.chance ? "EXCUSE ME SIR" : (props.chest ? "FINANCIAL AID OFFICE" : "ROLL AGAIN")}</p>
                 <div className={classes.subBox}>
-                    <p className={classes.innerText} style={{color: '#433F36'}}>PLAYER 1</p>
-                    <p className={classes.innerText} style={{color: '#7A6E5D'}}>{props.info.text.toUpperCase()}</p>
+                    <p className={classes.innerText} style={{color: '#433F36'}}>{props.name}</p>
+                    <p className={classes.innerText} style={{color: '#7A6E5D'}}>{props.info ? props.info.text.toUpperCase() : doubleText}</p>
                 </div>
             </div>
         </div>
@@ -70,8 +71,30 @@ const useStyles = makeStyles(() => ({
         fontFamily: 'VCR',
          fontSize: '25px',
          fontWeight: 400,
-         margin: 0,
+         margin: 'auto',
          textAlign: 'center',
-         lineHeight: '45px'
+         lineHeight: '45px',
+         maxWidth: '75%'
     }
 }))
+
+function useOutsideAlerter(ref) {
+    const dispatch = useDispatch()
+    useEffect(() => {
+        /**
+         * Alert if clicked on outside of element
+         */
+        function handleClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+                dispatch({type: "CLOSE_CARDS"})
+            }
+        }
+
+        // Bind the event listener
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            // Unbind the event listener on clean up
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [ref]);
+}

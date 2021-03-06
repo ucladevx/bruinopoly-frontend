@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import {turnLogic} from '../../reducers/lobby'
 import { makeStyles } from '@material-ui/core/styles';
-import { positions, sleep } from '../../config'
+import { positions, sleep, CHEST, CHANCE } from '../../config'
 import B from '../../assets/B.png';
 import Bruinopoly from '../../assets/bruinopoly.png';
 import FinAidCards from '../../assets/Financial_Aid_Cards.png';
@@ -19,12 +19,14 @@ export default function Board(props){
         <div className={classes.board}>
             {props.salePopup && <SalePopup property={props.salePopup} />}
             {props.tradePopup && <TradePopup />}
-            {props.cardPopup && props.cardPopup.show && <CardPopup info={props.cardPopup} />}
+            {props.chestPopup && <CardPopup info={CHEST[props.chestPopup]} chest={true} name={props.name}/>}
+            {props.chancePopup && <CardPopup info={CHANCE[props.chancePopup]} chance={true} name={props.name}/>}
+            {!props.salePopup && props.doubles && props.doubles.show && <CardPopup doubles={props.double} name={props.name}/>}
             {props.turn && <DiceBox />}
-            <img alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly} />
-            <img alt="B" className={classes.B} src={B} />
-            <img alt="financial aid card" className={classes.FinAidCards} src={FinAidCards} />
-            <img alt="excuse me card" className={classes.ExuseMeCards} src={ExuseMeCards} />
+            <img draggable="false" alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly} />
+            <img draggable="false" alt="B" className={classes.B} src={B} />
+            <img draggable="false" alt="financial aid card" className={classes.FinAidCards} src={FinAidCards} />
+            <img draggable="false" alt="excuse me card" className={classes.ExuseMeCards} src={ExuseMeCards} />
             <div className={classes.NoParking}>
                 {positions[20]}
             </div>
@@ -171,7 +173,7 @@ const useStyles = makeStyles(() => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         height: '225px',
-        zIndex: '0'
+        zIndex: '0',
     },
     FinAidCards: {
         position: 'absolute',

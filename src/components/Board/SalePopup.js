@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import {PROPERTIES} from '../../config'
+import {PROPERTIES, getColor} from '../../config'
 import {handlePurchase} from '../../reducers/lobby'
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -28,7 +28,7 @@ export default function SalePopup(props){
                 <div className={classes.topBox}>${property.price}</div>
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '482px', marginTop: '24px'}}>
                     <div className={classes.box}>
-                        <div className={classes.colorBar}></div>
+                        <div className={classes.colorBar} style={{backgroundColor: getColor(props.property)}}></div>
                         <p className={classes.leftText} style={{marginBottom: '20px', marginTop: '15px'}}>{property.name}</p>
                         <button className={classes.button} style={{width: '158px', opacity: canAfford ? 1 : .5}} 
                             onClick={()=>{if(!canAfford) return; dispatch(handlePurchase({buy: true, property: props.property}))}}>BUY</button>
@@ -37,7 +37,7 @@ export default function SalePopup(props){
                         <p className={classes.leftText}>Price: ${property.price}</p>
                     </div>
                     <div style={{padding: '13px'}} className={classes.box}>
-                        <div className={classes.colorBox}>{property.name}</div>
+                        <div className={classes.colorBox} style={{backgroundColor: getColor(props.property)}}>{property.name}</div>
                         <p className={classes.rent} style={{marginBottom: '8px', marginTop: '13px'}}>Rent: ${property.rent}</p>
                         {property.railroad === false && property.utility === false && <div>
                             <div className={classes.detailBox}> 
@@ -80,7 +80,7 @@ const useStyles = makeStyles(() => ({
         position: 'absolute',
         top: '108px',
         left: '108px',
-        zIndex: 5,
+        zIndex: 6,
         padding: '20px',
         boxSizing: 'border-box',
         display: 'flex',

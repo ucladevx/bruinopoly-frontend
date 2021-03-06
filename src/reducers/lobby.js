@@ -24,9 +24,18 @@ const SET_SOCKET = "SET_SOCKET"
 
 const MOVE_ONE = "MOVE_ONE"
 const MOVEMENT = "MOVEMENT"
+const GO_TO_JAIL = "GO_TO_JAIL"
+const LEAVE_JAIL = "LEAVE_JAIL"
 const PROPERTY_DECISION = "PROPERTY_DECISION"
 const CLOSE_PROPERTY = "CLOSE_PROPERTY"
 const ATTEMPT_BUY = "ATTEMPT_BUY"
+
+const HIDE_DICE = "HIDE_DICE"
+const DOUBLES = "DOUBLES"
+const DRAW_CHANCE = "DRAW_CHANCE"
+const DRAW_CHEST = "DRAW_CHEST"
+const CLOSE_CARDS = "CLOSE_CARDS"
+
 
 
 const initialState = {
@@ -44,7 +53,10 @@ const initialState = {
     yourTurn: true,
     token: null,
     messages: [],
-    salePopup: null
+    salePopup: null,
+    chancePopup: null,
+    chestPopup: null,
+    doubles: null
 }
 
 export function lobbyReducer(state = initialState, action) {
@@ -87,6 +99,7 @@ export function lobbyReducer(state = initialState, action) {
         case REQUEST_START: 
             if(state.socket != null)
                 state.socket.send(JSON.stringify(['request-start']))
+            return {...state}
         case SET_SOCKET:
             return {...state, socket: action.socket}
         case SET_HOST: 
@@ -95,18 +108,55 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, game: {...state.game, hasStarted: true}}
 
         case MOVE_ONE:
-            return {...state, game: {...state.game, players: state.game.players.map((player)=>{
-                if(player._id !== action.id) return player
-                else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200}
-                else return {...player, currentTile: (player.currentTile + 1)%40}
-            })}}
+            let p1 = state.game.players.filter(p => p._id === action.id)[0]
+
+            if(p1.turnsInJail === 0)
+                return {...state, game: {...state.game, players: state.game.players.map((player)=>{
+                    if(player._id !== action.id) return player
+                    else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200}
+                    else return {...player, currentTile: (player.currentTile + 1)%40}
+                })}}
+
+            return {...state}
         case MOVEMENT:
-            if(state.socket !== null){
+            let p2 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
+
+            //only send movement if not in jail, or in jail with doubles
+            if((p2.turnsInJail !== 0 || action.doubles === true) && state.socket !== null){
                 state.socket.send(JSON.stringify(['game-events', [{type: 'MOVEMENT', playerId: state.userInfo.id, numTiles: action.movement}] ]))
             }
+
+            //if player is in jail, reduce jail turn count, or free them if doubles
+            if(p2.turnsInJail !== 0 && action.doubles === true){
+                return {...state, game: {...state.game, players: state.game.players.map((player)=>{
+                    if(player._id !== state.userInfo.id) return player
+                    return {...player, turnsInJail: 0}
+                })}}
+            } else if(p2.turnsInJail !== 0  && action.doubles === false){
+                return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                    if(p._id !== state.userInfo.id) return p
+                    return {...p, turnsInJail: p.turnsInJail - 1}
+                })}}
+            } else if(action.doubles === false){
+                return {...state, doubles: null}
+            }
+
             return {...state}
+        case GO_TO_JAIL:
+            if(state.socket !== null && action.tellServer === true){
+                state.socket.send(JSON.stringify(['game-events', [{type: 'GO_TO_JAIL', playerId: action.id}] ]))
+            }
+        
+            return {...state, game: {...state.game, players: state.game.players.map((player)=>{
+                if(player._id !== action.id) return player
+                else return {...player, currentTile: 10, turnsInJail: 3}
+            })}} 
         case PROPERTY_DECISION:
+            let p3 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
             let owner = state.game.properties[action.id].ownerId
+
+            if(p3.turnsInJail !== 0) return {...state}
+
             if(owner === state.userInfo.id){
                 //DO NOTHING
                 return {...state}
@@ -152,6 +202,40 @@ export function lobbyReducer(state = initialState, action) {
             } else {
                 return {...state}
             }
+        case DRAW_CHANCE:
+            let p4 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
+            if(p4.turnsInJail !== 0) return {...state}
+
+            return {...state, chancePopup: state.game.chanceDeck.currentCardIndex, 
+                game: {...state.game, chanceDeck: {...state.game.chanceDeck, currentCardIndex: state.game.chanceDeck.currentCardIndex + 1}}}
+        case DRAW_CHEST:
+            let p5 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
+            if(p5.turnsInJail !== 0) return {...state}
+
+            return {...state, chestPopup: state.game.communityChestDeck.currentCardIndex, 
+                game: {...state.game, communityChestDeck: {...state.game.communityChestDeck, currentCardIndex: state.game.communityChestDeck.currentCardIndex + 1}}}
+        case CLOSE_CARDS:
+            if(state.doubles === null)
+                return {...state, chancePopup: null, chestPopup: null}
+            else 
+                return {...state, chancePopup: null, chestPopup: null, doubles: {...state.doubles, show: false}}
+        case DOUBLES:
+            if(state.doubles === null){
+                return {...state, yourTurn: true, doubles: {show: true, number: 1}}
+            } else if(state.doubles.number === 2){
+                if(state.socket !== null && action.tellServer === true){
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'GO_TO_JAIL', playerId: action.id}] ]))
+                }
+            
+                return {...state, yourTurn: false, doubles: {show: true, number: 3}, game: {...state.game, players: state.game.players.map((player)=>{
+                    if(player._id !== state.userInfo.id) return player
+                    else return {...player, currentTile: 10, turnsInJail: 3}
+                })}} 
+            } else {
+                return {...state, yourTurn: true, doubles: {show: true, number: 2}}
+            }
+        case HIDE_DICE:
+            return {...state, yourTurn: false}
         default:
             return state;
     }
@@ -242,32 +326,35 @@ export const leaveLobby = () => async (dispatch) => {
     dispatch({type: LEAVE_ROOM})
 };
 
-export const handleMovement = ({movement, id}) => async (dispatch) => {
-    dispatch({type: MOVEMENT, movement})
+export const handleMovement = ({movement, id, doubles}) => async (dispatch) => {
+    dispatch({type: MOVEMENT, movement, doubles})
     for(let i = 0; i < movement; i++){
-        dispatch({type: MOVE_ONE, id})
+        dispatch({type: MOVE_ONE, id, doubles})
         await sleep(1)
     }
 }
 
 export const turnLogic = ({movement, id, destination, doubles}) => async (dispatch) => {
-    await dispatch(handleMovement({movement, id}))
+    //dispatch({type: HIDE_DICE})
+    await dispatch(handleMovement({movement, id, doubles}))
 
 
     if(TILES[destination].type === TileType.PROPERTY){
         dispatch({type: PROPERTY_DECISION, id: destination})
     } else if(TILES[destination].type === TileType.CHANCE){
-
+        dispatch({type: DRAW_CHANCE})
     } else if(TILES[destination].type === TileType.CHEST){
-
+        dispatch({type: DRAW_CHEST})
     } else if(TILES[destination].type === TileType.FEES){
 
     } else {
-
+        if(destination === 30){
+            dispatch({type: GO_TO_JAIL, id, tellServer: true})
+        }
     }
 
     if(doubles){
-
+        dispatch({type: DOUBLES})
     }
 
     //(1) LAND ON PROPERTY => BUY/SKIP IF NOT OWNED, PAY RENT IF OWNED
@@ -292,10 +379,11 @@ export const setUserInfo = (info) => async (dispatch) => {
     if(!name || name === ""){
         return
     }
-    //cookies.set('user', JSON.stringify(info))
 
     dispatch({type: SET_USER_INFO, userObj: {...info, id: null}})
 };
+
+
 
 // function checkCookies() {
 //     //cookies.remove('user')

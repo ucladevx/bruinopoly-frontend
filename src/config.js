@@ -13,7 +13,10 @@ import Go from './assets/GO.png';
 import Jail from './assets/JAIL.png';
 import GoToJail from './assets/GO_TO_JAIL.png';
 import NoFreeParking from './assets/FREE_PARKING.png';
+
 import bman from './assets/bruinman.png'
+import squirrel from './assets/squirrel.png'
+import cat from './assets/powellcat.png'
 
 import CHANCE from './data/chance'
 import CHEST from './data/chest'
@@ -228,8 +231,8 @@ let positions = [
 
 let playerDetails = [
     {color: "brown", img: bman}, 
-    {color: "blue", img: bman},
-    {color: "pink", img: bman}, 
+    {color: "blue", img: cat},
+    {color: "pink", img: squirrel}, 
     {color: "purple", img: bman}, 
     {color: "yellow", img: bman}, 
     {color: "green", img: bman}, 
@@ -237,4 +240,28 @@ let playerDetails = [
     {color: "orange", img: bman}
 ]
 
-export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails}
+let getColor = (tile) => {
+    if(tile === 12 || tile === 28){
+        return "#C4B299"
+    } else if(tile === 5 || tile === 15 || tile === 25 || tile === 35){
+        return "#433F36"
+    } else if(tile <= 3){
+        return "#8E6A36"
+    } else if(tile <= 9){
+        return "#A8DDD7"
+    } else if(tile <= 14){
+        return "#EAACA3"
+    } else if(tile <= 19){
+        return "#F6B611"
+    } else if(tile <= 24){
+        return "#F15B45"
+    } else if(tile <= 29){
+        return "#FFF261"
+    } else if(tile <= 34){
+        return "#A8DC96"
+    } else {
+        return "#3F4CBB"
+    }
+}
+
+export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor}

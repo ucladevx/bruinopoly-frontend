@@ -12,7 +12,6 @@ export default function Property(props){
     const classes = useStyles(cssProps);
    
     useEffect(()=>{
-        console.log(properties[props.id].ownerId,ownerIndex)
         if(properties[props.id].ownerId === null) setOwner(null)
         
         players.forEach((p, i)=>{
