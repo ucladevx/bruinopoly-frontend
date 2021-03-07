@@ -1,6 +1,6 @@
 import axios from 'axios';
 //import Cookies from 'universal-cookie';
-import {API_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
+import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
 //const cookies = new Cookies();
 
@@ -35,6 +35,9 @@ const DOUBLES = "DOUBLES"
 const DRAW_CHANCE = "DRAW_CHANCE"
 const DRAW_CHEST = "DRAW_CHEST"
 const CLOSE_CARDS = "CLOSE_CARDS"
+
+//actions types to handle game-events from server
+const ADD_PROPERTY = "ADD_PROPERTY"
 
 
 
@@ -105,7 +108,7 @@ export function lobbyReducer(state = initialState, action) {
         case SET_HOST: 
             return {...state, isHost: true}
         case START_GAME:
-            return {...state, game: {...state.game, hasStarted: true}}
+            return {...state, game: action.game}
 
         case MOVE_ONE:
             let p1 = state.game.players.filter(p => p._id === action.id)[0]
@@ -122,7 +125,7 @@ export function lobbyReducer(state = initialState, action) {
             let p2 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
 
             //only send movement if not in jail, or in jail with doubles
-            if((p2.turnsInJail !== 0 || action.doubles === true) && state.socket !== null){
+            if(p2.turnsInJail === 0 || (p2.turnsInJail !== 0 && action.doubles === true) && state.socket !== null){
                 state.socket.send(JSON.stringify(['game-events', [{type: 'MOVEMENT', playerId: state.userInfo.id, numTiles: action.movement}] ]))
             }
 
@@ -187,6 +190,9 @@ export function lobbyReducer(state = initialState, action) {
 
             if(player.money >= action.property.price){
                 //CAN BUY: DECREASE MONEY, ADD PROPERTY TO USER'S PROPERTIES, NOTIFY SERVER
+                if(state.socket !== null)
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_PROPERTY', playerId: state.userInfo.id, propertyId: action.property.id}]]))
+
                 let temp_properties = Object.assign({}, state.game.properties)
                 temp_properties[action.property.id] = {...state.game.properties[action.property.id], ownerId: state.userInfo.id}
                 
@@ -236,6 +242,19 @@ export function lobbyReducer(state = initialState, action) {
             }
         case HIDE_DICE:
             return {...state, yourTurn: false}
+        case ADD_PROPERTY:
+            let temp = Object.assign({}, state.game.properties)
+            temp[action.property.id] = {...state.game.properties[action.property.id], ownerId: action.playerId}
+            
+            return {...state, game: {...state.game, 
+                properties: temp, 
+                players: state.game.players.map((p)=>{
+                    if(p._id !== action.playerId) return p
+                    return {...p, 
+                        money: p.money - action.property.price, 
+                        propertiesOwned: [...p.propertiesOwned, action.property.id]
+                    }
+                })}}
         default:
             return state;
     }
@@ -243,7 +262,7 @@ export function lobbyReducer(state = initialState, action) {
 
 export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
     console.log(id, name, password)
-    let socket = new WebSocket(`ws://localhost:8080?room_id=${id}&name=${name}&password=${password}&token=${token}`);
+    let socket = new WebSocket(`ws://${SOCKET_URL}?room_id=${id}&name=${name}&password=${password}&token=${token}`);
     
     dispatch({type: SET_SOCKET, socket})
 
@@ -277,8 +296,19 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 dispatch({type: SET_HOST})
                 break;
             case 'can-start':
-                dispatch({type: START_GAME})
+                dispatch({type: START_GAME, game: data[1].game})
                 break;
+            case 'game-events':
+                console.log(data[1][0])
+                let event = data[1][0]
+                switch(event.type){
+                    case "MOVEMENT":
+                        dispatch(handleMovement({movement: event.numTiles, id: event.playerId, doubles: false, onlyMove: true}))
+                        break;
+                    case "PURCHASE_PROPERTY":
+                        dispatch({type: ADD_PROPERTY, playerId: event.playerId, property: PROPERTIES[parseInt(event.propertyId)]})
+                        break;
+                }
             default:
                 console.log("default case")
         }
@@ -326,8 +356,10 @@ export const leaveLobby = () => async (dispatch) => {
     dispatch({type: LEAVE_ROOM})
 };
 
-export const handleMovement = ({movement, id, doubles}) => async (dispatch) => {
-    dispatch({type: MOVEMENT, movement, doubles})
+export const handleMovement = ({movement, id, doubles, onlyMove}) => async (dispatch) => {
+    if(onlyMove === false)
+        dispatch({type: MOVEMENT, movement, doubles})
+
     for(let i = 0; i < movement; i++){
         dispatch({type: MOVE_ONE, id, doubles})
         await sleep(1)
@@ -336,7 +368,7 @@ export const handleMovement = ({movement, id, doubles}) => async (dispatch) => {
 
 export const turnLogic = ({movement, id, destination, doubles}) => async (dispatch) => {
     //dispatch({type: HIDE_DICE})
-    await dispatch(handleMovement({movement, id, doubles}))
+    await dispatch(handleMovement({movement, id, doubles, onlyMove: false}))
 
 
     if(TILES[destination].type === TileType.PROPERTY){

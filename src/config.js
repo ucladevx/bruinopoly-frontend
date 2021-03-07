@@ -30,6 +30,8 @@ let sleep = (sec) => {
 }
 
 let API_URL = "http://localhost:3000"
+let SOCKET_URL = "localhost:8080"
+
 let majors = ["Aerospace Engineering",
     "African American Studies",
     "African and Middle Eastern Studies",
@@ -264,4 +266,4 @@ let getColor = (tile) => {
     }
 }
 
-export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor}
+export {majors, API_URL, SOCKET_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor}
