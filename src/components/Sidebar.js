@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import Bruincard from './Bruincard'
 import PlayerBanner from './PlayerBanner'
@@ -9,6 +10,17 @@ import trade from '../assets/trade.png'
 
 export default function Sidebar(props){
     const classes = useStyles();
+    const turn = useSelector(state => state.lobbyReducer.yourTurn)
+    const players = useSelector(state => state.lobbyReducer.game.players)
+    const player = useSelector(state => state.lobbyReducer.userInfo)
+    const dispatch = useDispatch()
+
+    let handleBuy = () => {
+        if(!turn) return
+        let person = players.filter(p => p._id === player.id)[0]
+
+        dispatch({type: "PROPERTY_DECISION", justOpening: true, id: person.currentTile})
+    }
 
     return(
         <div className={classes.container}>
@@ -26,7 +38,7 @@ export default function Sidebar(props){
             </div>}
             {props.started && <div className={classes.gameSidebar}>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '35px'}}>
-                    <div className={classes.actionButton}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
+                    <div className={classes.actionButton} onClick={handleBuy}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
                     <div className={classes.actionButton}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
                     <div className={classes.actionButton}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
                     <div className={classes.actionButton}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
@@ -73,7 +85,8 @@ const useStyles = makeStyles(() => ({
         fontFamily: 'ChelseaMarket',
         fontSize: '44px',
         lineHeight: '25px',
-        color: '#433F36'
+        color: '#433F36',
+        marginBottom: '10px'
     },
     name: {
         fontSize: '32px',

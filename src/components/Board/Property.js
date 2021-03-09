@@ -10,6 +10,7 @@ export default function Property(props){
     const [ownerIndex, setOwner] = useState(0)
     const cssProps = {color: props.color}
     const classes = useStyles(cssProps);
+    const [here, setHere] = useState(0)
    
     useEffect(()=>{
         if(properties[props.id].ownerId === null) setOwner(null)
@@ -20,6 +21,16 @@ export default function Property(props){
         })
     }, [properties[props.id].ownerId])
 
+    useEffect(()=>{
+        let count = 0
+        
+        players.forEach((p)=>{
+            if(p.currentTile === props.id)
+                count++;
+        })
+        setHere(count);
+    }, [players])
+
     return(
         <div className={classes.main}>
             {properties[props.id].ownerId !== null && ownerIndex !== null && <div className={classes.ownership} style={{backgroundColor: playerDetails[ownerIndex].color}}></div>}
@@ -29,7 +40,9 @@ export default function Property(props){
             {props.price !== null && <div className={classes.price}>{props.price}</div>}
             {players.map((player, i)=>{
                 if(player.currentTile === props.id)
-                    return <img key={i} className={classes.token} src={playerDetails[i].img} />
+                    return <div style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
+                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                    </div>
                 else
                     return null
             })}
@@ -40,11 +53,20 @@ export default function Property(props){
 
 const useStyles = makeStyles(() => ({
     token: {
-        height: '40px',
-        zIndex: 5,
+        height: '35px',
+    },
+    outerToken: {
+        height: '43px',
+        width: '43px',
         position: 'absolute',
-        top: '50px',
-        left: '22px',
+        left: '10px',
+        top: '20px',
+        zIndex: 5,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid black'
     },
     ownership: {
         position: 'absolute',

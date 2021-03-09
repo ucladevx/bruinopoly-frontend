@@ -30,7 +30,7 @@ export default function SalePopup(props){
                     <div className={classes.box}>
                         <div className={classes.colorBar} style={{backgroundColor: getColor(props.property)}}></div>
                         <p className={classes.leftText} style={{marginBottom: '20px', marginTop: '15px'}}>{property.name}</p>
-                        <button className={classes.button} style={{width: '158px', opacity: canAfford ? 1 : .5}} 
+                        <button className={classes.button} style={{width: '158px', opacity: canAfford ? 1 : .5, cursor: canAfford ? 'pointer' : 'default'}} 
                             onClick={()=>{if(!canAfford) return; dispatch(handlePurchase({buy: true, property: props.property}))}}>BUY</button>
                         <button className={classes.button} style={{width: '158px'}}
                              onClick={()=>{dispatch(handlePurchase({buy: false, property: props.property}))}}>SKIP</button>

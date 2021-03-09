@@ -197,7 +197,7 @@ let positions = [
     <Property id={8} key={9} color='#A8DDD7' name='Engr. IV' price='$100' />,
     <Property id={9} key={10} color='#A8DDD7' name='Boelter' price='$120' />,
     //corner
-    <Corner id={10} key={11} icon={Jail}></Corner>,
+    <Corner id={10} key={11} icon={Jail} jail={true}></Corner>,
     <Property id={11} key={12} color='#EAACA3' name='Rolfe Hall' price='$140' />,
     <Property id={12} key={13} padding={true} name='Royce' icon={Royce} price='$150' />,
     <Property id={13} key={14} color='#EAACA3' name='Schoenberg Music Hall' price='$140' />,
@@ -232,9 +232,9 @@ let positions = [
 ]
 
 let playerDetails = [
-    {color: "brown", img: bman}, 
-    {color: "blue", img: cat},
-    {color: "pink", img: squirrel}, 
+    {color: "#B6DAD6", img: bman}, 
+    {color: "#A8DC96", img: cat},
+    {color: "#F7B62A", img: squirrel}, 
     {color: "purple", img: bman}, 
     {color: "yellow", img: bman}, 
     {color: "green", img: bman}, 

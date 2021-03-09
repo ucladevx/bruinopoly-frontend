@@ -14,7 +14,18 @@ export default function Property(props){
             <img src={icon} className={classes.icon}/>
             {players.map((player, i)=>{
                 if(player.currentTile === props.id)
-                    return <img key={i} className={classes.token} src={playerDetails[i].img} />
+                    if(props.jail === true && player.turnsInJail === 0)
+                        return <div style={{backgroundColor: playerDetails[i].color, left: '-10px', top: '10px'}} className={classes.outerToken}>
+                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                        </div>
+                    else if(props.jail === true && player.turnsInJail !== 0)
+                        return <div style={{backgroundColor: playerDetails[i].color, left: '40px', top: '10px'}} className={classes.outerToken}>
+                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                        </div>
+                    else 
+                        return <div style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
+                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                        </div>
                 else
                     return null
             })}
@@ -33,10 +44,19 @@ const useStyles = makeStyles(() => ({
         height: '100%',
     },
     token: {
-        height: '40px',
-        zIndex: 5,
-        position: 'absolute',
-        left: '20px',
-        top: '20px'
+        height: '35px',
     },
+    outerToken: {
+        height: '43px',
+        width: '43px',
+        position: 'absolute',
+        left: '10px',
+        top: '10px',
+        zIndex: 5,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid black'
+    }
 }))

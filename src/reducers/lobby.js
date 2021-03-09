@@ -38,6 +38,7 @@ const CLOSE_CARDS = "CLOSE_CARDS"
 
 //actions types to handle game-events from server
 const ADD_PROPERTY = "ADD_PROPERTY"
+const PAY_FEES = "PAY_FEES"
 
 
 
@@ -166,7 +167,7 @@ export function lobbyReducer(state = initialState, action) {
             } else if (owner === null){
                 //CAN POTENTIALLY BUY
                 return {...state, salePopup: action.id}
-            } else if(owner !== state.userInfo.id) {
+            } else if(owner !== state.userInfo.id && action.justOpening !== true) {
                 //PAY RENT  (ADD BANKRUPTY CHECK LATER)
                 let property = PROPERTIES[action.id]
 
@@ -212,11 +213,18 @@ export function lobbyReducer(state = initialState, action) {
             let p4 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
             if(p4.turnsInJail !== 0) return {...state}
 
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'CARD_DRAW', deck: "COMMUNITY_CHEST", playerId: state.userInfo.id, cardIndex: state.game.chanceDeck.currentCardIndex}] ]))
+
             return {...state, chancePopup: state.game.chanceDeck.currentCardIndex, 
                 game: {...state.game, chanceDeck: {...state.game.chanceDeck, currentCardIndex: state.game.chanceDeck.currentCardIndex + 1}}}
         case DRAW_CHEST:
             let p5 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
             if(p5.turnsInJail !== 0) return {...state}
+
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'CARD_DRAW', deck: "COMMUNITY_CHEST", playerId: state.userInfo.id, cardIndex: state.game.communityChestDeck.currentCardIndex}] ]))
+
 
             return {...state, chestPopup: state.game.communityChestDeck.currentCardIndex, 
                 game: {...state.game, communityChestDeck: {...state.game.communityChestDeck, currentCardIndex: state.game.communityChestDeck.currentCardIndex + 1}}}
@@ -255,6 +263,14 @@ export function lobbyReducer(state = initialState, action) {
                         propertiesOwned: [...p.propertiesOwned, action.property.id]
                     }
                 })}}
+        case PAY_FEES:
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'CHANGE_MONEY', playerId: action.id, moneyChange: -200}] ]))
+
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id !== action.id) return p
+                else return {...p, money: p.money - 200}
+            })}}
         default:
             return state;
     }
@@ -378,7 +394,7 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
     } else if(TILES[destination].type === TileType.CHEST){
         dispatch({type: DRAW_CHEST})
     } else if(TILES[destination].type === TileType.FEES){
-
+        dispatch({type: PAY_FEES, id})
     } else {
         if(destination === 30){
             dispatch({type: GO_TO_JAIL, id, tellServer: true})
@@ -404,8 +420,6 @@ export const handlePurchase = ({buy, property}) => async (dispatch) => {
     dispatch({type: CLOSE_PROPERTY})
 }
 
-
-
 export const setUserInfo = (info) => async (dispatch) => {
     let {name, major, year} = info;
     if(!name || name === ""){
@@ -414,19 +428,3 @@ export const setUserInfo = (info) => async (dispatch) => {
 
     dispatch({type: SET_USER_INFO, userObj: {...info, id: null}})
 };
-
-
-
-// function checkCookies() {
-//     //cookies.remove('user')
-//     let user = cookies.get("user");
-//     console.log(user)
-
-//     if(user && user !== "null"){
-//         if(!user.hasOwnProperty('name') || !user.hasOwnProperty('major') || !user.hasOwnProperty('year'))
-//             return null;
-//         let {name, major, email} = user
-//         return {name, major, email}
-//     }
-//     return null;
-// }
