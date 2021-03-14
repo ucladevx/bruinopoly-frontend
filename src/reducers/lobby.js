@@ -169,6 +169,7 @@ export function lobbyReducer(state = initialState, action) {
                 return {...state, salePopup: action.id}
             } else if(owner !== state.userInfo.id && action.justOpening !== true) {
                 //PAY RENT  (ADD BANKRUPTY CHECK LATER)
+                //TODO: calculate rent for railroad and utility
                 let property = PROPERTIES[action.id]
 
                 if(state.socket !== null){
