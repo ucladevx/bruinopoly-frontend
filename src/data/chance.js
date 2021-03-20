@@ -168,7 +168,7 @@ function advanceToProperty(player, room, propertyId) {
       }
     },
     {
-      id: 11,
+      id: 13,
       text: "You get lost in Boelter Hall and ending up sleeping in a hallway. When you wake up, your wallet is gone. Lose $20.",
       getEvents: (player, room) => {
         return [

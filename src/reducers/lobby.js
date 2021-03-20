@@ -91,7 +91,8 @@ export function lobbyReducer(state = initialState, action) {
         case LEAVE_ROOM:
             if(state.socket !== null && typeof state.socket.close !== "undefined")
                 state.socket.close()
-            return {...state, gameID: null, isHost: false, messages: [], players: null, game: null, socket: null}
+            return {...state, gameID: null, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
+                 chancePopup: null, chestPopup: null, salePopup: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -218,7 +219,7 @@ export function lobbyReducer(state = initialState, action) {
                 state.socket.send(JSON.stringify(['game-events', [{type: 'CARD_DRAW', deck: "COMMUNITY_CHEST", playerId: state.userInfo.id, cardIndex: state.game.chanceDeck.currentCardIndex}] ]))
 
             return {...state, chancePopup: state.game.chanceDeck.currentCardIndex, 
-                game: {...state.game, chanceDeck: {...state.game.chanceDeck, currentCardIndex: state.game.chanceDeck.currentCardIndex + 1}}}
+                game: {...state.game, chanceDeck: {...state.game.chanceDeck, currentCardIndex: (state.game.chanceDeck.currentCardIndex + 1)%14}}}
         case DRAW_CHEST:
             let p5 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
             if(p5.turnsInJail !== 0) return {...state}
@@ -226,9 +227,8 @@ export function lobbyReducer(state = initialState, action) {
             if(state.socket !== null)
                 state.socket.send(JSON.stringify(['game-events', [{type: 'CARD_DRAW', deck: "COMMUNITY_CHEST", playerId: state.userInfo.id, cardIndex: state.game.communityChestDeck.currentCardIndex}] ]))
 
-
             return {...state, chestPopup: state.game.communityChestDeck.currentCardIndex, 
-                game: {...state.game, communityChestDeck: {...state.game.communityChestDeck, currentCardIndex: state.game.communityChestDeck.currentCardIndex + 1}}}
+                game: {...state.game, communityChestDeck: {...state.game.communityChestDeck, currentCardIndex: (state.game.communityChestDeck.currentCardIndex + 1)%13}}}
         case CLOSE_CARDS:
             if(state.doubles === null)
                 return {...state, chancePopup: null, chestPopup: null}

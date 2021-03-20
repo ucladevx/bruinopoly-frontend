@@ -8,14 +8,14 @@ export default function CardPopup(props){
     useOutsideAlerter(wrapperRef);
 
     let doubleText = props.doubles && props.doubles === 3 ? "YOU ROLLED A DOUBLE THREE TIMES IN A ROW. GO TO MURPHY" : "YOU ROLLED A DOUBLE. ROLL AGAIN"
-
+    console.log(props)
     return(
         <div  style={{width: '100%', height: '100%'}}>
             <div className={classes.shadow}></div>
             <div ref={wrapperRef} className={classes.container} style={{backgroundColor: props.chance ? "#F5D34D" : (props.chest ? "#A8DDD7" : "#7A6E5D")}}>
                 <p className={classes.titleText}>{props.chance ? "EXCUSE ME SIR" : (props.chest ? "FINANCIAL AID OFFICE" : "ROLL AGAIN")}</p>
                 <div className={classes.subBox}>
-                    <p className={classes.innerText} style={{color: '#433F36'}}>{props.name}</p>
+                    <p className={classes.innerText} style={{color: '#433F36', marginBottom: '12px'}}>{props.name}</p>
                     <p className={classes.innerText} style={{color: '#7A6E5D'}}>{props.info ? props.info.text.toUpperCase() : doubleText}</p>
                 </div>
             </div>
@@ -57,7 +57,7 @@ const useStyles = makeStyles(() => ({
         fontWeight: 400,
         color: 'white',
         textShadow: '2.3341px 2.3341px 0px rgba(0, 0, 0, 0.25)',
-        margin: 0
+        margin: 0,
     },
     subBox: {
         width: '478px',
@@ -65,7 +65,9 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F7F2E7',
         borderRadius: '10px',
         marginTop: '15px',
-        paddingTop: '20px'
+        paddingTop: '10px',
+        overflow: 'scroll',
+        boxSizing: 'border-box'
     },
     innerText: {
         fontFamily: 'VCR',
@@ -73,8 +75,8 @@ const useStyles = makeStyles(() => ({
          fontWeight: 400,
          margin: 'auto',
          textAlign: 'center',
-         lineHeight: '45px',
-         maxWidth: '75%'
+         lineHeight: '34px',
+         maxWidth: '85%'
     }
 }))
 

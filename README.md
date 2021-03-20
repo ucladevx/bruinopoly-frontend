@@ -22,7 +22,6 @@ npm start
 
 ## TODO
 
-* fix player locations on jail tile (Murphy)
 * fix player locations on all times, spread out when multiple on same tile
 * add apartments and dorms
 * add effects for card draw

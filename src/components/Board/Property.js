@@ -40,8 +40,8 @@ export default function Property(props){
             {props.price !== null && <div className={classes.price}>{props.price}</div>}
             {players.map((player, i)=>{
                 if(player.currentTile === props.id)
-                    return <div style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
-                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                    return <div key={i} style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
+                            <img className={classes.token} src={playerDetails[i].img} />
                     </div>
                 else
                     return null

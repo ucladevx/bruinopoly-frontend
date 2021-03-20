@@ -7,7 +7,7 @@ const mapStateToProps = state => ({
     turn: state.lobbyReducer.yourTurn,
     salePopup: state.lobbyReducer.salePopup,
     chestPopup: state.lobbyReducer.chestPopup,
-    chancePopup: state.lobbyReducer.chestPopup,
+    chancePopup: state.lobbyReducer.chancePopup,
     doubles: state.lobbyReducer.doubles,
     name: state.lobbyReducer.userInfo.name
 });

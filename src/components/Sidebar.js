@@ -60,7 +60,8 @@ const useStyles = makeStyles(() => ({
         margin: '50px 0px 0px 50px',
         fontFamily: 'VCR',
         width: '25%',
-        minWidth: '416px'
+        minWidth: '416px',
+        height: '100%'
     },
     actionButton: {
         width: '82px',

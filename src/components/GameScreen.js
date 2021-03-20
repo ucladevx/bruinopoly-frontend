@@ -51,6 +51,8 @@ const useStyles = makeStyles(() => ({
         boxShadow: '0px 32.4707px 106.268px -61.9895px rgba(0, 0, 0, 0.25);',
         height: '100vh',
         width: '100vw',
+        boxSizing: 'border-box',
+        overflow: 'hidden'
     },
     board: {
         position: 'absolute',

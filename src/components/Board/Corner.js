@@ -11,20 +11,20 @@ export default function Property(props){
 
     return(
         <div className={classes.main}>
-            <img src={icon} className={classes.icon}/>
+            <img alt="corner type" src={icon} className={classes.icon}/>
             {players.map((player, i)=>{
                 if(player.currentTile === props.id)
                     if(props.jail === true && player.turnsInJail === 0)
-                        return <div style={{backgroundColor: playerDetails[i].color, left: '-10px', top: '10px'}} className={classes.outerToken}>
-                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                        return <div key={i} style={{backgroundColor: playerDetails[i].color, left: '-10px', top: '10px'}} className={classes.outerToken}>
+                            <img alt="token" className={classes.token} src={playerDetails[i].img} />
                         </div>
                     else if(props.jail === true && player.turnsInJail !== 0)
-                        return <div style={{backgroundColor: playerDetails[i].color, left: '40px', top: '10px'}} className={classes.outerToken}>
-                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                        return <div key={i}  style={{backgroundColor: playerDetails[i].color, left: '40px', top: '10px'}} className={classes.outerToken}>
+                            <img alt="token" className={classes.token} src={playerDetails[i].img} />
                         </div>
                     else 
-                        return <div style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
-                            <img key={i} className={classes.token} src={playerDetails[i].img} />
+                        return <div key={i} style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
+                            <img alt="token" className={classes.token} src={playerDetails[i].img} />
                         </div>
                 else
                     return null

@@ -14,13 +14,14 @@ import TradePopup from './Trade'
 
 export default function Board(props){
     const classes = useStyles();
+    console.log(props)
 
     return(
         <div className={classes.board}>
             {props.salePopup && <SalePopup property={props.salePopup} />}
             {props.tradePopup && <TradePopup />}
-            {props.chestPopup && <CardPopup info={CHEST[props.chestPopup]} chest={true} name={props.name}/>}
-            {props.chancePopup && <CardPopup info={CHANCE[props.chancePopup]} chance={true} name={props.name}/>}
+            {props.chestPopup !== null && <CardPopup info={CHEST[props.chestPopup]} chest={true} name={props.name}/>}
+            {props.chancePopup !== null && <CardPopup info={CHANCE[props.chancePopup]} chance={true} name={props.name}/>}
             {!props.salePopup && props.doubles && props.doubles.show && <CardPopup doubles={props.double} name={props.name}/>}
             {props.turn && <DiceBox />}
             <img draggable="false" alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly} />
