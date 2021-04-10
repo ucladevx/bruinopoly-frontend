@@ -1,16 +1,25 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import roycehall from '../assets/Royce.png';
-import bruin from '../assets/bruinman.png'
 import blob1 from '../assets/blob2.png'
+import {playerDetails} from '../config'
 
 export default function Bruincard(props){
     const classes = useStyles();
+    const [id, changeID] = useState(0)
+
+    useEffect(()=>{
+        props.info[1].forEach((p,i) => {
+            if(p._id === props.info[0]) 
+                changeID(i)
+            return
+        })
+    },[])
 
     return (
         <div className={classes.container}>
            <img alt="royce hall" className={classes.royce} src={roycehall} />
-           <img alt="bruin man" className={classes.bman} src={bruin} />
+           <img alt="token character" className={classes.bman} src={playerDetails[id].img} />
            <img alt="colored blob" className={classes.blob} src={blob1} />
            <div className={classes.box}>
                 <p style={{marginTop: '10px', marginBottom: '5px'}} className={classes.text}>{props.user.name.toUpperCase()}</p>

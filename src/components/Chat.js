@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import {useSelector, useDispatch} from 'react-redux'
 import {addMessage} from '../reducers/lobby.js'
+import {playerDetails} from '../config'
 
 import Plus from '@material-ui/icons/Add';
 import KReturn from '@material-ui/icons/KeyboardReturn';
@@ -18,9 +19,6 @@ export default function About(props){
     const dispatch = useDispatch()
     const messages = useSelector(state => state.lobbyReducer.messages)
     const user = useSelector(state => state.lobbyReducer.userInfo)
-
-
-    const colors = ["#A8DC96", "#F6C811", "#B6DAD6", "#DC9F96"]
 
     let toggle = () => setOpen(!open);
     let toggleMute = () => setMute(!muted);
@@ -43,7 +41,7 @@ export default function About(props){
                     { !muted ? <MicNone className={classes.mic} onClick={toggleMute}/> : <MicOff className={classes.mic} onClick={toggleMute}/> }
                     {
                         props.playersList && props.playersList.map((user, i)=>{
-                            return <Bubble key={i} color={colors[i]} name={user.name} />
+                            return <Bubble key={i} color={playerDetails[i].color} name={user.name} />
                         })
                     }
                 </div>
@@ -51,8 +49,12 @@ export default function About(props){
                     <div className={classes.messages}>
                         {
                             messages && messages.map((message, i)=>{
+                                let id = 0;
+                                props.playersList.forEach((p,i) => {
+                                    if(p.name === message.name) id = i;
+                                })
                                 return <div key={i} style={{display: 'flex', alignItems: 'center', paddingLeft: '15px', marginBottom: '7px'}}>
-                                    <Bubble color={colors[0]} name={message.name} />
+                                    <Bubble color={playerDetails[id].color} name={message.name} />
                                     <span className={classes.messageText}>{message.content}</span>
                                 </div>
                             })

@@ -1,6 +1,5 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import bruin from '../assets/bruinman.png'
 
 export default function PlayerBanner(props){
     const classes = useStyles();
@@ -8,7 +7,7 @@ export default function PlayerBanner(props){
     return (
         <div className={classes.container}>
             <div className={classes.circle}>
-                <img alt="bruin man" className={classes.bman} src={bruin} />
+                <img alt="token character" className={classes.bman} src={props.token} />
             </div>
             <div className={classes.triangle}></div>
             <div className={classes.bar}>{props.name.toUpperCase()}</div>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import Bruincard from './Bruincard'
@@ -7,6 +7,7 @@ import clock from '../assets/Groupclock.png'
 import mortgage from '../assets/mortgage.png'
 import home from '../assets/home.png'
 import trade from '../assets/trade.png'
+import {playerDetails} from '../config'
 
 export default function Sidebar(props){
     const classes = useStyles();
@@ -43,10 +44,11 @@ export default function Sidebar(props){
                     <div className={classes.actionButton}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
                     <div className={classes.actionButton}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
                 </div>
-                <Bruincard user={props.game.players.filter((player)=> player._id === props.user.id)[0]} />
+                <Bruincard user={props.game.players.filter((player)=> player._id === props.user.id)[0]} info={[props.user.id, props.game.players]} />
                 <div className={classes.nameBox}>
-                    {props.game && props.game.players.filter((player)=> player._id !== props.user.id).map((player, i) => {
-                        return <PlayerBanner key={i} name={player.name} money={player.money} />
+                    {props.game && props.game.players.map((player, i) => {
+                        if(player._id === props.user.id) return null;
+                        return <PlayerBanner key={i} name={player.name} money={player.money} token={playerDetails[i].img} />
                     })}
                 </div>
             </div>}
