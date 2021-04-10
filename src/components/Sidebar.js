@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import Bruincard from './Bruincard'
@@ -8,13 +8,43 @@ import mortgage from '../assets/mortgage.png'
 import home from '../assets/home.png'
 import trade from '../assets/trade.png'
 import {playerDetails} from '../config'
+import {parseISO, differenceInSeconds} from 'date-fns'
 
 export default function Sidebar(props){
     const classes = useStyles();
     const turn = useSelector(state => state.lobbyReducer.yourTurn)
     const players = useSelector(state => state.lobbyReducer.game.players)
     const player = useSelector(state => state.lobbyReducer.userInfo)
+    const [timeLeft, setTimeLeft] = useState("00:00")
     const dispatch = useDispatch()
+
+    useEffect(()=>{
+        let diffSec = differenceInSeconds(parseISO(props.game.startDate), new Date())
+        console.log("start time:",parseISO(props.game.startDate))
+
+        if(diffSec/60 > 60){
+            setTimeLeft("60:00+")
+        } else {
+            setTimeLeft(`${Math.floor(diffSec/60)}:${diffSec % 60}`) 
+        }
+
+        let interval = setInterval(()=>{
+            if(diffSec <= 0) return;
+
+            diffSec -= 1
+
+            if(diffSec/60 > 60){
+                setTimeLeft("60:00+")
+            } else {
+                let sec = (diffSec % 60)
+                setTimeLeft(`${Math.floor(diffSec/60)}:${sec<10? ("0"+sec) :sec}`) 
+            }
+        }, 1000)
+
+        return () => {
+            clearInterval(interval)
+        }
+    }, [])
 
     let handleBuy = () => {
         if(!turn) return
@@ -30,7 +60,7 @@ export default function Sidebar(props){
             {!props.started && <div>
                 <div className={classes.timeLeft}>
                     <img alt="clock" src={clock} className={classes.clock}></img>
-                    <div>0:00 left</div>
+                    <div>{!props.started ? timeLeft : timeLeft} left</div>
                 </div>
                 <div className={classes.playersText}>PLAYERS</div>
                 {props.players && props.players.map((player, i)=>{
