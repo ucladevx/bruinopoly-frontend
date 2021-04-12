@@ -11,7 +11,16 @@ export default function Property(props){
     const cssProps = {color: props.color}
     const classes = useStyles(cssProps);
     const [here, setHere] = useState(0)
-   
+    const [playerMap, setPlayerMap] = useState({})
+
+    useEffect(()=>{
+        let obj = {}
+        for(let i = 0; i < players.length; i++){
+            obj[players[i]._id] = i
+        }
+        setPlayerMap(obj)
+    }, [])
+
     useEffect(()=>{
         if(properties[props.id].ownerId === null) setOwner(null)
         
@@ -29,6 +38,7 @@ export default function Property(props){
                 count++;
         })
         setHere(count);
+
     }, [players])
 
     return(
@@ -38,13 +48,10 @@ export default function Property(props){
             <div className={classes.name}>{props.name.toUpperCase()}</div>
             {props.icon !== null && <img src={props.icon} style={{width: props.small ? '35px' : '90%', marginBottom: props.padding ? '20px': null}} className={classes.icon}/>}
             {props.price !== null && <div className={classes.price}>{props.price}</div>}
-            {players.map((player, i)=>{
-                if(player.currentTile === props.id)
-                    return <div key={i} style={{backgroundColor: playerDetails[i].color}} className={classes.outerToken}>
-                            <img className={classes.token} src={playerDetails[i].img} />
-                    </div>
-                else
-                    return null
+            {Object.keys(playerMap).length > 0 && players.filter(p => p.currentTile === props.id).map((player, i)=>{
+                return <div key={i} style={{backgroundColor: playerDetails[playerMap[player._id]].color, top: i===0 ? "20px" : `${20+10*i}`}} className={classes.outerToken}>
+                    <img className={classes.token} src={playerDetails[playerMap[player._id]].img} />
+                 </div>
             })}
         </div>
     )

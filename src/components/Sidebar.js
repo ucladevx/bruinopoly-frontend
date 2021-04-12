@@ -24,6 +24,8 @@ export default function Sidebar(props){
 
         if(diffSec/60 > 60){
             setTimeLeft("60:00+")
+        } else if(diffSec <= 0){
+            setTimeLeft("00:00")
         } else {
             setTimeLeft(`${Math.floor(diffSec/60)}:${diffSec % 60}`) 
         }
@@ -47,10 +49,7 @@ export default function Sidebar(props){
     }, [])
 
     let handleBuy = () => {
-        if(!turn) return
-        let person = players.filter(p => p._id === player.id)[0]
-
-        dispatch({type: "PROPERTY_DECISION", justOpening: true, id: person.currentTile})
+       //buy apts/dorms
     }
 
     return(
