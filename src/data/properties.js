@@ -6,6 +6,7 @@ const PROPERTIES = {
     rent: 2,
     railroad: false,
     utility: false,
+    dormCost: 50,
   },
   3: {
     id: 3,
@@ -14,6 +15,7 @@ const PROPERTIES = {
     rent: 4,
     railroad: false,
     utility: false,
+    dormCost: 50,
   },
   5: {
     id: 5,
@@ -30,6 +32,7 @@ const PROPERTIES = {
     rent: 6,
     railroad: false,
     utility: false,
+    dormCost: 50,
   },
   8: {
     id: 8,
@@ -38,6 +41,7 @@ const PROPERTIES = {
     price: 100,
     railroad: false,
     utility: false,
+    dormCost: 50,
   },
   9: {
     id: 9,
@@ -46,6 +50,7 @@ const PROPERTIES = {
     price: 120,
     railroad: false,
     utility: false,
+    dormCost: 50,
   },
   11: {
     id: 11,
@@ -54,6 +59,7 @@ const PROPERTIES = {
     rent: 10,
     railroad: false,
     utility: false,
+    dormCost: 100,
   },
   12: {
     id: 12,
@@ -70,6 +76,7 @@ const PROPERTIES = {
     rent: 10,
     railroad: false,
     utility: false,
+    dormCost: 100,
   },
   14: {
     id: 14,
@@ -78,6 +85,7 @@ const PROPERTIES = {
     rent: 12,
     railroad: false,
     utility: false,
+    dormCost: 100,
   },
   15: {
     id: 15,
@@ -94,6 +102,7 @@ const PROPERTIES = {
     rent: 14,
     railroad: false,
     utility: false,
+    dormCost: 100,
   },
   18: {
     id: 18,
@@ -102,6 +111,7 @@ const PROPERTIES = {
     rent: 14,
     railroad: false,
     utility: false,
+    dormCost: 100,
   },
   19: {
     id: 19,
@@ -110,6 +120,7 @@ const PROPERTIES = {
     rent: 16,
     railroad: false,
     utility: false,
+    dormCost: 100,
   },
   21: {
     id: 21,
@@ -118,6 +129,7 @@ const PROPERTIES = {
     rent: 18,
     railroad: false,
     utility: false,
+    dormCost: 150,
   },
   23: {
     id: 23,
@@ -126,6 +138,7 @@ const PROPERTIES = {
     rent: 18,
     railroad: false,
     utility: false,
+    dormCost: 150,
   },
   24: {
     id: 24,
@@ -134,6 +147,7 @@ const PROPERTIES = {
     rent: 20,
     railroad: false,
     utility: false,
+    dormCost: 150,
   },
   25: {
     id: 25,
@@ -150,6 +164,7 @@ const PROPERTIES = {
     rent: 22,
     railroad: false,
     utility: false,
+    dormCost: 150,
   },
   27: {
     id: 27,
@@ -158,6 +173,7 @@ const PROPERTIES = {
     rent: 22,
     railroad: false,
     utility: false,
+    dormCost: 150,
   },
   28: {
     id: 28,
@@ -174,6 +190,7 @@ const PROPERTIES = {
     rent: 24,
     railroad: false,
     utility: false,
+    dormCost: 150,
   },
   31: {
     id: 31,
@@ -182,6 +199,7 @@ const PROPERTIES = {
     rent: 26,
     railroad: false,
     utility: false,
+    dormCost: 200,
   },
   33: {
     id: 33,
@@ -190,6 +208,7 @@ const PROPERTIES = {
     rent: 26,
     railroad: false,
     utility: false,
+    dormCost: 200,
   },
   34: {
     id: 34,
@@ -198,6 +217,7 @@ const PROPERTIES = {
     rent: 28,
     railroad: false,
     utility: false,
+    dormCost: 200,
   },
   35: {
     id: 35,
@@ -214,6 +234,7 @@ const PROPERTIES = {
     rent: 35,
     railroad: false,
     utility: false,
+    dormCost: 200,
   },
   39: {
     id: 39,
@@ -222,6 +243,7 @@ const PROPERTIES = {
     rent: 50,
     railroad: false,
     utility: false,
+    dormCost: 200,
   },
 };
 

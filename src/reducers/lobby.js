@@ -17,6 +17,8 @@ const CREATE_ROOM_ERROR = "CREATE_ROOMS_ERROR"
 
 const REQUEST_START = "REQUEST_START"
 const START_GAME = "START_GAME"
+const START_TURN = "START_TURN"
+const END_TURN = "END_TURN"
 const SET_HOST = "SET_HOST"
 const UPDATE_PLAYERS = "UPDATE_PLAYERS"
 const ADD_MESSAGE = "ADD_MESSAGE"
@@ -102,7 +104,7 @@ export function lobbyReducer(state = initialState, action) {
             }
             return {...state, messages: [...state.messages, action.message]}
         case REQUEST_START: 
-            if(state.socket != null)
+            if(state.socket !== null)
                 state.socket.send(JSON.stringify(['request-start']))
             return {...state}
         case SET_SOCKET:
@@ -111,7 +113,13 @@ export function lobbyReducer(state = initialState, action) {
             return {...state, isHost: true}
         case START_GAME:
             return {...state, game: action.game}
+        case START_TURN:
+            return {...state, yourTurn: true}
+        case END_TURN:
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'END_TURN'}]]))
 
+            return {...state, yourTurn: false}
         case MOVE_ONE:
             let p1 = state.game.players.filter(p => p._id === action.id)[0]
 
@@ -315,6 +323,13 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
             case 'can-start':
                 dispatch({type: START_GAME, game: data[1].game})
                 break;
+            case 'game-over':
+                console.log("The winner has id:",data[1].winner)
+                //dispatch event to close socket connection, display winner popup with button to leave game
+                break;
+            case 'your-turn':
+                dispatch({type: START_TURN})
+                break;
             case 'game-events':
                 console.log(data[1][0])
                 let event = data[1][0]
@@ -404,6 +419,8 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
 
     if(doubles){
         dispatch({type: DOUBLES})
+    } else {
+        dispatch({type: END_TURN})
     }
 
     //(1) LAND ON PROPERTY => BUY/SKIP IF NOT OWNED, PAY RENT IF OWNED
