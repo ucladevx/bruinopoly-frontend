@@ -56,7 +56,7 @@ const initialState = {
     gameID: null,
     isHost: false,
     game: null,
-    yourTurn: true,
+    yourTurn: false,
     token: null,
     messages: [],
     salePopup: null,
@@ -93,7 +93,7 @@ export function lobbyReducer(state = initialState, action) {
         case LEAVE_ROOM:
             if(state.socket !== null && typeof state.socket.close !== "undefined")
                 state.socket.close()
-            return {...state, gameID: null, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
+            return {...state, gameID: null, yourTurn: false, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
                  chancePopup: null, chestPopup: null, salePopup: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
@@ -420,6 +420,7 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
     if(doubles){
         dispatch({type: DOUBLES})
     } else {
+        console.log("ENDING TURN")
         dispatch({type: END_TURN})
     }
 
