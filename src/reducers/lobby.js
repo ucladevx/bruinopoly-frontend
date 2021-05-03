@@ -32,6 +32,12 @@ const PROPERTY_DECISION = "PROPERTY_DECISION"
 const CLOSE_PROPERTY = "CLOSE_PROPERTY"
 const ATTEMPT_BUY = "ATTEMPT_BUY"
 
+const OPEN_TRADE = "OPEN_TRADE"
+const CANCEL_TRADE = "CANCEL_TRADE"
+const OFFER_TRADE = "OFFER_TRADE"
+const RECEIVE_TRADE = "RECEIVE_TRADE"
+const ACCEPT_TRADE = "ACCEPT_TRADE"
+
 const HIDE_DICE = "HIDE_DICE"
 const DOUBLES = "DOUBLES"
 const DRAW_CHANCE = "DRAW_CHANCE"
@@ -59,6 +65,7 @@ const initialState = {
     yourTurn: false,
     token: null,
     messages: [],
+    tradePopup: null,
     salePopup: null,
     chancePopup: null,
     chestPopup: null,
@@ -89,12 +96,13 @@ export function lobbyReducer(state = initialState, action) {
                     playerId = player._id
             })
 
-            return {...state, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, createRoomError: null, userInfo: {...state.userInfo, id: playerId}}
+            return {...state, tradePopup: null, doubles: null, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, 
+                createRoomError: null, userInfo: {...state.userInfo, id: playerId}}
         case LEAVE_ROOM:
             if(state.socket !== null && typeof state.socket.close !== "undefined")
                 state.socket.close()
             return {...state, gameID: null, yourTurn: false, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
-                 chancePopup: null, chestPopup: null, salePopup: null}
+                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -164,6 +172,24 @@ export function lobbyReducer(state = initialState, action) {
                 if(player._id !== action.id) return player
                 else return {...player, currentTile: 10, turnsInJail: 3}
             })}} 
+        case OPEN_TRADE:
+            if(state.game.players.length > 1 && state.yourTurn === true)
+                return {...state, tradePopup: {receive: false}}
+            else return {...state}
+        case OFFER_TRADE:
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'OFFER_TRADE', ...action.obj}]]))
+            console.log("SENDING OFFER", action.obj)
+            return {...state}
+        case ACCEPT_TRADE:
+            console.log("ACCEPTING OFFER")
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'ACCEPT_TRADE', ...state.tradePopup}]]))
+            return {...state, tradePopup: null}
+        case RECEIVE_TRADE:
+            return {...state, tradePopup: {receive: true, ...action.obj}}
+        case CANCEL_TRADE: 
+            return {...state, tradePopup: null}
         case PROPERTY_DECISION:
             let p3 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
             let owner = state.game.properties[action.id].ownerId
@@ -330,6 +356,9 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
             case 'your-turn':
                 dispatch({type: START_TURN})
                 break;
+            case 'offered-trade':
+                dispatch({type: RECEIVE_TRADE, obj: {...data[1]} })
+                break;
             case 'game-events':
                 console.log(data[1][0])
                 let event = data[1][0]
@@ -340,7 +369,12 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                     case "PURCHASE_PROPERTY":
                         dispatch({type: ADD_PROPERTY, playerId: event.playerId, property: PROPERTIES[parseInt(event.propertyId)]})
                         break;
+                    case "OFFER_TRADE":
+                        break;
+                        dispatch({type: RECEIVE_TRADE, obj: {...event} })
+                        break;
                 }
+                break;
             default:
                 console.log("default case")
         }

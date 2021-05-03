@@ -1,13 +1,60 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch, useSelector } from 'react-redux'
+import {PROPERTIES, getColor, mapIdToName} from '../../config';
 
 import arrow from '../../assets/price_change.png'
 
-export default function SalePopup(props){
+export default function TradePopup(props){
     const [pay, changePay] = useState(0)
     const [receive, changeReceive] = useState(0)
+    const [tradeRecipient, changeRecipient] = useState(null)
+    const [myProperties, changeMyProperties] = useState([])
+    const [otherProperties, changeOtherProperties] = useState([])
+    const [propertiesITrade, changeMyTradeProperties] = useState([])
+    const [propertiesOtherTrade, changeOtherTradeProperties] = useState([])
+    const players = useSelector(state => state.lobbyReducer.game.players)
+    const player = useSelector(state => state.lobbyReducer.userInfo)
+    const trade = useSelector(state => state.lobbyReducer.tradePopup)
+    const [tradeOffererName, changeTradeOffererName] = useState("")
     const classes = useStyles();
+    const dispatch = useDispatch()
 
+    useEffect(()=>{
+        console.log("TRADE",trade)
+        const me = players.filter(p => p._id === player.id)[0]
+        changeMyProperties(me.propertiesOwned)
+
+        if(trade.receive === true){
+            let other = players.filter(p => p._id === trade.playerId)[0]
+            changeTradeOffererName(other.name)
+
+            changePay(trade.moneyIncoming)
+            changeReceive(trade.moneyOutgoing)
+        }
+    }, [])
+
+    useEffect(()=>{
+        if(trade.recipient === true){
+            let other = players.filter(p => p._id === trade.playerId)[0]
+            changeTradeOffererName(other.name)
+
+            changePay(trade.moneyIncoming)
+            changeReceive(trade.moneyOutgoing)
+        }
+    }, [trade])
+
+
+    useEffect(()=>{
+        if(tradeRecipient === null || tradeRecipient === ""){
+            changeOtherProperties([])
+            return
+        } 
+        
+        let other = players.filter(p => p._id === tradeRecipient)[0]
+        changeOtherProperties(other.propertiesOwned)
+    }, [tradeRecipient])
+    
     const handleIncrease = (bool) => {
         if(bool===true){
             changePay(pay + 10)
@@ -26,48 +73,128 @@ export default function SalePopup(props){
         }
     }
 
+    let handleClose = () => {
+        dispatch({type: "CANCEL_TRADE"})
+    }
+
+    let handleReject = () => {
+        //TODO: tell other person to close trade tab
+        dispatch({type: "CANCEL_TRADE"})
+    }
+
+    let handleAccept = () => {
+        //TODO: check that trade hasn't been modified since receiving it
+        dispatch({type: "ACCEPT_TRADE"})
+    }
+
+    let handleMyProperties = (propertyNum) => {
+        if(propertiesITrade.includes(propertyNum)){
+            changeMyTradeProperties(l => l.filter(p => p !== propertyNum))
+        } else {
+            changeMyTradeProperties(l => [...l, propertyNum])
+        }
+    }
+
+    let handleOffer = () => {
+        if(tradeRecipient === null) return;
+
+        let obj = {
+            propertiesOutgoing: propertiesITrade,
+            propertiesIncoming: propertiesOtherTrade,
+            moneyOutgoing: pay,
+            moneyIncoming: receive,
+            receivingPlayerId: tradeRecipient,
+            playerId: player.id
+        }
+        dispatch({type: "OFFER_TRADE", obj})
+    }
+
+    let handleOtherProperties = (propertyNum) => {
+        if(propertiesOtherTrade.includes(propertyNum)){
+            changeOtherTradeProperties(l => l.filter(p => p !== propertyNum))
+        } else {
+            changeOtherTradeProperties(l => [...l, propertyNum])
+        }
+    }
+
     return(
         <div style={{width: '100%', height: '100%'}}>
             <div className={classes.shadow}></div>
             <div className={classes.container}>
-                <div className={classes.tradeText}>TRADE</div>
+                <div className={classes.tradeText}>{trade.receive ? "TRADE OFFER" : "TRADE"}</div>
+                {trade.receive ? <div className={classes.topBox}>{tradeOffererName} IS OFFERING A TRADE</div> : null}
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '482px', marginTop: '24px', marginBottom: '20px'}}>
                     <div className={classes.box}>
-                        <div className={classes.colorBar}>PLAYER 1</div>
+                        <div className={classes.colorBar}>{player.name}</div>
                         <div className={classes.money}>$ {pay}
                             <img src={arrow} className={classes.arrow} style={{transform: 'rotate(180deg)',bottom: '5px', right: '15px'}} alt="lower price"
                                 onClick={()=>{handleDecrease(true)}}/>
                             <img src={arrow} className={classes.arrow} style={{top: '5px', right: '15px'}} alt="raise price"
                                 onClick={()=>{handleIncrease(true)}}/>
                         </div>
-                        <div className={classes.propertyBox}>
-                            <div className={classes.typeBox}></div>
-                            <p className={classes.text}>SCHOENBERG MUSIC HALL</p>
-                            <p className={classes.text}>$140</p>
-                        </div>
+                        {!trade.receive && myProperties.map((p, i) => {
+                            return <div key={i} style={{backgroundColor: propertiesITrade.includes(p) ? "#e1e6e2" : 'white'}} 
+                                onClick={()=> handleMyProperties(p)} className={classes.propertyBox}>
+                                <div style={{backgroundColor: getColor(p)}} className={classes.typeBox}></div>
+                                <p className={classes.text}>{PROPERTIES[p].name}</p>
+                                <p className={classes.text}>${PROPERTIES[p].price}</p>
+                            </div>
+                        })}
+                        {trade.receive && trade.propertiesIncoming.map((p,i)=>{
+                            return <div key={i}
+                                className={classes.propertyBox}>
+                                <div style={{backgroundColor: getColor(p)}} className={classes.typeBox}></div>
+                                <p className={classes.text}>{PROPERTIES[p].name}</p>
+                                <p className={classes.text}>${PROPERTIES[p].price}</p>
+                            </div>
+                        })}
                     </div>
                     <div className={classes.box}>
-                        <div className={classes.colorBar}>PLAYER 2</div>
+                        {trade.receive===true ? 
+                            (<div className={classes.colorBar}>{tradeOffererName}</div>) 
+                        :   (<select onChange={(e)=>{changeRecipient(e.target.value)}} className={classes.colorBar} style={{textAlign: 'center'}}>
+                                <option value={""}>Choose player</option>
+                                {players.filter(p => p._id !== player.id).map((p, i) => {
+                                    return <option key={i} value={p._id}>{p.name}</option>
+                                })}
+                            </select>) 
+                        }
                         <div className={classes.money}>$ {receive}
                             <img src={arrow} className={classes.arrow} style={{transform: 'rotate(180deg)',bottom: '5px', right: '15px'}} alt="lower price"
                                 onClick={()=>{handleDecrease(false)}}/>
                             <img src={arrow} className={classes.arrow} style={{top: '5px', right: '15px'}} alt="raise price"
                                 onClick={()=>{handleIncrease(false)}}/>
                         </div>
-                        <div className={classes.propertyBox}>
-                            <div className={classes.typeBox}></div>
-                            <p className={classes.text}>SCHOENBERG MUSIC HALL</p>
-                            <p className={classes.text}>$140</p>
-                        </div>
+                        {!trade.receive && otherProperties.map((p, i) => {
+                            return <div key={i} style={{backgroundColor: propertiesOtherTrade.includes(p) ? "#e1e6e2" : 'white'}}
+                                onClick={()=> handleOtherProperties(p)} className={classes.propertyBox}>
+                                <div style={{backgroundColor: getColor(p)}} className={classes.typeBox}></div>
+                                <p className={classes.text}>{PROPERTIES[p].name}</p>
+                                <p className={classes.text}>${PROPERTIES[p].price}</p>
+                            </div>
+                        })}
+                        {trade.receive && trade.propertiesOutgoing.map((p,i)=>{
+                            return <div key={i} 
+                                className={classes.propertyBox}>
+                                <div style={{backgroundColor: getColor(p)}} className={classes.typeBox}></div>
+                                <p className={classes.text}>{PROPERTIES[p].name}</p>
+                                <p className={classes.text}>${PROPERTIES[p].price}</p>
+                            </div>
+                        })}
                     </div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-around', width: '78%'}}>
-                    <button className={classes.button} style={{width: '158px'}}>OFFER</button>
-                    <button className={classes.button} style={{width: '158px'}}>CANCEL</button>
-                </div>
+                {trade.receive ? (
+                    <div style={{display: 'flex', justifyContent: 'space-around', width: '100%'}}>
+                        <button onClick={handleAccept} className={classes.button} style={{width: '143px'}}>ACCEPT</button>
+                        <button className={classes.button} style={{width: '143px'}}>COUNTER</button>
+                        <button onClick={handleReject}  className={classes.button} style={{width: '143px'}}>REJECT</button>
+                    </div>)  : (<div style={{display: 'flex', justifyContent: 'space-around', width: '78%'}}>
+                        <button onClick={handleOffer} className={classes.button} style={{width: '158px'}}>OFFER</button>
+                        <button onClick={handleClose} className={classes.button} style={{width: '158px'}}>CANCEL</button>
+                    </div> )  
+                }
             </div>
         </div>
-       
     )
 
 }
@@ -75,7 +202,7 @@ export default function SalePopup(props){
 const useStyles = makeStyles(() => ({
     container: {
         width: '524px',
-        height: '526px',
+        
         backgroundColor: '#C4B299',
         borderRadius: '10px',
         boxShadow: '4px 4px 13px rgba(0, 0, 0, 0.15)',
@@ -108,7 +235,8 @@ const useStyles = makeStyles(() => ({
         textShadow: '2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff'
     },
     topBox: {
-        height: '38px',
+        marginTop: '19px',
+        height: '60px',
         width: '482px',
         borderRadius: '10px',
         backgroundColor: '#EFE9DB',
@@ -176,6 +304,7 @@ const useStyles = makeStyles(() => ({
         marginBottom: '15px'
     },
     propertyBox: {
+        cursor: 'pointer',
         height: '46px',
         width: '199px',
         margin: 'auto',
@@ -184,7 +313,7 @@ const useStyles = makeStyles(() => ({
         paddingLeft: '30px',
         paddingTop: '7px',
         boxSizing: 'border-box',
-
+        marginBottom: '10px'
     },
     typeBox: {
         height: '38px',
