@@ -201,8 +201,8 @@ const PROPERTIES = {
     utility: false,
     dormCost: 200,
   },
-  33: {
-    id: 33,
+  32: {
+    id: 32,
     name: 'Biomed Library',
     price: 300,
     rent: 26,

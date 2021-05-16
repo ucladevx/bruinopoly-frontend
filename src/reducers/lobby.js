@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ar } from 'date-fns/locale';
 //import Cookies from 'universal-cookie';
 import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
@@ -39,6 +40,10 @@ const RECEIVE_TRADE = "RECEIVE_TRADE"
 const ACCEPT_TRADE = "ACCEPT_TRADE"
 const HANDLE_ACCEPT_TRADE = "HANDLE_ACCEPT_TRADE"
 
+const OPEN_BUY_DORM = "OPEN_BUY_DORM"
+const OPEN_SELL_DORM = "OPEN_SELL_DORM"
+const CLOSE_DORM = "CLOSE_DORM"
+
 const HIDE_DICE = "HIDE_DICE"
 const DOUBLES = "DOUBLES"
 const DRAW_CHANCE = "DRAW_CHANCE"
@@ -48,6 +53,9 @@ const CLOSE_CARDS = "CLOSE_CARDS"
 //actions types to handle game-events from server
 const ADD_PROPERTY = "ADD_PROPERTY"
 const PAY_FEES = "PAY_FEES"
+
+//FOR TESTING
+const BUY_ALL_PROPERTIES = "BUY_ALL_PROPERTIES"
 
 
 
@@ -67,6 +75,7 @@ const initialState = {
     token: null,
     messages: [],
     tradePopup: null,
+    propertyPopup: null,
     salePopup: null,
     chancePopup: null,
     chestPopup: null,
@@ -75,6 +84,22 @@ const initialState = {
 
 export function lobbyReducer(state = initialState, action) {
     switch (action.type) {
+        case BUY_ALL_PROPERTIES:
+            let arr = [6,8,9]
+           //["1", "3", "5", "6", "8", "9", "11", "12", "13", "14", "15", "16", "18", "19", "21", "23", "24", "25", "26", "27", "28", "29", "31", "33", "34", "35", "37", "39"]
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id == state.userInfo.id){
+                    return {...p, money: 100000, propertiesOwned: arr}
+                } else {
+                    return p
+                }
+            }), properties: state.game.properties.map((p,i)=>{
+                if(arr.includes(i)){
+                    return {...p, ownerId: state.userInfo.id}
+                } else {
+                    return p
+                }
+            })} }
         case SET_USER_INFO:
             return {...state, userInfo: action.userObj, redirectTo: "/"}
         case SET_ROOMS_LIST:
@@ -179,12 +204,10 @@ export function lobbyReducer(state = initialState, action) {
                 return {...state, tradePopup: {receive: false}}
             else return {...state}
         case OFFER_TRADE:
-            //console.log("SENDING OFFER", action.obj)
             if(state.socket !== null)
                 state.socket.send(JSON.stringify(['game-events', [{type: 'OFFER_TRADE', ...action.obj}]]))
             return {...state}
         case ACCEPT_TRADE:
-            //console.log("ACCEPTING OFFER: ")
             let tempTradeObj = {...state.tradePopup}
             delete tempTradeObj.type
             if(state.socket !== null)
@@ -397,6 +420,16 @@ export function lobbyReducer(state = initialState, action) {
                 if(p._id !== action.id) return p
                 else return {...p, money: p.money - 200}
             })}}
+        case OPEN_BUY_DORM:
+            if(state.yourTurn === true)
+                return {...state, propertyPopup: {buy: true, sell: false}}
+            return {...state}
+        case OPEN_SELL_DORM:
+            if(state.yourTurn === true)
+                return {...state, propertyPopup: {buy: false, sell: true}}
+            return {...state}
+        case CLOSE_DORM:
+            return {...state, propertyPopup: null}
         default:
             return state;
     }

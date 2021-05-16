@@ -11,6 +11,7 @@ import ExuseMeCards from '../../assets/Exuse_Me_Cards.png';
 import SalePopup from './SalePopup'
 import CardPopup from './CardPopup'
 import TradePopup from './Trade'
+import PropertyPopup from './PropertyPopup'
 
 export default function Board(props){
     const classes = useStyles();
@@ -19,6 +20,7 @@ export default function Board(props){
     return(
         <div className={classes.board}>
             {props.salePopup && <SalePopup property={props.salePopup} />}
+            {props.propertyPopup && <PropertyPopup />}
             {props.tradePopup && <TradePopup />}
             {props.chestPopup !== null && <CardPopup info={CHEST[props.chestPopup]} chest={true} name={props.name}/>}
             {props.chancePopup !== null && <CardPopup info={CHANCE[props.chancePopup]} chance={true} name={props.name}/>}
