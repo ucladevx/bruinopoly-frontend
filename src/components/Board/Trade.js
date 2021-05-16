@@ -56,6 +56,8 @@ export default function TradePopup(props){
     }, [tradeRecipient])
     
     const handleIncrease = (bool) => {
+        if(trade.receive === true) return;
+
         if(bool===true){
             changePay(pay + 10)
         } else {
@@ -64,6 +66,8 @@ export default function TradePopup(props){
     }
 
     const handleDecrease = (bool) => {
+        if(trade.receive === true) return;
+
         if(bool===true){
             if(pay - 10 >= 0)
                 changePay(pay - 10)
@@ -84,6 +88,7 @@ export default function TradePopup(props){
 
     let handleAccept = () => {
         //TODO: check that trade hasn't been modified since receiving it
+        console.log("CALLING DISPATCH ACCEPT_TRADE")
         dispatch({type: "ACCEPT_TRADE"})
     }
 
@@ -186,7 +191,7 @@ export default function TradePopup(props){
                 {trade.receive ? (
                     <div style={{display: 'flex', justifyContent: 'space-around', width: '100%'}}>
                         <button onClick={handleAccept} className={classes.button} style={{width: '143px'}}>ACCEPT</button>
-                        <button className={classes.button} style={{width: '143px'}}>COUNTER</button>
+                        <button className={classes.button} style={{width: '143px', cursor: 'default', backgroundColor: 'gray'}}>COUNTER</button>
                         <button onClick={handleReject}  className={classes.button} style={{width: '143px'}}>REJECT</button>
                     </div>)  : (<div style={{display: 'flex', justifyContent: 'space-around', width: '78%'}}>
                         <button onClick={handleOffer} className={classes.button} style={{width: '158px'}}>OFFER</button>
