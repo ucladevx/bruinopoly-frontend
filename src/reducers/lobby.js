@@ -32,6 +32,13 @@ const PROPERTY_DECISION = "PROPERTY_DECISION"
 const CLOSE_PROPERTY = "CLOSE_PROPERTY"
 const ATTEMPT_BUY = "ATTEMPT_BUY"
 
+const OPEN_TRADE = "OPEN_TRADE"
+const CANCEL_TRADE = "CANCEL_TRADE"
+const OFFER_TRADE = "OFFER_TRADE"
+const RECEIVE_TRADE = "RECEIVE_TRADE"
+const ACCEPT_TRADE = "ACCEPT_TRADE"
+const HANDLE_ACCEPT_TRADE = "HANDLE_ACCEPT_TRADE"
+
 const HIDE_DICE = "HIDE_DICE"
 const DOUBLES = "DOUBLES"
 const DRAW_CHANCE = "DRAW_CHANCE"
@@ -59,6 +66,7 @@ const initialState = {
     yourTurn: false,
     token: null,
     messages: [],
+    tradePopup: null,
     salePopup: null,
     chancePopup: null,
     chestPopup: null,
@@ -89,12 +97,14 @@ export function lobbyReducer(state = initialState, action) {
                     playerId = player._id
             })
 
-            return {...state, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, createRoomError: null, userInfo: {...state.userInfo, id: playerId}}
+            return {...state, tradePopup: null, doubles: null, gameID: action.id, game: action.room, lobbyError: null, joinRoomError: null, 
+                createRoomError: null, userInfo: {...state.userInfo, id: playerId}}
         case LEAVE_ROOM:
             if(state.socket !== null && typeof state.socket.close !== "undefined")
                 state.socket.close()
+            //SHOULD TOKEN BECOME NULL UPON LEAVING ROOM? MAYBE CHANGE LATER
             return {...state, gameID: null, yourTurn: false, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
-                 chancePopup: null, chestPopup: null, salePopup: null}
+                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, token: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -164,6 +174,113 @@ export function lobbyReducer(state = initialState, action) {
                 if(player._id !== action.id) return player
                 else return {...player, currentTile: 10, turnsInJail: 3}
             })}} 
+        case OPEN_TRADE:
+            if(state.game.players.length > 1 && state.yourTurn === true)
+                return {...state, tradePopup: {receive: false}}
+            else return {...state}
+        case OFFER_TRADE:
+            //console.log("SENDING OFFER", action.obj)
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'OFFER_TRADE', ...action.obj}]]))
+            return {...state}
+        case ACCEPT_TRADE:
+            //console.log("ACCEPTING OFFER: ")
+            let tempTradeObj = {...state.tradePopup}
+            delete tempTradeObj.type
+            if(state.socket !== null)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'ACCEPT_TRADE', ...tempTradeObj}]]))
+            //return {...state, tradePopup: null}
+
+            return {...state, tradePopup: null, game: {...state.game, properties: state.game.properties.map((p,i) => {
+                if(tempTradeObj.propertiesOutgoing.includes(i)){
+                    return {...p, ownerId: tempTradeObj.receivingPlayerId}
+                } else if(tempTradeObj.propertiesIncoming.includes(i)){
+                    return {...p, ownerId: tempTradeObj.playerId}
+                } else {
+                    return p;
+                }
+            }), players: state.game.players.map((p) => {
+                //remove/add necessary properties
+                let tempP;
+                if(p._id === tempTradeObj.playerId){
+                    tempP = Object.assign({}, p);
+                    tempP.money -= tempTradeObj.moneyOutgoing;
+                    tempP.money += tempTradeObj.moneyIncoming; 
+
+                    tempP.propertiesOwned = tempP.propertiesOwned.filter((po)=>{
+                        return !tempTradeObj.propertiesOutgoing.includes(po)
+                    })
+                    tempP.propertiesOwned = [...tempP.propertiesOwned, ...tempTradeObj.propertiesIncoming]
+
+                    return tempP;
+                } else if(p._id === tempTradeObj.receivingPlayerId){
+                    tempP = Object.assign({}, p);
+                    tempP.money += tempTradeObj.moneyOutgoing;
+                    tempP.money -= tempTradeObj.moneyIncoming; 
+
+                    tempP.propertiesOwned = tempP.propertiesOwned.filter((po)=>{
+                        return !tempTradeObj.propertiesIncoming.includes(po)
+                    })
+                    tempP.propertiesOwned = [...tempP.propertiesOwned, ...tempTradeObj.propertiesOutgoing]
+
+                    return tempP;
+                } else {
+                    return p;
+                }
+            })}}
+            
+        case HANDLE_ACCEPT_TRADE:
+            console.log("HANDLE_ACCEPT_TRADE:", action.obj)
+                /* {
+                playerId: ...
+                receivingPlayerId: ...
+                propertiesOutgoing: [] 
+                propertiesIncoming: []
+                moneyOutgoing: ...
+                moneyIncoming: ...
+            } */  
+            return {...state, tradePopup: null, game: {...state.game, properties: state.game.properties.map((p,i) => {
+                if(action.obj.propertiesOutgoing.includes(i)){
+                    return {...p, ownerId: action.obj.receivingPlayerId}
+                } else if(action.obj.propertiesIncoming.includes(i)){
+                    return {...p, ownerId: action.obj.playerId}
+                } else {
+                    return p;
+                }
+            }), players: state.game.players.map((p) => {
+                //remove/add necessary properties
+                let tempP;
+                if(p._id === action.obj.playerId){
+                    tempP = Object.assign({}, p);
+                    tempP.money -= action.obj.moneyOutgoing;
+                    tempP.money += action.obj.moneyIncoming; 
+
+                    tempP.propertiesOwned = tempP.propertiesOwned.filter((po)=>{
+                        return !action.obj.propertiesOutgoing.includes(po)
+                    })
+                    tempP.propertiesOwned = [...tempP.propertiesOwned, ...action.obj.propertiesIncoming]
+
+                    return tempP;
+                } else if(p._id === action.obj.receivingPlayerId){
+                    tempP = Object.assign({}, p);
+                    tempP.money += action.obj.moneyOutgoing;
+                    tempP.money -= action.obj.moneyIncoming; 
+
+                    tempP.propertiesOwned = tempP.propertiesOwned.filter((po)=>{
+                        return !action.obj.propertiesIncoming.includes(po)
+                    })
+                    tempP.propertiesOwned = [...tempP.propertiesOwned, ...action.obj.propertiesOutgoing]
+
+                    return tempP;
+                } else {
+                    return p;
+                }
+            })}}
+        case RECEIVE_TRADE:
+            //console.log("RECEIVING TRADE OFFER: ", action.obj)
+            return {...state, tradePopup: {receive: true, ...action.obj}}
+        case CANCEL_TRADE: 
+            return {...state, tradePopup: null}
         case PROPERTY_DECISION:
             let p3 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
             let owner = state.game.properties[action.id].ownerId
@@ -204,7 +321,7 @@ export function lobbyReducer(state = initialState, action) {
                 if(state.socket !== null)
                     state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_PROPERTY', playerId: state.userInfo.id, propertyId: action.property.id}]]))
 
-                let temp_properties = Object.assign({}, state.game.properties)
+                let temp_properties = [...state.game.properties]
                 temp_properties[action.property.id] = {...state.game.properties[action.property.id], ownerId: state.userInfo.id}
                 
                 return {...state, game: {...state.game, 
@@ -260,7 +377,7 @@ export function lobbyReducer(state = initialState, action) {
         case HIDE_DICE:
             return {...state, yourTurn: false}
         case ADD_PROPERTY:
-            let temp = Object.assign({}, state.game.properties)
+            let temp =[...state.game.properties]
             temp[action.property.id] = {...state.game.properties[action.property.id], ownerId: action.playerId}
             
             return {...state, game: {...state.game, 
@@ -330,6 +447,11 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
             case 'your-turn':
                 dispatch({type: START_TURN})
                 break;
+            case 'offered-trade':
+                let temp = Object.assign({}, data[1])
+                console.log("IN BREAK, RECEIVING TRADE OFFER: ", temp)
+                dispatch({type: RECEIVE_TRADE, obj: {...data[1]} })
+                break;
             case 'game-events':
                 console.log(data[1][0])
                 let event = data[1][0]
@@ -340,6 +462,16 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                     case "PURCHASE_PROPERTY":
                         dispatch({type: ADD_PROPERTY, playerId: event.playerId, property: PROPERTIES[parseInt(event.propertyId)]})
                         break;
+                    case "OFFER_TRADE":
+                        //ignore, needs to be 'offered-trade' event
+                        break;
+                        dispatch({type: RECEIVE_TRADE, obj: {...event} })
+                        break;
+                    case "ACCEPT_TRADE":
+                        dispatch({type: HANDLE_ACCEPT_TRADE, obj: {...data[1][0]} })
+                        break;
+                    default:
+                        console.log("game-events default")
                 }
             default:
                 console.log("default case")

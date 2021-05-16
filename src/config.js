@@ -22,6 +22,7 @@ import CHANCE from './data/chance'
 import CHEST from './data/chest'
 import {TILES, TileType} from './data/tiles'
 import PROPERTIES from './data/properties'
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 
 let sleep = (sec) => {
     return new Promise((res, rej)=>{
@@ -268,4 +269,10 @@ let getColor = (tile) => {
     }
 }
 
-export {majors, API_URL, SOCKET_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor}
+let mapIdToName = (players, id) => {
+    let other = players.filter(p => p._id === id)[0]
+    console.log(other.name)
+    return other.name
+}
+
+export {majors, API_URL, SOCKET_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor, mapIdToName}

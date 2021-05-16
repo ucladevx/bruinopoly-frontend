@@ -52,6 +52,10 @@ export default function Sidebar(props){
        //buy apts/dorms
     }
 
+    let handleTrade = () => {
+        dispatch({type: "OPEN_TRADE"})
+    }
+
     return(
         <div className={classes.container}>
             <div className={classes.bruinopoly}>BRUINOPOLY</div>
@@ -70,7 +74,7 @@ export default function Sidebar(props){
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '35px'}}>
                     <div className={classes.actionButton} onClick={handleBuy}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
                     <div className={classes.actionButton}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
-                    <div className={classes.actionButton}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
+                    <div className={classes.actionButton} onClick={handleTrade}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
                     <div className={classes.actionButton}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
                 </div>
                 <Bruincard user={props.game.players.filter((player)=> player._id === props.user.id)[0]} info={[props.user.id, props.game.players]} />
