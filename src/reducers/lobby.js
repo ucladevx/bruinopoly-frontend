@@ -301,16 +301,20 @@ export function lobbyReducer(state = initialState, action) {
                 if(state.socket !== null){
                     state.socket.send(JSON.stringify(['game-events', [{type: 'RENT', playerId: state.userInfo.id, propertyOwner: owner, propertyId: action.id}]]))
                 }
+
+                const ownedProperties = state.game.players.find((p) => p._id === owner).propertiesOwned
+                const rent = ownAll(action.id, ownedProperties) ? property.rent * 2 : property.rent
             
                 return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                     if(p._id === state.userInfo.id) 
-                        return {...p, money: p.money - property.rent}
+                        return {...p, money: p.money - rent}
                     else if(p._id === owner) 
-                        return {...p, money: p.money + property.rent}
+                        return {...p, money: p.money + rent}
                     else 
                         return p
                 })}}
             }
+            break
         case CLOSE_PROPERTY:
             return {...state, salePopup: null}
         case ATTEMPT_BUY:
@@ -579,3 +583,54 @@ export const setUserInfo = (info) => async (dispatch) => {
 
     dispatch({type: SET_USER_INFO, userObj: {...info, id: null}})
 };
+
+const ownAll = (propertyNum, ownedProperties) => {
+    if(propertyNum == 1 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+        return true;
+    } else if(propertyNum == 3 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+        return true;
+    } else if(propertyNum == 6 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+        return true;
+    } else if(propertyNum == 8 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+        return true;
+    } else if(propertyNum == 9 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+        return true;
+    } else if(propertyNum == 11 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+        return true;
+    } else if(propertyNum == 13 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+        return true;
+    } else if(propertyNum == 14 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+        return true;
+    } else if(propertyNum == 16 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+        return true;
+    } else if(propertyNum == 18 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+        return true;
+    } else if(propertyNum == 19 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+        return true;
+    } else if(propertyNum == 21 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+        return true;
+    } else if(propertyNum == 23 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+        return true;
+    } else if(propertyNum == 24 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+        return true;
+    } else if(propertyNum == 26 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+        return true;
+    } else if(propertyNum == 27 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+        return true;
+    } else if(propertyNum == 29 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+        return true;
+    } else if(propertyNum == 31 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+        return true;
+    } else if(propertyNum == 32 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+        return true;
+    } else if(propertyNum == 34 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+        return true;
+    } else if(propertyNum == 37 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+        return true;
+    } else if(propertyNum == 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+        return true;
+    } else {
+        return false
+    }
+
+}
