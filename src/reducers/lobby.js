@@ -88,7 +88,8 @@ export function lobbyReducer(state = initialState, action) {
             let arr = [6,8,9]
            //["1", "3", "5", "6", "8", "9", "11", "12", "13", "14", "15", "16", "18", "19", "21", "23", "24", "25", "26", "27", "28", "29", "31", "33", "34", "35", "37", "39"]
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
-                if(p._id == state.userInfo.id){
+                console.log(p._id === state.userInfo.id)
+                if(p._id === state.userInfo.id){
                     return {...p, money: 100000, propertiesOwned: arr}
                 } else {
                     return p

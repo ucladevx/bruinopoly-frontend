@@ -6,7 +6,7 @@ import {PROPERTIES, getColor} from '../../config';
 export default function PropertyPopup(props){
     const player = useSelector(state => state.lobbyReducer.userInfo)
     const properties = useSelector(state => state.lobbyReducer.game.properties)
-    const me = useSelector(state => state.lobbyReducer.players.filter((p)=> p._id === player.id))[0]
+    const me = useSelector(state => state.lobbyReducer.game.players.filter((p)=> p._id === player.id))[0]
     const classes = useStyles();
     const dispatch = useDispatch()
 
@@ -26,11 +26,10 @@ export default function PropertyPopup(props){
                 <div className={classes.propertyText}>BUY</div>
                 <div className={classes.topBox}>BUY DORMS/APTS</div>
 
-                <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-                    <div className={classes.box}>
-                        <div className={classes.colorBar}>{player.name}</div>
-                    </div>
+                <div className={classes.box}>
+                    <div className={classes.colorBar}>{player.name}</div>
                     {me.propertiesOwned.map((p, i)=>{
+                        console.log(p, ownAll(p, me.propertiesOwned))
                         if(ownAll(p, me.propertiesOwned)){
                             return <div className={classes.wholeBox}>
                                 <div key={i} className={classes.propertyBox}>
@@ -38,7 +37,7 @@ export default function PropertyPopup(props){
                                     <p className={classes.text}>{PROPERTIES[p].name}</p>
                                 </div>
                                 <div className={classes.boxOfBoxes}>
-                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                                    <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
                                         <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=1 ? "#72E7DA" : 'none'}}></div>
                                         <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=2 ? "#72E7DA" : 'none'}}></div>
                                         <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=3 ? "#72E7DA" : 'none'}}></div>
@@ -114,6 +113,7 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F7F2E7',
         height: '370px',
         width: '482px',
+        overflow: 'scroll',
         marginTop: '19px',
         marginBottom: '16px',
         boxSizing: 'border-box',
@@ -121,12 +121,18 @@ const useStyles = makeStyles(() => ({
     wholeBox: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '95%',
+        margin: 'auto',
+        marginBottom: '15px',
     },
     boxOfBoxes: {
         width: '115px',
         height: '47px',
-        display: 'flex'
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
     },
     fillInBox: {
         height: '20px',
@@ -149,7 +155,8 @@ const useStyles = makeStyles(() => ({
         lineHeight: '49px',
         textAlign: 'center',
         fontWeight: '400',
-        color: '#433F36'
+        color: '#433F36',
+        marginBottom: '15px'
     },
     button: {
         color: 'white',
@@ -174,19 +181,17 @@ const useStyles = makeStyles(() => ({
         color: '#433F36',
         fontSize: '20px',
         fontFamily: 'VCR',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        border: 'none'
     },
     propertyBox: {
-        cursor: 'pointer',
         height: '46px',
         width: '199px',
-        margin: 'auto',
         backgroundColor: 'white',
         position: 'relative',
         paddingLeft: '30px',
         paddingTop: '7px',
         boxSizing: 'border-box',
-        marginBottom: '10px'
     },
     typeBox: {
         height: '38px',
@@ -197,61 +202,60 @@ const useStyles = makeStyles(() => ({
         position: 'absolute',
     },
     text: {
-        fontSize: '13px',
+        fontSize: '16px',
         fontWeight: 400,
         color: '#433F36',
         textAlign: 'center',
         fontFamily: 'VCR',
         margin: 0,
-        marginBottom: '6px',
         maxWidth: '175px'
     }
 }))
 
 let ownAll = (propertyNum, ownedProperties) => {
-    if(propertyNum == 1 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+    if(propertyNum === 1 && ownedProperties.includes(1) && ownedProperties.includes(3)){
         return true;
-    } else if(propertyNum == 3 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+    } else if(propertyNum === 3 && ownedProperties.includes(1) && ownedProperties.includes(3)){
         return true;
-    } else if(propertyNum == 6 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+    } else if(propertyNum === 6 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
         return true;
-    } else if(propertyNum == 8 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+    } else if(propertyNum === 8 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
         return true;
-    } else if(propertyNum == 9 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+    } else if(propertyNum === 9 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
         return true;
-    } else if(propertyNum == 11 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+    } else if(propertyNum === 11 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
         return true;
-    } else if(propertyNum == 13 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+    } else if(propertyNum === 13 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
         return true;
-    } else if(propertyNum == 14 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+    } else if(propertyNum === 14 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
         return true;
-    } else if(propertyNum == 16 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+    } else if(propertyNum === 16 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
         return true;
-    } else if(propertyNum == 18 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+    } else if(propertyNum === 18 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
         return true;
-    } else if(propertyNum == 19 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+    } else if(propertyNum === 19 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
         return true;
-    } else if(propertyNum == 21 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+    } else if(propertyNum === 21 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
         return true;
-    } else if(propertyNum == 23 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+    } else if(propertyNum === 23 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
         return true;
-    } else if(propertyNum == 24 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+    } else if(propertyNum === 24 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
         return true;
-    } else if(propertyNum == 26 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+    } else if(propertyNum === 26 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
         return true;
-    } else if(propertyNum == 27 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+    } else if(propertyNum === 27 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
         return true;
-    } else if(propertyNum == 29 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+    } else if(propertyNum === 29 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
         return true;
-    } else if(propertyNum == 31 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+    } else if(propertyNum === 31 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
         return true;
-    } else if(propertyNum == 32 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+    } else if(propertyNum === 32 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
         return true;
-    } else if(propertyNum == 34 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+    } else if(propertyNum === 34 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
         return true;
-    } else if(propertyNum == 37 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+    } else if(propertyNum === 37 && ownedProperties.includes(37) && ownedProperties.includes(39)){
         return true;
-    } else if(propertyNum == 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+    } else if(propertyNum === 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
         return true;
     } else {
         return false
