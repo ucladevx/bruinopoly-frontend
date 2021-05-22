@@ -1,21 +1,30 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux'
 import {PROPERTIES, getColor} from '../../config';
 
 export default function PropertyPopup(props){
     const player = useSelector(state => state.lobbyReducer.userInfo)
+    const thisPopup = useSelector(state => state.lobbyReducer.propertyPopup)
     const properties = useSelector(state => state.lobbyReducer.game.properties)
-    const me = useSelector(state => state.lobbyReducer.game.players.filter((p)=> p._id === player.id))[0]
+    const me = useSelector(state => state.lobbyReducer.game.players.find((p)=> p._id === player.id))
     const classes = useStyles();
     const dispatch = useDispatch()
 
     let handleClose = () => {
         dispatch({type: "CLOSE_DORM"})
     }
+    
+    useEffect(()=>{
+        console.log("properties has changed", properties[6].dormCount)
+    }, properties)
 
-    let handleDormTransaction = () => {
-        console.log("BUY/SELL BUTTON")
+    let handleDormTransaction = (propertyNum) => {
+        if(thisPopup.buy === true && properties[propertyNum].dormCount < 5 && me.money > PROPERTIES[propertyNum].dormCost){
+            dispatch({type: "BUY_DORM", propertyNum, playerId: player.id, send: true})
+        } else if(thisPopup.sell === true && properties[propertyNum].dormCount > 0){
+            dispatch({type: "SELL_DORM", propertyNum, playerId: player.id, send: true})
+        }
     }
 
 
@@ -23,35 +32,40 @@ export default function PropertyPopup(props){
         <div style={{width: '100%', height: '100%'}}>
             <div className={classes.shadow}></div>
             <div className={classes.container}>
-                <div className={classes.propertyText}>BUY</div>
-                <div className={classes.topBox}>BUY DORMS/APTS</div>
+                <div className={classes.propertyText}>{thisPopup.buy === true ? "BUY" : "SELL"}</div>
+                <div className={classes.topBox}>{thisPopup.buy === true ? "BUY" : "SELL"} DORMS/APTS</div>
 
                 <div className={classes.box}>
                     <div className={classes.colorBar}>{player.name}</div>
+                    <div style={{height: '350px', overflow: 'scroll'}}>
                     {me.propertiesOwned.map((p, i)=>{
-                        console.log(p, ownAll(p, me.propertiesOwned))
                         if(ownAll(p, me.propertiesOwned)){
-                            return <div className={classes.wholeBox}>
+                            return <div className={classes.wholeBox} key={i}>
                                 <div key={i} className={classes.propertyBox}>
                                     <div style={{backgroundColor: getColor(p)}} className={classes.typeBox}></div>
                                     <p className={classes.text}>{PROPERTIES[p].name}</p>
                                 </div>
                                 <div className={classes.boxOfBoxes}>
                                     <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                                        <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=1 ? "#72E7DA" : 'none'}}></div>
-                                        <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=2 ? "#72E7DA" : 'none'}}></div>
-                                        <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=3 ? "#72E7DA" : 'none'}}></div>
-                                        <div className={classes.fillInBox} style={{backgroundColor: p.dormCount >=4 ? "#72E7DA" : 'none'}}></div>
+                                        <div className={classes.fillInBox} style={{backgroundColor: properties[p].dormCount >= 1 ? "#72E7DA" : 'none'}}>{properties[p].dormCount}</div>
+                                        <div className={classes.fillInBox} style={{backgroundColor: properties[p].dormCount >= 2 ? "#72E7DA" : 'none'}}></div>
+                                        <div className={classes.fillInBox} style={{backgroundColor: properties[p].dormCount >= 3 ? "#72E7DA" : 'none'}}></div>
+                                        <div className={classes.fillInBox} style={{backgroundColor: properties[p].dormCount >= 4 ? "#72E7DA" : 'none'}}></div>
                                     </div>
-                                    <div className={classes.bigFillInBox} style={{backgroundColor: p.dormCount === 5 ? "#72E7DA" : 'none'}}></div>
+                                    <div className={classes.bigFillInBox} style={{backgroundColor: properties[p].dormCount === 5 ? "#72E7DA" : 'none'}}></div>
                                 </div>
-                                <button onClick={handleDormTransaction} className={classes.transactionButton}
-                                    style={player.money > PROPERTIES[p].dormCost ? {opacity: '0.4', cursor: 'default'} : null}>BUY</button>
+                                <button onClick={()=>{handleDormTransaction(p)}} className={classes.transactionButton}
+                                    style={(thisPopup.sell === true && properties[p].dormCount === 0) || 
+                                        (thisPopup.buy === true && me.money < PROPERTIES[p].dormCost) ||
+                                         (thisPopup.buy === true && properties[p].dormCount === 5) ? {opacity: '0.4', cursor: 'default'} : null}>
+                                       {thisPopup.buy === true ? "BUY" : "SELL"}
+                                </button>
                             </div>
                         } else {
                             return null
                         }
                     })}
+                    </div>
                 </div>
                 <button onClick={handleClose} className={classes.button} style={{width: '143px'}}>CONFIRM</button>
             </div>
@@ -113,7 +127,6 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F7F2E7',
         height: '370px',
         width: '482px',
-        overflow: 'scroll',
         marginTop: '19px',
         marginBottom: '16px',
         boxSizing: 'border-box',

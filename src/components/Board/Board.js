@@ -15,7 +15,6 @@ import PropertyPopup from './PropertyPopup'
 
 export default function Board(props){
     const classes = useStyles();
-    console.log(props)
 
     return(
         <div className={classes.board}>
@@ -71,7 +70,7 @@ function DiceBox(){
     const [haveRolled, updateRolled] = useState(false)
 
     let handleRoll = async () => {
-        //if(haveRolled) return
+        if(haveRolled) return
         updateRolled(true)
         let leftDice = Math.floor(Math.random()*6+1)
         let rightDice = Math.floor(Math.random()*6+1)

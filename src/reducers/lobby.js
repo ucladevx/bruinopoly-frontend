@@ -43,6 +43,8 @@ const HANDLE_ACCEPT_TRADE = "HANDLE_ACCEPT_TRADE"
 const OPEN_BUY_DORM = "OPEN_BUY_DORM"
 const OPEN_SELL_DORM = "OPEN_SELL_DORM"
 const CLOSE_DORM = "CLOSE_DORM"
+const BUY_DORM = "BUY_DORM"
+const SELL_DORM = "SELL_DORM"
 
 const HIDE_DICE = "HIDE_DICE"
 const DOUBLES = "DOUBLES"
@@ -88,7 +90,6 @@ export function lobbyReducer(state = initialState, action) {
             let arr = [6,8,9]
            //["1", "3", "5", "6", "8", "9", "11", "12", "13", "14", "15", "16", "18", "19", "21", "23", "24", "25", "26", "27", "28", "29", "31", "33", "34", "35", "37", "39"]
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
-                console.log(p._id === state.userInfo.id)
                 if(p._id === state.userInfo.id){
                     return {...p, money: 100000, propertiesOwned: arr}
                 } else {
@@ -130,7 +131,7 @@ export function lobbyReducer(state = initialState, action) {
                 state.socket.close()
             //SHOULD TOKEN BECOME NULL UPON LEAVING ROOM? MAYBE CHANGE LATER
             return {...state, gameID: null, yourTurn: false, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
-                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, token: null}
+                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, propertyPopup: null, token: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -431,6 +432,38 @@ export function lobbyReducer(state = initialState, action) {
             return {...state}
         case CLOSE_DORM:
             return {...state, propertyPopup: null}
+        case BUY_DORM:
+            //TODO: maybe add additional checks for purchase
+            if(state.socket !== null && action.send === true)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_DORM',propertyId: action.propertyNum, playerId: action.playerId}] ]))
+
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === action.playerId)
+                    return {...p, money: p.money - PROPERTIES[action.propertyNum].dormCost}
+                else    
+                    return p
+            }), properties: state.game.properties.map((p, i)=>{
+                if(i === action.propertyNum)
+                    return {...p, dormCount: p.dormCount + 1}
+                else
+                    return p
+            })}}
+        case SELL_DORM:
+            //TODO: maybe add additional checks for sale
+            if(state.socket !== null && action.send === true)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'SELL_DORM',propertyId: action.propertyNum, playerId: action.playerId}] ]))
+
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === action.playerId)
+                    return {...p, money: p.money + PROPERTIES[action.propertyNum].dormCost / 2}
+                else    
+                    return p
+            }), properties: state.game.properties.map((p, i)=>{
+                if(i === action.propertyNum)
+                    return {...p, dormCount: p.dormCount - 1}
+                else
+                    return p
+            })}}
         default:
             return state;
     }

@@ -9,7 +9,6 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import paw from '../assets/loadingpaw.png';
 
 export default function GameScreen(props){
-    console.log(props)
     const classes = useStyles();
     const heightMatch = useMediaQuery('(max-height:800px)');
 
