@@ -224,8 +224,8 @@ let positions = [
     //corner
     <Corner id={30} key={31} icon={GoToJail}></Corner>,
     <Property id={31} key={32} color='#A8DC96' name='SCI & ENGR. LIBRARY' price='$300' />,
-    <Property id={32} key={33} name='Financial Aid Office' icon={FinAid} />,
-    <Property id={33} key={34} color='#A8DC96' name='BIOMED LIBRARY' price='$300' />,
+    <Property id={32} key={33} color='#A8DC96' name='BIOMED LIBRARY' price='$300' />,
+    <Property id={33} key={34} name='Financial Aid Office' icon={FinAid} />,
     <Property id={34} key={35} color='#A8DC96' name='YRL' price='$320' />,
     <Property id={35} key={36} padding={true} name='Covel' price='$200' icon={Dining} />,
     <Property id={36} key={37} name='Exuse Me Sir!' icon={Exuse_Me_Yellow} />,

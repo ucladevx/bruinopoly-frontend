@@ -9,6 +9,7 @@ const mapStateToProps = state => ({
     chestPopup: state.lobbyReducer.chestPopup,
     chancePopup: state.lobbyReducer.chancePopup,
     tradePopup: state.lobbyReducer.tradePopup,
+    propertyPopup: state.lobbyReducer.propertyPopup,
     doubles: state.lobbyReducer.doubles,
     name: state.lobbyReducer.userInfo.name
 });

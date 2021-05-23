@@ -48,13 +48,19 @@ export default function Sidebar(props){
         }
     }, [])
 
-    let handleBuy = () => {
-       //buy apts/dorms
-    }
-
     let handleTrade = () => {
         dispatch({type: "OPEN_TRADE"})
     }
+
+    let handleOpenProperty  = (buy) => {
+        //remove after testing
+        dispatch({type: "BUY_ALL_PROPERTIES"})
+        if(buy)
+            dispatch({type: "OPEN_BUY_DORM"})
+        else    
+            dispatch({type: "OPEN_SELL_DORM"})
+    }
+
 
     return(
         <div className={classes.container}>
@@ -72,8 +78,8 @@ export default function Sidebar(props){
             </div>}
             {props.started && <div className={classes.gameSidebar}>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '35px'}}>
-                    <div className={classes.actionButton} onClick={handleBuy}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
-                    <div className={classes.actionButton}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
+                    <div className={classes.actionButton} onClick={()=> handleOpenProperty(true)}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
+                    <div className={classes.actionButton} onClick={()=> handleOpenProperty(false)}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
                     <div className={classes.actionButton} onClick={handleTrade}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
                     <div className={classes.actionButton}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
                 </div>

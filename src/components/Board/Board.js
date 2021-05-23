@@ -11,14 +11,15 @@ import ExuseMeCards from '../../assets/Exuse_Me_Cards.png';
 import SalePopup from './SalePopup'
 import CardPopup from './CardPopup'
 import TradePopup from './Trade'
+import PropertyPopup from './PropertyPopup'
 
 export default function Board(props){
     const classes = useStyles();
-    console.log(props)
 
     return(
         <div className={classes.board}>
             {props.salePopup && <SalePopup property={props.salePopup} />}
+            {props.propertyPopup && <PropertyPopup />}
             {props.tradePopup && <TradePopup />}
             {props.chestPopup !== null && <CardPopup info={CHEST[props.chestPopup]} chest={true} name={props.name}/>}
             {props.chancePopup !== null && <CardPopup info={CHANCE[props.chancePopup]} chance={true} name={props.name}/>}
@@ -69,7 +70,7 @@ function DiceBox(){
     const [haveRolled, updateRolled] = useState(false)
 
     let handleRoll = async () => {
-        //if(haveRolled) return
+        if(haveRolled) return
         updateRolled(true)
         let leftDice = Math.floor(Math.random()*6+1)
         let rightDice = Math.floor(Math.random()*6+1)
