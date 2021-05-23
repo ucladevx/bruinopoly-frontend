@@ -433,6 +433,9 @@ export function lobbyReducer(state = initialState, action) {
         case CLOSE_DORM:
             return {...state, propertyPopup: null}
         case BUY_DORM:
+            if(action.send === true && state.yourTurn === false)
+                return
+
             //TODO: maybe add additional checks for purchase
             if(state.socket !== null && action.send === true)
                 state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_DORM',propertyId: action.propertyNum, playerId: action.playerId}] ]))
@@ -449,6 +452,9 @@ export function lobbyReducer(state = initialState, action) {
                     return p
             })}}
         case SELL_DORM:
+            if(action.send === true && state.yourTurn === false)
+                return
+
             //TODO: maybe add additional checks for sale
             if(state.socket !== null && action.send === true)
                 state.socket.send(JSON.stringify(['game-events', [{type: 'SELL_DORM',propertyId: action.propertyNum, playerId: action.playerId}] ]))
