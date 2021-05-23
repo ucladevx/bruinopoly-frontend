@@ -20,9 +20,12 @@ export default function PropertyPopup(props){
     }, properties)
 
     let handleDormTransaction = (propertyNum) => {
-        if(thisPopup.buy === true && properties[propertyNum].dormCount < 5 && me.money > PROPERTIES[propertyNum].dormCost){
+        if(thisPopup.buy === true && properties[propertyNum].dormCount < 5 && me.money > PROPERTIES[propertyNum].dormCost 
+            && checkProposedDormTransaction(properties[propertyNum].dormCount + 1, propertyNum, properties)){
+
             dispatch({type: "BUY_DORM", propertyNum, playerId: player.id, send: true})
-        } else if(thisPopup.sell === true && properties[propertyNum].dormCount > 0){
+        } else if(thisPopup.sell === true && properties[propertyNum].dormCount > 0 
+            && checkProposedDormTransaction(properties[propertyNum].dormCount - 1, propertyNum, properties)){
             dispatch({type: "SELL_DORM", propertyNum, playerId: player.id, send: true})
         }
     }
@@ -273,5 +276,72 @@ let ownAll = (propertyNum, ownedProperties) => {
     } else {
         return false
     }
+}
 
+let checkProposedDormTransaction = (proposedDormCount, propertyNum, properties) => {
+    if(propertyNum === 1 && Math.abs(properties[1].dormCount - proposedDormCount) === 1 && Math.abs(properties[3].dormCount - proposedDormCount) === 1){
+        return true;
+    } else if(propertyNum === 3 && Math.abs(properties[1].dormCount - proposedDormCount) <= 1 && Math.abs(properties[3].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 6 && Math.abs(properties[6].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[8].dormCount - proposedDormCount) <= 1 && Math.abs(properties[9].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 8 && Math.abs(properties[6].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[8].dormCount - proposedDormCount) <= 1 && Math.abs(properties[9].dormCount - proposedDormCount) <=1 ){
+        return true;
+    } else if(propertyNum === 9 && Math.abs(properties[6].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[8].dormCount - proposedDormCount) <= 1 && Math.abs(properties[9].dormCount - proposedDormCount) <=1){
+        return true;
+    } else if(propertyNum === 11 && Math.abs(properties[11].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[13].dormCount - proposedDormCount) <= 1 && Math.abs(properties[14].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 13 && Math.abs(properties[11].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[13].dormCount - proposedDormCount) <= 1 && Math.abs(properties[14].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 14 && Math.abs(properties[11].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[13].dormCount - proposedDormCount) <= 1 && Math.abs(properties[14].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 16 && Math.abs(properties[16].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[18].dormCount - proposedDormCount) <= 1 && Math.abs(properties[19].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 18 && Math.abs(properties[16].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[18].dormCount - proposedDormCount) <= 1 && Math.abs(properties[19].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 19 && Math.abs(properties[16].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[18].dormCount - proposedDormCount) <= 1 && Math.abs(properties[19].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 21 && Math.abs(properties[21].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[23].dormCount - proposedDormCount) <= 1 && Math.abs(properties[24].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 23 && Math.abs(properties[21].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[23].dormCount - proposedDormCount) <= 1 && Math.abs(properties[24].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 24 && Math.abs(properties[21].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[23].dormCount - proposedDormCount) <= 1 && Math.abs(properties[24].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 26 && Math.abs(properties[26].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[27].dormCount - proposedDormCount) <= 1 && Math.abs(properties[29].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 27 && Math.abs(properties[26].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[27].dormCount - proposedDormCount) <= 1 && Math.abs(properties[29].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 29 && Math.abs(properties[26].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[27].dormCount - proposedDormCount) <= 1 && Math.abs(properties[29].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 31 && Math.abs(properties[31].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[32].dormCount - proposedDormCount) <= 1 && Math.abs(properties[34].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 32 && Math.abs(properties[31].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[32].dormCount - proposedDormCount) <= 1 && Math.abs(properties[34].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 34 && Math.abs(properties[31].dormCount - proposedDormCount) <= 1 
+        && Math.abs(properties[32].dormCount - proposedDormCount) <= 1 && Math.abs(properties[34].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 37 && Math.abs(properties[37].dormCount - proposedDormCount) <= 1 && Math.abs(properties[39].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else if(propertyNum === 39 && Math.abs(properties[37].dormCount - proposedDormCount) <= 1 && Math.abs(properties[39].dormCount - proposedDormCount) <= 1){
+        return true;
+    } else {
+        return false
+    }
 }
