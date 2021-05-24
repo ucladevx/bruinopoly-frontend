@@ -15,24 +15,13 @@ npm install
 npm start
 ```
 
-## Current Tasks
-
-* game logic
-* taking turns on gameboard 
-
 ## TODO
 
 * fix player locations on all times, spread out when multiple on same tile
-* add apartments and dorms
+* change dorm counts on event from server
 * add effects for card draw
-* connect to more game-events (card draw, etc.)
-* countdown on lobby
-
-## For Spring Quarter
-
-* trading
-* audio chat
-* game ended by time
+* voice chat
+* property mortgaging 
 
 ## Contributors
 
