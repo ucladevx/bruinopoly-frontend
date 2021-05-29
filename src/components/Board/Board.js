@@ -71,9 +71,13 @@ function DiceBox(){
 
     let handleRoll = async () => {
         if(haveRolled) return
-        updateRolled(true)
+       
         let leftDice = Math.floor(Math.random()*6+1)
         let rightDice = Math.floor(Math.random()*6+1)
+
+        //TEMP FIX: IN BEGINNING OF HANDLING TURN LOGIC, MAKE yourTurn = false to always hide dice 
+        if(leftDice !== rightDice)
+            updateRolled(true)
 
         for(let i = 0; i < 13; i++){
             updateLeft(Math.floor(Math.random()*6+1))

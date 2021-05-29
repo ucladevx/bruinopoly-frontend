@@ -32,6 +32,7 @@ const LEAVE_JAIL = "LEAVE_JAIL"
 const PROPERTY_DECISION = "PROPERTY_DECISION"
 const CLOSE_PROPERTY = "CLOSE_PROPERTY"
 const ATTEMPT_BUY = "ATTEMPT_BUY"
+const HANDLE_CHANGE_MONEY = "HANDLE_CHANGE_MONEY"
 
 const OPEN_TRADE = "OPEN_TRADE"
 const CANCEL_TRADE = "CANCEL_TRADE"
@@ -87,7 +88,16 @@ const initialState = {
 export function lobbyReducer(state = initialState, action) {
     switch (action.type) {
         case BUY_ALL_PROPERTIES:
+            if(state.yourTurn === false) return
             let arr = [6,8,9]
+
+            if(state.socket !== null){
+                state.socket.send(JSON.stringify(['game-events', [{type: 'CHANGE_MONEY', playerId: state.userInfo.id, moneyChange: 10000}] ]))
+                arr.forEach(async (num)=>{
+                    await sleep(.5)
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_PROPERTY', playerId: state.userInfo.id, propertyId: num}]]))
+                })
+            }      
            //["1", "3", "5", "6", "8", "9", "11", "12", "13", "14", "15", "16", "18", "19", "21", "23", "24", "25", "26", "27", "28", "29", "31", "33", "34", "35", "37", "39"]
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                 if(p._id === state.userInfo.id){
@@ -102,6 +112,13 @@ export function lobbyReducer(state = initialState, action) {
                     return p
                 }
             })} }
+        case HANDLE_CHANGE_MONEY:
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id == action.playerId){
+                    return {...p, money: p.money + action.money}
+                }
+                return p
+            })}}
         case SET_USER_INFO:
             return {...state, userInfo: action.userObj, redirectTo: "/"}
         case SET_ROOMS_LIST:
@@ -438,15 +455,15 @@ export function lobbyReducer(state = initialState, action) {
 
             //TODO: maybe add additional checks for purchase
             if(state.socket !== null && action.send === true)
-                state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_DORM',propertyId: action.propertyNum, playerId: action.playerId}] ]))
+                state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_DORM',propertyId: action.propertyId, playerId: action.playerId}] ]))
 
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                 if(p._id === action.playerId)
-                    return {...p, money: p.money - PROPERTIES[action.propertyNum].dormCost}
+                    return {...p, money: p.money - PROPERTIES[action.propertyId].dormCost}
                 else    
                     return p
             }), properties: state.game.properties.map((p, i)=>{
-                if(i === action.propertyNum)
+                if(i === action.propertyId)
                     return {...p, dormCount: p.dormCount + 1}
                 else
                     return p
@@ -457,15 +474,16 @@ export function lobbyReducer(state = initialState, action) {
 
             //TODO: maybe add additional checks for sale
             if(state.socket !== null && action.send === true)
-                state.socket.send(JSON.stringify(['game-events', [{type: 'SELL_DORM',propertyId: action.propertyNum, playerId: action.playerId}] ]))
-
+                state.socket.send(JSON.stringify(['game-events', [{type: 'SELL_DORM',propertyId: action.propertyId, playerId: action.playerId}] ]))
+            
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                 if(p._id === action.playerId)
-                    return {...p, money: p.money + PROPERTIES[action.propertyNum].dormCost / 2}
+                    return {...p, money: p.money + PROPERTIES[action.propertyId].dormCost / 2}
                 else    
                     return p
             }), properties: state.game.properties.map((p, i)=>{
-                if(i === action.propertyNum)
+                
+                if(i === action.propertyId)
                     return {...p, dormCount: p.dormCount - 1}
                 else
                     return p
@@ -529,6 +547,14 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 console.log(data[1][0])
                 let event = data[1][0]
                 switch(event.type){
+                    case "PURCHASE_DORM":
+                        dispatch({type: BUY_DORM, send: false, propertyId: event.propertyId, playerId: event.playerId})
+                        break;
+                    case "SELL_DORM":
+                        dispatch({type: SELL_DORM, send: false, propertyId: event.propertyId, playerId: event.playerId})
+                        break;
+                    case "CHANGE_MONEY":
+                        dispatch({type: HANDLE_CHANGE_MONEY, playerId: event.playerId, money: event.moneyChange})
                     case "MOVEMENT":
                         dispatch(handleMovement({movement: event.numTiles, id: event.playerId, doubles: false, onlyMove: true}))
                         break;
@@ -541,11 +567,12 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                         dispatch({type: RECEIVE_TRADE, obj: {...event} })
                         break;
                     case "ACCEPT_TRADE":
-                        dispatch({type: HANDLE_ACCEPT_TRADE, obj: {...data[1][0]} })
+                        dispatch({type: HANDLE_ACCEPT_TRADE, obj: {...event} })
                         break;
                     default:
                         console.log("game-events default")
                 }
+                break;
             default:
                 console.log("default case")
         }

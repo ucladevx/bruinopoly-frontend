@@ -23,10 +23,10 @@ export default function PropertyPopup(props){
         if(thisPopup.buy === true && properties[propertyNum].dormCount < 5 && me.money > PROPERTIES[propertyNum].dormCost 
             && checkProposedDormTransaction(properties[propertyNum].dormCount + 1, propertyNum, properties)){
 
-            dispatch({type: "BUY_DORM", propertyNum, playerId: player.id, send: true})
+            dispatch({type: "BUY_DORM", propertyId: propertyNum, playerId: player.id, send: true})
         } else if(thisPopup.sell === true && properties[propertyNum].dormCount > 0 
             && checkProposedDormTransaction(properties[propertyNum].dormCount - 1, propertyNum, properties)){
-            dispatch({type: "SELL_DORM", propertyNum, playerId: player.id, send: true})
+            dispatch({type: "SELL_DORM", propertyId: propertyNum, playerId: player.id, send: true})
         }
     }
 
@@ -40,7 +40,7 @@ export default function PropertyPopup(props){
 
                 <div className={classes.box}>
                     <div className={classes.colorBar}>{player.name}</div>
-                    <div style={{height: '350px', overflow: 'scroll'}}>
+                    <div style={{height: '300px', overflow: 'scroll'}}>
                     {me.propertiesOwned.map((p, i)=>{
                         if(ownAll(p, me.propertiesOwned)){
                             return <div className={classes.wholeBox} key={i}>
