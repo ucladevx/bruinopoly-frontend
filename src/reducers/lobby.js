@@ -47,6 +47,10 @@ const CLOSE_DORM = "CLOSE_DORM"
 const BUY_DORM = "BUY_DORM"
 const SELL_DORM = "SELL_DORM"
 
+const OPEN_MORTGAGE = "OPEN_MORTGAGE"
+const CLOSE_MORTGAGE = "CLOSE_MORTGAGE"
+const MORTGAGE = "MORTGAGE"
+
 const HIDE_DICE = "HIDE_DICE"
 const DOUBLES = "DOUBLES"
 const DRAW_CHANCE = "DRAW_CHANCE"
@@ -82,6 +86,7 @@ const initialState = {
     salePopup: null,
     chancePopup: null,
     chestPopup: null,
+    mortgagePopup: null,
     doubles: null
 }
 
@@ -439,6 +444,38 @@ export function lobbyReducer(state = initialState, action) {
                 if(p._id !== action.id) return p
                 else return {...p, money: p.money - 200}
             })}}
+        case OPEN_MORTGAGE:
+            if(state.yourTurn === true)
+                return {...state, mortgagePopup: {}}
+            return {...state}
+        case CLOSE_MORTGAGE:
+            if(state.yourTurn === true)
+                return {...state, mortgagePopup: null}
+            return {...state}
+        case MORTGAGE:
+            //TODO: contact server
+            if(action.actionType === "MORTGAGE"){
+                return {...state, game: {...state.game, properties: state.game.properties.map((p,i)=>{
+                    if(i === action.propertyNum)
+                        return {...p, isMortgaged: true}
+                    else    
+                        return p
+                }), players: state.game.players.map((p)=>{
+                    if(p._id === action.playerId)
+                        return {...p, money: p.money + PROPERTIES[action.propertyNum].mortgage}
+                })}}
+            } else if(action.actionType === "LIFT MORTGAGE"){
+                return {...state, game: {...state.game, properties: state.game.properties.map((p,i)=>{
+                    if(i === action.propertyNum)
+                        return {...p, isMortgaged: false}
+                    else    
+                        return p
+                }), players: state.game.players.map((p)=>{
+                    if(p._id === action.playerId)
+                        return {...p, money: p.money - (PROPERTIES[action.propertyNum].mortgage * 1.1)}
+                })}}
+            } else  
+                return state
         case OPEN_BUY_DORM:
             if(state.yourTurn === true)
                 return {...state, propertyPopup: {buy: true, sell: false}}

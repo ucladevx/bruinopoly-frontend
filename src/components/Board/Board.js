@@ -12,12 +12,14 @@ import SalePopup from './SalePopup'
 import CardPopup from './CardPopup'
 import TradePopup from './Trade'
 import PropertyPopup from './PropertyPopup'
+import MortgagePopup from './MortgagePopup'
 
 export default function Board(props){
     const classes = useStyles();
 
     return(
         <div className={classes.board}>
+            {props.mortgagePopup && <MortgagePopup />}
             {props.salePopup && <SalePopup property={props.salePopup} />}
             {props.propertyPopup && <PropertyPopup />}
             {props.tradePopup && <TradePopup />}

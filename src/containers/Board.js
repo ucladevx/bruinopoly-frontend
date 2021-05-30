@@ -11,7 +11,8 @@ const mapStateToProps = state => ({
     tradePopup: state.lobbyReducer.tradePopup,
     propertyPopup: state.lobbyReducer.propertyPopup,
     doubles: state.lobbyReducer.doubles,
-    name: state.lobbyReducer.userInfo.name
+    name: state.lobbyReducer.userInfo.name,
+    mortgagePopup: state.lobbyReducer.mortgagePopup
 });
 
 const mapDispatchToProps = dispatch => ({
