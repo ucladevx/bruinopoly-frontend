@@ -182,5 +182,5 @@ function advanceToProperty(player, room, propertyId) {
     }
   ];
   
-  module.exports = CHANCE;
+export default CHANCE;
   

@@ -199,5 +199,5 @@ const CHEST = [
   
   ];
   
-  module.exports = CHEST;
+export default CHEST;
   

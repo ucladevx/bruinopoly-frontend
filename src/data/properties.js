@@ -275,4 +275,4 @@ const PROPERTIES = {
   },
 };
 
-module.exports = PROPERTIES;
+export default PROPERTIES;
