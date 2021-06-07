@@ -54,7 +54,7 @@ export default function Sidebar(props){
 
     let handleOpenProperty  = (buy) => {
         //remove after testing
-        dispatch({type: "BUY_ALL_PROPERTIES"})
+        //dispatch({type: "BUY_ALL_PROPERTIES"})
         if(buy)
             dispatch({type: "OPEN_BUY_DORM"})
         else    
