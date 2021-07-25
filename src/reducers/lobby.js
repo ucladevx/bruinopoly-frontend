@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { ar } from 'date-fns/locale';
-//import Cookies from 'universal-cookie';
 import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
-//const cookies = new Cookies();
 
 const SET_USER_INFO = "SET_USER_INFO"
 
@@ -63,7 +61,6 @@ const PAY_FEES = "PAY_FEES"
 
 //FOR TESTING
 const BUY_ALL_PROPERTIES = "BUY_ALL_PROPERTIES"
-
 
 
 const initialState = {
