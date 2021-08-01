@@ -450,26 +450,28 @@ export function lobbyReducer(state = initialState, action) {
                 return {...state, mortgagePopup: null}
             return {...state}
         case MORTGAGE:
-            //TODO: contact server
+            if(state.socket !== null && action.send)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'MORTGAGE_PROPERTY', playerId: action.playerId, propertyId: action.propertyNum, mortgage: action.actionType}] ]))
+
             if(action.actionType === "MORTGAGE"){
                 return {...state, game: {...state.game, properties: state.game.properties.map((p,i)=>{
                     if(i === action.propertyNum)
-                        return {...p, isMortgaged: true}
-                    else    
-                        return p
+                        return {...p, isMortgaged: true}   
+                    return p
                 }), players: state.game.players.map((p)=>{
                     if(p._id === action.playerId)
                         return {...p, money: p.money + PROPERTIES[action.propertyNum].mortgage}
+                    return p
                 })}}
             } else if(action.actionType === "LIFT MORTGAGE"){
                 return {...state, game: {...state.game, properties: state.game.properties.map((p,i)=>{
                     if(i === action.propertyNum)
-                        return {...p, isMortgaged: false}
-                    else    
-                        return p
+                        return {...p, isMortgaged: false}   
+                    return p
                 }), players: state.game.players.map((p)=>{
                     if(p._id === action.playerId)
                         return {...p, money: p.money - (PROPERTIES[action.propertyNum].mortgage * 1.1)}
+                    return p
                 })}}
             } else  
                 return state
@@ -573,8 +575,6 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 dispatch({type: START_TURN})
                 break;
             case 'offered-trade':
-                let temp = Object.assign({}, data[1])
-                console.log("IN BREAK, RECEIVING TRADE OFFER: ", temp)
                 dispatch({type: RECEIVE_TRADE, obj: {...data[1]} })
                 break;
             case 'game-events':
@@ -603,6 +603,9 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                     case "ACCEPT_TRADE":
                         dispatch({type: HANDLE_ACCEPT_TRADE, obj: {...event} })
                         break;
+                    case "MORTGAGE_PROPERTY":
+                        dispatch({type: MORTGAGE, send: false, playerId: event.playerId, propertyNum: event.propertyId, actionType: event.mortgage})
+                        break
                     default:
                         console.log("game-events default")
                 }

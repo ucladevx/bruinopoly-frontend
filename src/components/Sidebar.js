@@ -103,7 +103,7 @@ export default function Sidebar(props){
                     <div className={classes.actionButton} style={(mortgagePopup) ? {backgroundColor: "#F15B45"} : null}
                         onClick={handleOpenMortgage}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
                 </div>
-                <Bruincard user={props.game.players.filter((player)=> player._id === props.user.id)[0]} info={[props.user.id, props.game.players]} />
+                <Bruincard user={props.game.players.find((player)=> player._id === props.user.id)} info={[props.user.id, props.game.players]} />
                 <div className={classes.nameBox}>
                     {props.game && props.game.players.map((player, i) => {
                         if(player._id === props.user.id) return null;

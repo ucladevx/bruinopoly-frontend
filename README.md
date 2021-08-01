@@ -21,7 +21,6 @@ npm start
 * change dorm counts on event from server
 * add effects for card draw
 * voice chat
-* property mortgaging 
 
 ## Contributors
 
