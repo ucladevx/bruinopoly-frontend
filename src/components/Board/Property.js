@@ -5,6 +5,7 @@ import {playerDetails} from '../../config'
 
 import dorm from '../../assets/dorm.png'
 import apt from '../../assets/apt.png'
+import mortgage from '../../assets/mortgage_black.png'
 
 export default function Property(props){
     const players = useSelector(state => state.lobbyReducer.game.players)
@@ -74,6 +75,7 @@ export default function Property(props){
                 }
             </div>}
             <div className={classes.name}>{props.name.toUpperCase()}</div>
+            {properties[props.id].isMortgaged && <img src={mortgage} className={classes.mortgage}/>}
             {props.icon !== null && <img src={props.icon} style={{width: props.small ? '35px' : '90%', marginBottom: props.padding ? '20px': null}} className={classes.icon}/>}
             {props.price !== null && <div className={classes.price}>{props.price}</div>}
             {Object.keys(playerMap).length > 0 && players.filter(p => p.currentTile === props.id).map((player, i)=>{
@@ -158,6 +160,13 @@ const useStyles = makeStyles(() => ({
         width: '90%',
         alignSelf: 'center',
         //marginTop: '5px'
+    },
+    mortgage: {
+        width: '40px',
+        position: 'absolute',
+        left: '11px',
+        bottom: '24px'
+
     },
     price:{
         fontSize: '9px',
