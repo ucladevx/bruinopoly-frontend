@@ -58,6 +58,7 @@ const CLOSE_CARDS = "CLOSE_CARDS"
 //actions types to handle game-events from server
 const ADD_PROPERTY = "ADD_PROPERTY"
 const PAY_FEES = "PAY_FEES"
+const GAME_OVER = "GAME_OVER"
 
 //FOR TESTING
 const BUY_ALL_PROPERTIES = "BUY_ALL_PROPERTIES"
@@ -84,7 +85,8 @@ const initialState = {
     chancePopup: null,
     chestPopup: null,
     mortgagePopup: null,
-    doubles: null
+    winPopup: null,
+    doubles: null,
 }
 
 export function lobbyReducer(state = initialState, action) {
@@ -150,7 +152,7 @@ export function lobbyReducer(state = initialState, action) {
                 state.socket.close()
             //SHOULD TOKEN BECOME NULL UPON LEAVING ROOM? MAYBE CHANGE LATER
             return {...state, gameID: null, yourTurn: false, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
-                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, propertyPopup: null, token: null}
+                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, propertyPopup: null, token: null, winPopup: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -338,6 +340,11 @@ export function lobbyReducer(state = initialState, action) {
                 //CAN POTENTIALLY BUY
                 return {...state, salePopup: action.id}
             } else if(owner !== state.userInfo.id && action.justOpening !== true) {
+                //no rent if property mortgaged
+                if(state.game.properties[action.id].isMortgaged === true){
+                    return {...state}
+                }
+
                 //PAY RENT  (ADD BANKRUPTY CHECK LATER)
                 //TODO: calculate rent for railroad and utility
                 let property = PROPERTIES[action.id]
@@ -355,6 +362,7 @@ export function lobbyReducer(state = initialState, action) {
                         return p
                 })}}
             }
+            return {...state}
         case CLOSE_PROPERTY:
             return {...state, salePopup: null}
         case ATTEMPT_BUY:
@@ -524,6 +532,11 @@ export function lobbyReducer(state = initialState, action) {
                 else
                     return p
             })}}
+        case GAME_OVER:
+            // make other popups false?
+            if(state.socket !== null)
+                state.socket.close()
+            return {...state, winPopup: {winner: action.winner}}
         default:
             return state;
     }
@@ -569,6 +582,7 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 break;
             case 'game-over':
                 console.log("The winner has id:",data[1].winner)
+                dispatch({type: GAME_OVER, winner: data[1].winner})
                 //dispatch event to close socket connection, display winner popup with button to leave game
                 break;
             case 'your-turn':
@@ -672,6 +686,7 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
     await dispatch(handleMovement({movement, id, doubles, onlyMove: false}))
 
 
+    //NEEDS CHANGES: ADD END TURN TO END OF PROPERTY_DECISION, CARD DRAWING, FEE PAYING
     if(TILES[destination].type === TileType.PROPERTY){
         dispatch({type: PROPERTY_DECISION, id: destination})
     } else if(TILES[destination].type === TileType.CHANCE){
