@@ -58,6 +58,7 @@ const CLOSE_CARDS = "CLOSE_CARDS"
 //actions types to handle game-events from server
 const ADD_PROPERTY = "ADD_PROPERTY"
 const PAY_FEES = "PAY_FEES"
+const HANDLE_RENT = "HANDLE_RENT"
 const GAME_OVER = "GAME_OVER"
 
 //FOR TESTING
@@ -184,7 +185,7 @@ export function lobbyReducer(state = initialState, action) {
             if(p1.turnsInJail === 0)
                 return {...state, game: {...state.game, players: state.game.players.map((player)=>{
                     if(player._id !== action.id) return player
-                    else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200}
+                    else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200} //pass GO, get $200
                     else return {...player, currentTile: (player.currentTile + 1)%40}
                 })}}
 
@@ -345,16 +346,49 @@ export function lobbyReducer(state = initialState, action) {
                     return {...state}
                 }
 
-                //PAY RENT  (ADD BANKRUPTY CHECK LATER)
-                //TODO: calculate rent for railroad and utility
+                //PAY RENT 
                 let property = PROPERTIES[action.id]
+                const ownedProperties = state.game.players.find((p) => p._id === owner).propertiesOwned
 
-                if(state.socket !== null){
-                    state.socket.send(JSON.stringify(['game-events', [{type: 'RENT', playerId: state.userInfo.id, propertyOwner: owner, propertyId: action.id}]]))
+                let rent = 0; //= ownAll(action.id, ownedProperties) ? property.rent * 2 : property.rent
+                if(property.utility === true){
+                    if(ownAll(action.id, ownedProperties)){
+                        rent = action.movement * 10;
+                    } else {
+                        rent = action.movement * 4;
+                    }
+                } else if(property.railroad === true){
+                    switch(railroadCount(ownedProperties)){
+                        case 1: rent = 25; break;
+                        case 2: rent = 50; break;
+                        case 3: rent = 100; break;
+                        case 4: rent = 200; break;
+                        default: rent = 0;
+                    }
+                } else {
+                    if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 5){
+                        rent = property.rent5;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 4){
+                        rent = property.rent4;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 3){
+                        rent = property.rent3;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 2){
+                        rent = property.rent2;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 1){
+                        rent = property.rent1;
+                    } else if(ownAll(action.id, ownedProperties)) {
+                        rent = property.rent * 2;
+                    } else {
+                        rent = property.rent;
+                    }
                 }
 
-                const ownedProperties = state.game.players.find((p) => p._id === owner).propertiesOwned
-                const rent = ownAll(action.id, ownedProperties) ? property.rent * 2 : property.rent
+                // BANKRUPTCY LOGIC HERE (TODO)
+
+                if(state.socket !== null){
+                    //calculate rent here, other players listen to 'RENT' event and just use given amount
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'RENT', playerId: state.userInfo.id, propertyOwner: owner, propertyId: action.id, rent}]]))
+                }
             
                 return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                     if(p._id === state.userInfo.id) 
@@ -535,6 +569,15 @@ export function lobbyReducer(state = initialState, action) {
                 else
                     return p
             })}}
+        case HANDLE_RENT:
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === action.playerId) 
+                    return {...p, money: p.money - rent}
+                else if(p._id === action.ownerId) 
+                    return {...p, money: p.money + rent}
+                else 
+                    return p
+            })}}
         case GAME_OVER:
             // make other popups false?
             if(state.socket !== null)
@@ -623,6 +666,9 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                     case "MORTGAGE_PROPERTY":
                         dispatch({type: MORTGAGE, send: false, playerId: event.playerId, propertyNum: event.propertyId, actionType: event.mortgage})
                         break
+                    case "RENT":
+                        dispatch({type: HANDLE_RENT, rent: event.rent, playerId: event.playerId, ownerId: event.propertyOwner})
+                        break;
                     default:
                         console.log("game-events default")
                 }
@@ -691,7 +737,7 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
 
     //NEEDS CHANGES: ADD END TURN TO END OF PROPERTY_DECISION, CARD DRAWING, FEE PAYING
     if(TILES[destination].type === TileType.PROPERTY){
-        dispatch({type: PROPERTY_DECISION, id: destination})
+        dispatch({type: PROPERTY_DECISION, id: destination, movement})
     } else if(TILES[destination].type === TileType.CHANCE){
         dispatch({type: DRAW_CHANCE})
     } else if(TILES[destination].type === TileType.CHEST){
@@ -780,8 +826,21 @@ const ownAll = (propertyNum, ownedProperties) => {
         return true;
     } else if(propertyNum == 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
         return true;
+    } else if(propertyNum == 12 && ownedProperties.includes(12) && ownedProperties.includes(28)){
+        //utilities Powell and Royce
+    } else if(propertyNum == 28 && ownedProperties.includes(12) && ownedProperties.includes(28)){
+        //utilities Powell and Royce
     } else {
         return false
     }
+}
 
+const railroadCount = (ownedProperties) => {
+    //railroads are 5, 15, 25, 35
+    let count = 0;
+    if(ownedProperties.includes(5)) count++;
+    if(ownedProperties.includes(15)) count++;
+    if(ownedProperties.includes(25)) count++;
+    if(ownedProperties.includes(35)) count++;
+    return count;
 }
