@@ -11,19 +11,24 @@ import ExuseMeCards from '../../assets/Exuse_Me_Cards.png';
 import SalePopup from './SalePopup'
 import CardPopup from './CardPopup'
 import TradePopup from './Trade'
+import PropertyPopup from './PropertyPopup'
+import MortgagePopup from './MortgagePopup'
+import WinPopup from './WinPopup'
 
 export default function Board(props){
     const classes = useStyles();
-    console.log(props)
 
     return(
         <div className={classes.board}>
+            {props.mortgagePopup && <MortgagePopup />}
             {props.salePopup && <SalePopup property={props.salePopup} />}
+            {props.propertyPopup && <PropertyPopup />}
             {props.tradePopup && <TradePopup />}
             {props.chestPopup !== null && <CardPopup info={CHEST[props.chestPopup]} chest={true} name={props.name}/>}
             {props.chancePopup !== null && <CardPopup info={CHANCE[props.chancePopup]} chance={true} name={props.name}/>}
             {!props.salePopup && props.doubles && props.doubles.show && <CardPopup doubles={props.double} name={props.name}/>}
             {props.turn && <DiceBox />}
+            {props.winPopup && <WinPopup winner={props.winPopup}/>}
             <img draggable="false" alt="bruinopoly text" className={classes.Bruinopoly} src={Bruinopoly} />
             <img draggable="false" alt="B" className={classes.B} src={B} />
             <img draggable="false" alt="financial aid card" className={classes.FinAidCards} src={FinAidCards} />
@@ -69,10 +74,14 @@ function DiceBox(){
     const [haveRolled, updateRolled] = useState(false)
 
     let handleRoll = async () => {
-        //if(haveRolled) return
-        updateRolled(true)
+        if(haveRolled) return
+       
         let leftDice = Math.floor(Math.random()*6+1)
         let rightDice = Math.floor(Math.random()*6+1)
+
+        //TEMP FIX: IN BEGINNING OF HANDLING TURN LOGIC, MAKE yourTurn = false to always hide dice 
+        if(leftDice !== rightDice)
+            updateRolled(true)
 
         for(let i = 0; i < 13; i++){
             updateLeft(Math.floor(Math.random()*6+1))

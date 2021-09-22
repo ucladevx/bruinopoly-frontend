@@ -1,8 +1,7 @@
 import axios from 'axios';
-//import Cookies from 'universal-cookie';
+import { ar } from 'date-fns/locale';
 import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
-//const cookies = new Cookies();
 
 const SET_USER_INFO = "SET_USER_INFO"
 
@@ -31,6 +30,7 @@ const LEAVE_JAIL = "LEAVE_JAIL"
 const PROPERTY_DECISION = "PROPERTY_DECISION"
 const CLOSE_PROPERTY = "CLOSE_PROPERTY"
 const ATTEMPT_BUY = "ATTEMPT_BUY"
+const HANDLE_CHANGE_MONEY = "HANDLE_CHANGE_MONEY"
 
 const OPEN_TRADE = "OPEN_TRADE"
 const CANCEL_TRADE = "CANCEL_TRADE"
@@ -38,6 +38,16 @@ const OFFER_TRADE = "OFFER_TRADE"
 const RECEIVE_TRADE = "RECEIVE_TRADE"
 const ACCEPT_TRADE = "ACCEPT_TRADE"
 const HANDLE_ACCEPT_TRADE = "HANDLE_ACCEPT_TRADE"
+
+const OPEN_BUY_DORM = "OPEN_BUY_DORM"
+const OPEN_SELL_DORM = "OPEN_SELL_DORM"
+const CLOSE_DORM = "CLOSE_DORM"
+const BUY_DORM = "BUY_DORM"
+const SELL_DORM = "SELL_DORM"
+
+const OPEN_MORTGAGE = "OPEN_MORTGAGE"
+const CLOSE_MORTGAGE = "CLOSE_MORTGAGE"
+const MORTGAGE = "MORTGAGE"
 
 const HIDE_DICE = "HIDE_DICE"
 const DOUBLES = "DOUBLES"
@@ -48,7 +58,10 @@ const CLOSE_CARDS = "CLOSE_CARDS"
 //actions types to handle game-events from server
 const ADD_PROPERTY = "ADD_PROPERTY"
 const PAY_FEES = "PAY_FEES"
+const GAME_OVER = "GAME_OVER"
 
+//FOR TESTING
+const BUY_ALL_PROPERTIES = "BUY_ALL_PROPERTIES"
 
 
 const initialState = {
@@ -67,14 +80,49 @@ const initialState = {
     token: null,
     messages: [],
     tradePopup: null,
+    propertyPopup: null,
     salePopup: null,
     chancePopup: null,
     chestPopup: null,
-    doubles: null
+    mortgagePopup: null,
+    winPopup: null,
+    doubles: null,
 }
 
 export function lobbyReducer(state = initialState, action) {
     switch (action.type) {
+        case BUY_ALL_PROPERTIES:
+            if(state.yourTurn === false) return
+            let arr = [6,8,9]
+
+            if(state.socket !== null){
+                state.socket.send(JSON.stringify(['game-events', [{type: 'CHANGE_MONEY', playerId: state.userInfo.id, moneyChange: 10000}] ]))
+                arr.forEach(async (num)=>{
+                    await sleep(.5)
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_PROPERTY', playerId: state.userInfo.id, propertyId: num}]]))
+                })
+            }      
+           //["1", "3", "5", "6", "8", "9", "11", "12", "13", "14", "15", "16", "18", "19", "21", "23", "24", "25", "26", "27", "28", "29", "31", "33", "34", "35", "37", "39"]
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === state.userInfo.id){
+                    return {...p, money: 100000, propertiesOwned: arr}
+                } else {
+                    return p
+                }
+            }), properties: state.game.properties.map((p,i)=>{
+                if(arr.includes(i)){
+                    return {...p, ownerId: state.userInfo.id}
+                } else {
+                    return p
+                }
+            })} }
+        case HANDLE_CHANGE_MONEY:
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id == action.playerId){
+                    return {...p, money: p.money + action.money}
+                }
+                return p
+            })}}
         case SET_USER_INFO:
             return {...state, userInfo: action.userObj, redirectTo: "/"}
         case SET_ROOMS_LIST:
@@ -104,7 +152,7 @@ export function lobbyReducer(state = initialState, action) {
                 state.socket.close()
             //SHOULD TOKEN BECOME NULL UPON LEAVING ROOM? MAYBE CHANGE LATER
             return {...state, gameID: null, yourTurn: false, isHost: false, messages: [], players: null, game: null, socket: null, doubles: null, 
-                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, token: null}
+                 chancePopup: null, chestPopup: null, salePopup: null, tradePopup: null, propertyPopup: null, token: null, winPopup: null}
         case UPDATE_PLAYERS:
             return {...state, players: action.players}
         case ADD_MESSAGE:
@@ -179,12 +227,10 @@ export function lobbyReducer(state = initialState, action) {
                 return {...state, tradePopup: {receive: false}}
             else return {...state}
         case OFFER_TRADE:
-            //console.log("SENDING OFFER", action.obj)
             if(state.socket !== null)
                 state.socket.send(JSON.stringify(['game-events', [{type: 'OFFER_TRADE', ...action.obj}]]))
             return {...state}
         case ACCEPT_TRADE:
-            //console.log("ACCEPTING OFFER: ")
             let tempTradeObj = {...state.tradePopup}
             delete tempTradeObj.type
             if(state.socket !== null)
@@ -294,6 +340,11 @@ export function lobbyReducer(state = initialState, action) {
                 //CAN POTENTIALLY BUY
                 return {...state, salePopup: action.id}
             } else if(owner !== state.userInfo.id && action.justOpening !== true) {
+                //no rent if property mortgaged
+                if(state.game.properties[action.id].isMortgaged === true){
+                    return {...state}
+                }
+
                 //PAY RENT  (ADD BANKRUPTY CHECK LATER)
                 //TODO: calculate rent for railroad and utility
                 let property = PROPERTIES[action.id]
@@ -314,7 +365,7 @@ export function lobbyReducer(state = initialState, action) {
                         return p
                 })}}
             }
-            break
+            return {...state}
         case CLOSE_PROPERTY:
             return {...state, salePopup: null}
         case ATTEMPT_BUY:
@@ -401,6 +452,94 @@ export function lobbyReducer(state = initialState, action) {
                 if(p._id !== action.id) return p
                 else return {...p, money: p.money - 200}
             })}}
+        case OPEN_MORTGAGE:
+            if(state.yourTurn === true)
+                return {...state, mortgagePopup: {}}
+            return {...state}
+        case CLOSE_MORTGAGE:
+            if(state.yourTurn === true)
+                return {...state, mortgagePopup: null}
+            return {...state}
+        case MORTGAGE:
+            if(state.socket !== null && action.send)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'MORTGAGE_PROPERTY', playerId: action.playerId, propertyId: action.propertyNum, mortgage: action.actionType}] ]))
+
+            if(action.actionType === "MORTGAGE"){
+                return {...state, game: {...state.game, properties: state.game.properties.map((p,i)=>{
+                    if(i === action.propertyNum)
+                        return {...p, isMortgaged: true}   
+                    return p
+                }), players: state.game.players.map((p)=>{
+                    if(p._id === action.playerId)
+                        return {...p, money: p.money + PROPERTIES[action.propertyNum].mortgage}
+                    return p
+                })}}
+            } else if(action.actionType === "LIFT MORTGAGE"){
+                return {...state, game: {...state.game, properties: state.game.properties.map((p,i)=>{
+                    if(i === action.propertyNum)
+                        return {...p, isMortgaged: false}   
+                    return p
+                }), players: state.game.players.map((p)=>{
+                    if(p._id === action.playerId)
+                        return {...p, money: p.money - (PROPERTIES[action.propertyNum].mortgage * 1.1)}
+                    return p
+                })}}
+            } else  
+                return state
+        case OPEN_BUY_DORM:
+            if(state.yourTurn === true)
+                return {...state, propertyPopup: {buy: true, sell: false}}
+            return {...state}
+        case OPEN_SELL_DORM:
+            if(state.yourTurn === true)
+                return {...state, propertyPopup: {buy: false, sell: true}}
+            return {...state}
+        case CLOSE_DORM:
+            return {...state, propertyPopup: null}
+        case BUY_DORM:
+            if(action.send === true && state.yourTurn === false)
+                return
+
+            //TODO: maybe add additional checks for purchase
+            if(state.socket !== null && action.send === true)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'PURCHASE_DORM',propertyId: action.propertyId, playerId: action.playerId}] ]))
+
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === action.playerId)
+                    return {...p, money: p.money - PROPERTIES[action.propertyId].dormCost}
+                else    
+                    return p
+            }), properties: state.game.properties.map((p, i)=>{
+                if(i === action.propertyId)
+                    return {...p, dormCount: p.dormCount + 1}
+                else
+                    return p
+            })}}
+        case SELL_DORM:
+            if(action.send === true && state.yourTurn === false)
+                return
+
+            //TODO: maybe add additional checks for sale
+            if(state.socket !== null && action.send === true)
+                state.socket.send(JSON.stringify(['game-events', [{type: 'SELL_DORM',propertyId: action.propertyId, playerId: action.playerId}] ]))
+            
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === action.playerId)
+                    return {...p, money: p.money + PROPERTIES[action.propertyId].dormCost / 2}
+                else    
+                    return p
+            }), properties: state.game.properties.map((p, i)=>{
+                
+                if(i === action.propertyId)
+                    return {...p, dormCount: p.dormCount - 1}
+                else
+                    return p
+            })}}
+        case GAME_OVER:
+            // make other popups false?
+            if(state.socket !== null)
+                state.socket.close()
+            return {...state, winPopup: {winner: action.winner}}
         default:
             return state;
     }
@@ -446,20 +585,27 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 break;
             case 'game-over':
                 console.log("The winner has id:",data[1].winner)
+                dispatch({type: GAME_OVER, winner: data[1].winner})
                 //dispatch event to close socket connection, display winner popup with button to leave game
                 break;
             case 'your-turn':
                 dispatch({type: START_TURN})
                 break;
             case 'offered-trade':
-                let temp = Object.assign({}, data[1])
-                console.log("IN BREAK, RECEIVING TRADE OFFER: ", temp)
                 dispatch({type: RECEIVE_TRADE, obj: {...data[1]} })
                 break;
             case 'game-events':
                 console.log(data[1][0])
                 let event = data[1][0]
                 switch(event.type){
+                    case "PURCHASE_DORM":
+                        dispatch({type: BUY_DORM, send: false, propertyId: event.propertyId, playerId: event.playerId})
+                        break;
+                    case "SELL_DORM":
+                        dispatch({type: SELL_DORM, send: false, propertyId: event.propertyId, playerId: event.playerId})
+                        break;
+                    case "CHANGE_MONEY":
+                        dispatch({type: HANDLE_CHANGE_MONEY, playerId: event.playerId, money: event.moneyChange})
                     case "MOVEMENT":
                         dispatch(handleMovement({movement: event.numTiles, id: event.playerId, doubles: false, onlyMove: true}))
                         break;
@@ -472,11 +618,15 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                         dispatch({type: RECEIVE_TRADE, obj: {...event} })
                         break;
                     case "ACCEPT_TRADE":
-                        dispatch({type: HANDLE_ACCEPT_TRADE, obj: {...data[1][0]} })
+                        dispatch({type: HANDLE_ACCEPT_TRADE, obj: {...event} })
                         break;
+                    case "MORTGAGE_PROPERTY":
+                        dispatch({type: MORTGAGE, send: false, playerId: event.playerId, propertyNum: event.propertyId, actionType: event.mortgage})
+                        break
                     default:
                         console.log("game-events default")
                 }
+                break;
             default:
                 console.log("default case")
         }
@@ -539,6 +689,7 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
     await dispatch(handleMovement({movement, id, doubles, onlyMove: false}))
 
 
+    //NEEDS CHANGES: ADD END TURN TO END OF PROPERTY_DECISION, CARD DRAWING, FEE PAYING
     if(TILES[destination].type === TileType.PROPERTY){
         dispatch({type: PROPERTY_DECISION, id: destination})
     } else if(TILES[destination].type === TileType.CHANCE){

@@ -7,6 +7,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 50,
+    mortgage: 30
   },
   3: {
     id: 3,
@@ -16,6 +17,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 50,
+    mortgage: 30
   },
   5: {
     id: 5,
@@ -24,6 +26,7 @@ const PROPERTIES = {
     rent: 25,
     railroad: true,
     utility: false,
+    mortgage: 100
   },
   6: {
     id: 6,
@@ -33,6 +36,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 50,
+    mortgage: 50
   },
   8: {
     id: 8,
@@ -42,6 +46,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 50,
+    mortgage: 50
   },
   9: {
     id: 9,
@@ -51,6 +56,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 50,
+    mortgage: 60
   },
   11: {
     id: 11,
@@ -60,6 +66,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 100,
+    mortgage: 70
   },
   12: {
     id: 12,
@@ -68,6 +75,7 @@ const PROPERTIES = {
     rent: 0,
     railroad: false,
     utility: true,
+    mortgage: 75
   },
   13: {
     id: 13,
@@ -77,6 +85,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 100,
+    mortgage: 70
   },
   14: {
     id: 14,
@@ -86,6 +95,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 100,
+    mortgage: 80
   },
   15: {
     id: 15,
@@ -94,6 +104,7 @@ const PROPERTIES = {
     rent: 25,
     railroad: true,
     utility: false,
+    mortgage: 100
   },
   16: {
     id: 16,
@@ -103,6 +114,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 100,
+    mortgage: 90
   },
   18: {
     id: 18,
@@ -112,6 +124,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 100,
+    mortgage: 90
   },
   19: {
     id: 19,
@@ -121,6 +134,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 100,
+    mortgage: 100
   },
   21: {
     id: 21,
@@ -130,6 +144,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 150,
+    mortgage: 110
   },
   23: {
     id: 23,
@@ -139,6 +154,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 150,
+    mortgage: 110
   },
   24: {
     id: 24,
@@ -148,6 +164,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 150,
+    mortgage: 120
   },
   25: {
     id: 25,
@@ -156,6 +173,7 @@ const PROPERTIES = {
     rent: 25,
     railroad: true,
     utility: false,
+    mortgage: 100
   },
   26: {
     id: 26,
@@ -165,6 +183,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 150,
+    mortgage: 130
   },
   27: {
     id: 27,
@@ -174,6 +193,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 150,
+    mortgage: 130
   },
   28: {
     id: 28,
@@ -182,6 +202,7 @@ const PROPERTIES = {
     rent: 0,
     railroad: false,
     utility: true,
+    mortgage: 75
   },
   29: {
     id: 29,
@@ -191,6 +212,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 150,
+    mortgage: 140
   },
   31: {
     id: 31,
@@ -200,15 +222,17 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 200,
+    mortgage: 150
   },
-  33: {
-    id: 33,
+  32: {
+    id: 32,
     name: 'Biomed Library',
     price: 300,
     rent: 26,
     railroad: false,
     utility: false,
     dormCost: 200,
+    mortgage: 150
   },
   34: {
     id: 34,
@@ -218,6 +242,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 200,
+    mortgage: 160
   },
   35: {
     id: 35,
@@ -226,6 +251,7 @@ const PROPERTIES = {
     rent: 25,
     railroad: true,
     utility: false,
+    mortgage: 100
   },
   37: {
     id: 37,
@@ -235,6 +261,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 200,
+    mortgage: 175
   },
   39: {
     id: 39,
@@ -244,6 +271,7 @@ const PROPERTIES = {
     railroad: false,
     utility: false,
     dormCost: 200,
+    mortgage: 200
   },
 };
 

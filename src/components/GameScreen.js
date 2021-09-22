@@ -1,16 +1,18 @@
-import React, {useState} from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux'
 import Board from '../containers/Board';
 import {Redirect} from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar';
 import Chat from './Chat';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import decode from 'jwt-decode'
 
 import paw from '../assets/loadingpaw.png';
 
 export default function GameScreen(props){
-    console.log(props)
     const classes = useStyles();
+    const token = useSelector(state => state.lobbyReducer.token)
     const heightMatch = useMediaQuery('(max-height:800px)');
 
     let handleStart = () => {
@@ -20,6 +22,13 @@ export default function GameScreen(props){
     let handleLeave = () => {
         props.leaveLobby()
         props.history.push("/")
+    }
+
+    let checkDecode = () => {
+        if(token === null) return false;
+
+        let decoded = decode(token)
+        return decoded.game_id === props.game._id
     }
 
     if(props.game === null)
@@ -33,7 +42,7 @@ export default function GameScreen(props){
             {!props.game.hasStarted && <div className={classes.loadingContainer}>
                 <img alt="paw" className={classes.paw} src={paw}/>
                 <div className={classes.loadingText}>{`GAME WILL BEGIN AFTER ${props.game.startTime}`}</div>
-                {props.host && <button className={classes.startButton} onClick={handleStart}>Start Game</button>}
+                {props.host && checkDecode() && <button className={classes.startButton} onClick={handleStart}>Start Game</button>}
                 <button className={classes.startButton} onClick={handleLeave}>Leave Lobby</button>
             </div>}
             {props.game.hasStarted && <div className={classes.board} style={heightMatch ? {transform: 'scale(.88)', top: '50px'} : null}>
