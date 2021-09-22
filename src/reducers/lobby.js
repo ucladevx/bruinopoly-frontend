@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ar } from 'date-fns/locale';
+//import { ar } from 'date-fns/locale';
 import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
 
@@ -119,7 +119,7 @@ export function lobbyReducer(state = initialState, action) {
             })} }
         case HANDLE_CHANGE_MONEY:
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
-                if(p._id == action.playerId){
+                if(p._id === action.playerId){
                     return {...p, money: p.money + action.money}
                 }
                 return p
@@ -194,7 +194,7 @@ export function lobbyReducer(state = initialState, action) {
             let p2 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
 
             //only send movement if not in jail, or in jail with doubles
-            if(p2.turnsInJail === 0 || (p2.turnsInJail !== 0 && action.doubles === true) && state.socket !== null){
+            if(state.socket !== null && (p2.turnsInJail === 0 || (p2.turnsInJail !== 0 && action.doubles === true))){
                 state.socket.send(JSON.stringify(['game-events', [{type: 'MOVEMENT', playerId: state.userInfo.id, numTiles: action.movement}] ]))
             }
 
@@ -572,9 +572,9 @@ export function lobbyReducer(state = initialState, action) {
         case HANDLE_RENT:
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                 if(p._id === action.playerId) 
-                    return {...p, money: p.money - rent}
+                    return {...p, money: p.money - action.rent}
                 else if(p._id === action.ownerId) 
-                    return {...p, money: p.money + rent}
+                    return {...p, money: p.money + action.rent}
                 else 
                     return p
             })}}
@@ -649,6 +649,7 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                         break;
                     case "CHANGE_MONEY":
                         dispatch({type: HANDLE_CHANGE_MONEY, playerId: event.playerId, money: event.moneyChange})
+                        break;
                     case "MOVEMENT":
                         dispatch(handleMovement({movement: event.numTiles, id: event.playerId, doubles: false, onlyMove: true}))
                         break;
@@ -782,53 +783,53 @@ export const setUserInfo = (info) => async (dispatch) => {
 };
 
 const ownAll = (propertyNum, ownedProperties) => {
-    if(propertyNum == 1 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+    if(propertyNum === 1 && ownedProperties.includes(1) && ownedProperties.includes(3)){
         return true;
-    } else if(propertyNum == 3 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+    } else if(propertyNum === 3 && ownedProperties.includes(1) && ownedProperties.includes(3)){
         return true;
-    } else if(propertyNum == 6 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+    } else if(propertyNum === 6 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
         return true;
-    } else if(propertyNum == 8 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+    } else if(propertyNum === 8 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
         return true;
-    } else if(propertyNum == 9 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+    } else if(propertyNum === 9 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
         return true;
-    } else if(propertyNum == 11 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+    } else if(propertyNum === 11 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
         return true;
-    } else if(propertyNum == 13 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+    } else if(propertyNum === 13 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
         return true;
-    } else if(propertyNum == 14 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+    } else if(propertyNum === 14 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
         return true;
-    } else if(propertyNum == 16 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+    } else if(propertyNum === 16 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
         return true;
-    } else if(propertyNum == 18 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+    } else if(propertyNum === 18 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
         return true;
-    } else if(propertyNum == 19 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+    } else if(propertyNum === 19 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
         return true;
-    } else if(propertyNum == 21 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+    } else if(propertyNum === 21 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
         return true;
-    } else if(propertyNum == 23 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+    } else if(propertyNum === 23 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
         return true;
-    } else if(propertyNum == 24 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+    } else if(propertyNum === 24 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
         return true;
-    } else if(propertyNum == 26 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+    } else if(propertyNum === 26 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
         return true;
-    } else if(propertyNum == 27 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+    } else if(propertyNum === 27 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
         return true;
-    } else if(propertyNum == 29 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+    } else if(propertyNum === 29 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
         return true;
-    } else if(propertyNum == 31 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+    } else if(propertyNum === 31 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
         return true;
-    } else if(propertyNum == 32 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+    } else if(propertyNum === 32 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
         return true;
-    } else if(propertyNum == 34 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+    } else if(propertyNum === 34 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
         return true;
-    } else if(propertyNum == 37 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+    } else if(propertyNum === 37 && ownedProperties.includes(37) && ownedProperties.includes(39)){
         return true;
-    } else if(propertyNum == 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+    } else if(propertyNum === 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
         return true;
-    } else if(propertyNum == 12 && ownedProperties.includes(12) && ownedProperties.includes(28)){
+    } else if(propertyNum === 12 && ownedProperties.includes(12) && ownedProperties.includes(28)){
         //utilities Powell and Royce
-    } else if(propertyNum == 28 && ownedProperties.includes(12) && ownedProperties.includes(28)){
+    } else if(propertyNum === 28 && ownedProperties.includes(12) && ownedProperties.includes(28)){
         //utilities Powell and Royce
     } else {
         return false
