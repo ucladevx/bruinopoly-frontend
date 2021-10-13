@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ar } from 'date-fns/locale';
-import {API_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
+import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
 
 const SET_USER_INFO = "SET_USER_INFO"
