@@ -544,7 +544,7 @@ export function lobbyReducer(state = initialState, action) {
 
 export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
     console.log(id, name, password)
-    let socket = new WebSocket(`ws://${SOCKET_URL}?room_id=${id}&name=${name}&password=${password}&token=${token}`);
+    let socket = new WebSocket(`ws://${API_URL}?room_id=${id}&name=${name}&password=${password}&token=${token}`);
     
     dispatch({type: SET_SOCKET, socket})
 
