@@ -17,22 +17,21 @@ npm start
 
 ## TODO
 
-* fix player locations on all times, spread out when multiple on same tile
-* change dorm counts on event from server
-* add effects for card draw
-* voice chat
-* property mortgaging 
+* fix player locations on all tiles, spread out when multiple on same tile (high priority)
+* add effects for card draw (high priority)
+* fix turn logic with ending turns (med priority)
+* be able to use get out of jail cards (med priority)
+* voice chat (low priority)
 
 ## Contributors
 
-* **Thomas Kamm** - Frontend Engineer 
-* **Sam Hirschhorn** - Frontend Engineer
+* **Thomas Kamm** - EM
+* (?) **Sam Hirschhorn** - Frontend Engineer
 
-## Other Bruinopoly members
+## Other Bruinopoly members (current)
 
 * **David Deng** - Backend Engineer
 * **Frank Zheng** - Backend Engineer 
-* **Rahul Natarajan** - Engineering Manager
+* **Rahul Natarajan** - PM
 * **Christina Cha** - Designer
-* **Shreya Chatterjee** - Project Manager
-* **Maya Bakir** - Project Manager
+* (?) **Shreya Chatterjee** - Project Manager

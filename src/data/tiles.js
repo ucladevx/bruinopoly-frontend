@@ -173,7 +173,7 @@ const TileType = {
     {
       type: TileType.PROPERTY,
       name: 'Biomed Library',
-      propertyId: 33,
+      propertyId: 32,
     },
     {
       type: TileType.PROPERTY,

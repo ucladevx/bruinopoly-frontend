@@ -23,7 +23,7 @@ export default function MortgagePopup(props){
         if(actionType === "LIFT MORTGAGE" && (me.money < PROPERTIES[propertyNum].mortgage * 1.1))
             return
 
-        dispatch({type: "MORTGAGE", propertyNum, actionType, playerId: player.id})
+        dispatch({type: "MORTGAGE", propertyNum, actionType, playerId: player.id, send: true})
     }
 
 

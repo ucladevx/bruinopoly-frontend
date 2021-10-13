@@ -11,6 +11,10 @@ import {playerDetails} from '../config'
 import {parseISO, differenceInSeconds} from 'date-fns'
 
 export default function Sidebar(props){
+    const mortgagePopup = useSelector(state => state.lobbyReducer.mortgagePopup)
+    const propertyPopup = useSelector(state => state.lobbyReducer.propertyPopup)
+    const tradePopup = useSelector(state => state.lobbyReducer.tradePopup)
+
     const classes = useStyles();
     const turn = useSelector(state => state.lobbyReducer.yourTurn)
     const players = useSelector(state => state.lobbyReducer.game.players)
@@ -49,12 +53,18 @@ export default function Sidebar(props){
     }, [])
 
     let handleTrade = () => {
+        if(!turn || mortgagePopup || propertyPopup) return;
+
         dispatch({type: "OPEN_TRADE"})
     }
 
     let handleOpenProperty  = (buy) => {
         //remove after testing
-        //dispatch({type: "BUY_ALL_PROPERTIES"})
+        /************************************* */
+        dispatch({type: "BUY_ALL_PROPERTIES"})
+        /************************************* */
+        if(!turn || tradePopup || mortgagePopup) return;
+
         if(buy)
             dispatch({type: "OPEN_BUY_DORM"})
         else    
@@ -62,6 +72,8 @@ export default function Sidebar(props){
     }
 
     let handleOpenMortgage = () => {
+        if(!turn || tradePopup || propertyPopup) return;
+
         dispatch({type: "OPEN_MORTGAGE"})
     }
 
@@ -82,12 +94,16 @@ export default function Sidebar(props){
             </div>}
             {props.started && <div className={classes.gameSidebar}>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '35px'}}>
-                    <div className={classes.actionButton} onClick={()=> handleOpenProperty(true)}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
-                    <div className={classes.actionButton} onClick={()=> handleOpenProperty(false)}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
-                    <div className={classes.actionButton} onClick={handleTrade}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
-                    <div className={classes.actionButton} onClick={handleOpenMortgage}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
+                    <div className={classes.actionButton} style={(propertyPopup && propertyPopup.buy) ? {backgroundColor: "#F15B45"} : null}
+                        onClick={()=> handleOpenProperty(true)}>+<img className={classes.actionImage} alt="action buy" src={home} /></div>
+                    <div className={classes.actionButton} style={(propertyPopup && propertyPopup.sell) ? {backgroundColor: "#F15B45"} : null}
+                        onClick={()=> handleOpenProperty(false)}>-<img className={classes.actionImage} alt="action sell" src={home} /></div>
+                    <div className={classes.actionButton} style={tradePopup ? {backgroundColor: "#F15B45"} : null} 
+                        onClick={handleTrade}><img style={{height: '44px'}} className={classes.actionImage} alt="action trade" src={trade} /></div>
+                    <div className={classes.actionButton} style={(mortgagePopup) ? {backgroundColor: "#F15B45"} : null}
+                        onClick={handleOpenMortgage}><img className={classes.actionImage} alt="action mortgage" src={mortgage} /></div>
                 </div>
-                <Bruincard user={props.game.players.filter((player)=> player._id === props.user.id)[0]} info={[props.user.id, props.game.players]} />
+                <Bruincard user={props.game.players.find((player)=> player._id === props.user.id)} info={[props.user.id, props.game.players]} />
                 <div className={classes.nameBox}>
                     {props.game && props.game.players.map((player, i) => {
                         if(player._id === props.user.id) return null;
