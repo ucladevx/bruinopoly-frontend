@@ -275,4 +275,4 @@ let mapIdToName = (players, id) => {
     return other.name
 }
 
-export {majors, API_URL, SOCKET_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor, mapIdToName}
+export {majors, API_URL, times, minGameTime, positions, sleep, CHANCE, CHEST, PROPERTIES, TILES, TileType, playerDetails, getColor, mapIdToName}
