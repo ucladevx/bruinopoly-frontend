@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ar } from 'date-fns/locale';
+//import { ar } from 'date-fns/locale';
 import {API_URL, SOCKET_URL, sleep, PROPERTIES, TileType, TILES} from '../config';
 
 
@@ -58,6 +58,7 @@ const CLOSE_CARDS = "CLOSE_CARDS"
 //actions types to handle game-events from server
 const ADD_PROPERTY = "ADD_PROPERTY"
 const PAY_FEES = "PAY_FEES"
+const HANDLE_RENT = "HANDLE_RENT"
 const GAME_OVER = "GAME_OVER"
 
 //FOR TESTING
@@ -118,7 +119,7 @@ export function lobbyReducer(state = initialState, action) {
             })} }
         case HANDLE_CHANGE_MONEY:
             return {...state, game: {...state.game, players: state.game.players.map((p)=>{
-                if(p._id == action.playerId){
+                if(p._id === action.playerId){
                     return {...p, money: p.money + action.money}
                 }
                 return p
@@ -184,7 +185,7 @@ export function lobbyReducer(state = initialState, action) {
             if(p1.turnsInJail === 0)
                 return {...state, game: {...state.game, players: state.game.players.map((player)=>{
                     if(player._id !== action.id) return player
-                    else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200}
+                    else if((player.currentTile + 1)%40 === 0) return {...player, currentTile: (player.currentTile + 1)%40, money: player.money + 200} //pass GO, get $200
                     else return {...player, currentTile: (player.currentTile + 1)%40}
                 })}}
 
@@ -193,7 +194,7 @@ export function lobbyReducer(state = initialState, action) {
             let p2 = state.game.players.filter(p => p._id === state.userInfo.id)[0]
 
             //only send movement if not in jail, or in jail with doubles
-            if(p2.turnsInJail === 0 || (p2.turnsInJail !== 0 && action.doubles === true) && state.socket !== null){
+            if(state.socket !== null && (p2.turnsInJail === 0 || (p2.turnsInJail !== 0 && action.doubles === true))){
                 state.socket.send(JSON.stringify(['game-events', [{type: 'MOVEMENT', playerId: state.userInfo.id, numTiles: action.movement}] ]))
             }
 
@@ -345,19 +346,55 @@ export function lobbyReducer(state = initialState, action) {
                     return {...state}
                 }
 
-                //PAY RENT  (ADD BANKRUPTY CHECK LATER)
-                //TODO: calculate rent for railroad and utility
+                //PAY RENT 
                 let property = PROPERTIES[action.id]
+                const ownedProperties = state.game.players.find((p) => p._id === owner).propertiesOwned
+
+                let rent = 0; //= ownAll(action.id, ownedProperties) ? property.rent * 2 : property.rent
+                if(property.utility === true){
+                    if(ownAll(action.id, ownedProperties)){
+                        rent = action.movement * 10;
+                    } else {
+                        rent = action.movement * 4;
+                    }
+                } else if(property.railroad === true){
+                    switch(railroadCount(ownedProperties)){
+                        case 1: rent = 25; break;
+                        case 2: rent = 50; break;
+                        case 3: rent = 100; break;
+                        case 4: rent = 200; break;
+                        default: rent = 0;
+                    }
+                } else {
+                    if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 5){
+                        rent = property.rent5;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 4){
+                        rent = property.rent4;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 3){
+                        rent = property.rent3;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 2){
+                        rent = property.rent2;
+                    } else if(ownAll(action.id, ownedProperties) && state.game.properties[action.id].dormCount === 1){
+                        rent = property.rent1;
+                    } else if(ownAll(action.id, ownedProperties)) {
+                        rent = property.rent * 2;
+                    } else {
+                        rent = property.rent;
+                    }
+                }
+
+                // BANKRUPTCY LOGIC HERE (TODO)
 
                 if(state.socket !== null){
-                    state.socket.send(JSON.stringify(['game-events', [{type: 'RENT', playerId: state.userInfo.id, propertyOwner: owner, propertyId: action.id}]]))
+                    //calculate rent here, other players listen to 'RENT' event and just use given amount
+                    state.socket.send(JSON.stringify(['game-events', [{type: 'RENT', playerId: state.userInfo.id, propertyOwner: owner, propertyId: action.id, rent}]]))
                 }
             
                 return {...state, game: {...state.game, players: state.game.players.map((p)=>{
                     if(p._id === state.userInfo.id) 
-                        return {...p, money: p.money - property.rent}
+                        return {...p, money: p.money - rent}
                     else if(p._id === owner) 
-                        return {...p, money: p.money + property.rent}
+                        return {...p, money: p.money + rent}
                     else 
                         return p
                 })}}
@@ -532,6 +569,15 @@ export function lobbyReducer(state = initialState, action) {
                 else
                     return p
             })}}
+        case HANDLE_RENT:
+            return {...state, game: {...state.game, players: state.game.players.map((p)=>{
+                if(p._id === action.playerId) 
+                    return {...p, money: p.money - action.rent}
+                else if(p._id === action.ownerId) 
+                    return {...p, money: p.money + action.rent}
+                else 
+                    return p
+            })}}
         case GAME_OVER:
             // make other popups false?
             if(state.socket !== null)
@@ -603,6 +649,7 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                         break;
                     case "CHANGE_MONEY":
                         dispatch({type: HANDLE_CHANGE_MONEY, playerId: event.playerId, money: event.moneyChange})
+                        break;
                     case "MOVEMENT":
                         dispatch(handleMovement({movement: event.numTiles, id: event.playerId, doubles: false, onlyMove: true}))
                         break;
@@ -620,6 +667,9 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                     case "MORTGAGE_PROPERTY":
                         dispatch({type: MORTGAGE, send: false, playerId: event.playerId, propertyNum: event.propertyId, actionType: event.mortgage})
                         break
+                    case "RENT":
+                        dispatch({type: HANDLE_RENT, rent: event.rent, playerId: event.playerId, ownerId: event.propertyOwner})
+                        break;
                     default:
                         console.log("game-events default")
                 }
@@ -688,7 +738,7 @@ export const turnLogic = ({movement, id, destination, doubles}) => async (dispat
 
     //NEEDS CHANGES: ADD END TURN TO END OF PROPERTY_DECISION, CARD DRAWING, FEE PAYING
     if(TILES[destination].type === TileType.PROPERTY){
-        dispatch({type: PROPERTY_DECISION, id: destination})
+        dispatch({type: PROPERTY_DECISION, id: destination, movement})
     } else if(TILES[destination].type === TileType.CHANCE){
         dispatch({type: DRAW_CHANCE})
     } else if(TILES[destination].type === TileType.CHEST){
@@ -731,3 +781,67 @@ export const setUserInfo = (info) => async (dispatch) => {
 
     dispatch({type: SET_USER_INFO, userObj: {...info, id: null}})
 };
+
+const ownAll = (propertyNum, ownedProperties) => {
+    if(propertyNum === 1 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+        return true;
+    } else if(propertyNum === 3 && ownedProperties.includes(1) && ownedProperties.includes(3)){
+        return true;
+    } else if(propertyNum === 6 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+        return true;
+    } else if(propertyNum === 8 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+        return true;
+    } else if(propertyNum === 9 && ownedProperties.includes(6) && ownedProperties.includes(8) && ownedProperties.includes(9)){
+        return true;
+    } else if(propertyNum === 11 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+        return true;
+    } else if(propertyNum === 13 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+        return true;
+    } else if(propertyNum === 14 && ownedProperties.includes(11) && ownedProperties.includes(13) && ownedProperties.includes(14)){
+        return true;
+    } else if(propertyNum === 16 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+        return true;
+    } else if(propertyNum === 18 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+        return true;
+    } else if(propertyNum === 19 && ownedProperties.includes(16) && ownedProperties.includes(18) && ownedProperties.includes(19)){
+        return true;
+    } else if(propertyNum === 21 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+        return true;
+    } else if(propertyNum === 23 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+        return true;
+    } else if(propertyNum === 24 && ownedProperties.includes(21) && ownedProperties.includes(23) && ownedProperties.includes(24)){
+        return true;
+    } else if(propertyNum === 26 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+        return true;
+    } else if(propertyNum === 27 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+        return true;
+    } else if(propertyNum === 29 && ownedProperties.includes(26) && ownedProperties.includes(27) && ownedProperties.includes(29)){
+        return true;
+    } else if(propertyNum === 31 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+        return true;
+    } else if(propertyNum === 32 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+        return true;
+    } else if(propertyNum === 34 && ownedProperties.includes(31) && ownedProperties.includes(32) && ownedProperties.includes(34)){
+        return true;
+    } else if(propertyNum === 37 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+        return true;
+    } else if(propertyNum === 39 && ownedProperties.includes(37) && ownedProperties.includes(39)){
+        return true;
+    } else if(propertyNum === 12 && ownedProperties.includes(12) && ownedProperties.includes(28)){
+        //utilities Powell and Royce
+    } else if(propertyNum === 28 && ownedProperties.includes(12) && ownedProperties.includes(28)){
+        //utilities Powell and Royce
+    } else {
+        return false
+    }
+}
+
+const railroadCount = (ownedProperties) => {
+    //railroads are 5, 15, 25, 35
+    let count = 0;
+    if(ownedProperties.includes(5)) count++;
+    if(ownedProperties.includes(15)) count++;
+    if(ownedProperties.includes(25)) count++;
+    if(ownedProperties.includes(35)) count++;
+    return count;
+}
