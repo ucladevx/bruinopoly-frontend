@@ -32,8 +32,8 @@ let sleep = (sec) => {
 
 // let API_URL = "http://localhost:3000"
 // let SOCKET_URL = "localhost:8080"
-let API_URL = "https://bruinopoly-backend.herokuapp.com/"
-//et SOCKET_URL = "http://node-express-env.eba-9wtp4njy.us-east-2.elasticbeanstalk.com:8080/"
+let API_URL = "https://bruinopoly-backend.herokuapp.com"
+let SOCKET_URL = "bruinopoly-backend.herokuapp.com"
 
 let majors = ["Aerospace Engineering",
     "African American Studies",

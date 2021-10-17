@@ -167,13 +167,13 @@ const TileType = {
       propertyId: 31,
     },
     {
-      type: TileType.CHEST,
-      name: 'Financial Aid Office',
-    },
-    {
       type: TileType.PROPERTY,
       name: 'Biomed Library',
       propertyId: 32,
+    },
+    {
+      type: TileType.CHEST,
+      name: 'Financial Aid Office',
     },
     {
       type: TileType.PROPERTY,
