@@ -61,7 +61,7 @@ export default function Sidebar(props){
     let handleOpenProperty  = (buy) => {
         //remove after testing
         /************************************* */
-        dispatch({type: "BUY_ALL_PROPERTIES"})
+        //dispatch({type: "BUY_ALL_PROPERTIES"})
         /************************************* */
         if(!turn || tradePopup || mortgagePopup) return;
 
