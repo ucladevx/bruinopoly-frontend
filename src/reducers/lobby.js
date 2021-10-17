@@ -277,7 +277,7 @@ export function lobbyReducer(state = initialState, action) {
             })}}
             
         case HANDLE_ACCEPT_TRADE:
-            console.log("HANDLE_ACCEPT_TRADE:", action.obj)
+           // console.log("HANDLE_ACCEPT_TRADE:", action.obj)
                 /* {
                 playerId: ...
                 receivingPlayerId: ...
@@ -589,22 +589,22 @@ export function lobbyReducer(state = initialState, action) {
 }
 
 export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
-    console.log(id, name, password)
+    //console.log(id, name, password)
     let socket = new WebSocket(`wss://${SOCKET_URL}?room_id=${id}&name=${name}&password=${password}&token=${token}`);
     
     dispatch({type: SET_SOCKET, socket})
 
     socket.addEventListener('open', function (event) {
-        console.log("open event")
+        //console.log("open event")
     });
 
     socket.addEventListener('error', function (event) {
-        console.log("Error event")
+        //console.log("Error event")
     });
 
     socket.addEventListener('message', function(event) {
         let data = JSON.parse(event.data)
-        console.log('Message from server ', data);
+        //console.log('Message from server ', data);
 
         switch(data[0]){
             case 'join-error':
@@ -617,7 +617,7 @@ export const joinRoom = ({id, name, password, token}) => async (dispatch) => {
                 dispatch({type: JOIN_ROOM, id, room: data[1].roomData})
                 break;
             case 'message':
-                console.log(data[1])
+               //console.log(data[1])
                 dispatch({type: ADD_MESSAGE, message: data[1], send: false})
                 break;
             case 'host':
@@ -687,10 +687,10 @@ export const createRoom = (data) => async (dispatch) => {
         return
     }
     
-    console.log(data)
+    //console.log(data)
     try {  
         let result = await axios.post(`${API_URL}/rooms`, data);
-        console.log(result.data);
+       // console.log(result.data);
         dispatch({type: ADD_NEW_ROOM, room: result.data.room, token: result.data.token})
     } catch(e){
         dispatch({type: CREATE_ROOM_ERROR, error: e})
@@ -700,10 +700,10 @@ export const createRoom = (data) => async (dispatch) => {
 export const getRooms = () => async (dispatch) => {
     try {
         let result = await axios.get(`${API_URL}/rooms`)
-        console.log(result.data)
+       // console.log(result.data)
         dispatch({type: SET_ROOMS_LIST, rooms: result.data.rooms})
     } catch(e){
-        console.log(e)
+       // console.log(e)
         dispatch({type: LOBBY_ERROR, error: e})
     }
    

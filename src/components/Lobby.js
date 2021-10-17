@@ -145,8 +145,8 @@ export default function Lobby(props){
                 </div>
                 <div className={classes.optionsBox}>
                     <button className={classes.option} onClick={() => setDisplay(true)}><div>CREATE ROOM</div></button>
-                    <button className={classes.option}><div>ABOUT</div></button>
-                    <button className={classes.option}><div>CONTACT</div></button>
+                    <button className={classes.option} onClick={()=> props.history.push("/about")}><div>ABOUT</div></button>
+                    <button className={classes.option} onClick={()=> props.history.push("/contact")}><div>CONTACT</div></button>
                 </div>
                 <div className={classes.roomsText} style={{backgroundColor: '#A8DDD7'}}><div>SUGGESTED ROOMS</div></div>
                 <div className={classes.roomsText} style={{backgroundColor: '#DC9F96'}}><div>AVAILABLE ROOMS</div></div>
